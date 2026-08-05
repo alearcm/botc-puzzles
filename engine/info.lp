@@ -49,6 +49,9 @@ reg_team(Q,TM,Site) :- mr_team(Q,Site,TM).
 % ================= tokens & modes =================
 % learns(C, first|other|each, Schema) from cards.
 token_due(P,C,T,Schema) :- learns(C,first,Schema), acting(P,C,T), T = 1.
+% first-night info abilities gained mid-game (philosopher/pit-hag creations)
+token_due(P,C,T,Schema) :- learns(C,first,Schema), acting(P,C,T),
+                           ability_start(P,C,T), T > 1.
 token_due(P,C,T,Schema) :- learns(C,other,Schema), acting(P,C,T), T > 1.
 token_due(P,C,T,Schema) :- learns(C,each,Schema),  acting(P,C,T).
 % shadow tokens: theater info, always FREE
@@ -61,7 +64,7 @@ shadow_token(P,B,T) :- token_due(P,B,T,_), shadow_acting(P,B,T).
 % mode precedence: sober_healthy > vortox > droison/shadow > base
 m_vortox(P,C,T) :- token_due(P,C,T,_), role(C,townsfolk,_),
     char(V,vortox,T), has_ability(V,vortox,T).
-m_free(P,C,T) :- token_due(P,C,T,_), sched(C,T,I), impaired_at(P,T,I).
+m_free(P,C,T) :- token_due(P,C,T,_), asched(C,T,I), impaired_at(P,T,I).
 m_free(P,C,T) :- shadow_token(P,C,T).
 m_free(P,savant,T) :- token_due(P,savant,T,savant_visit), impaired_day(P,T).
 
@@ -289,4 +292,21 @@ sv_ok(P,T) :- savant_pair(P,T,Id1,Id2), stmt_true(Id2), not stmt_true(Id1).
    savant_pair(P,T,Id1,Id2), stmt_true(Id2).
 day_of_token(P,C,T,T) :- stmt(_,P,C,T).
 % savant day visits: token_due comes from the day visit input
-token_due(P,savant,T,savant_visit) :- stmt(_,P,savant,T), char(P,savant,T).
+token_due(P,savant,T,savant_visit) :- stmt(_,P,savant,T), has_ability(P,savant,T).
+
+% ---- outsiders_in_play: godfather (night 1) ----
+% Shown set must equal the set of outsider characters some player registers
+% as (per-player sites: the Spy may appear as an outsider, the Recluse's
+% outsider identity may be hidden... no — recluse registers evil-side only;
+% the direction that matters: spy adds, and a dead outsider still counts).
+{ shown_gf(P,T,CC) : role(CC,outsider,_), on_script(CC) } :-
+    token_due(P,godfather,T,outsiders_in_play).
+site_ch(gf(P,T,Q),Q,T) :- token_due(P,godfather,T,outsiders_in_play), player(Q).
+gf_reg(P,T,CC) :- token_due(P,godfather,T,outsiders_in_play),
+    role(CC,outsider,_), on_script(CC), player(Q), reg_char(Q,CC,gf(P,T,Q)).
+:- enforce_true(P,godfather,T), shown_gf(P,T,CC), not gf_reg(P,T,CC).
+:- enforce_true(P,godfather,T), gf_reg(P,T,CC), not shown_gf(P,T,CC).
+gf_mismatch(P,T) :- shown_gf(P,T,CC), not gf_reg(P,T,CC).
+gf_mismatch(P,T) :- gf_reg(P,T,CC), not shown_gf(P,T,CC).
+:- enforce_false(P,godfather,T), not gf_mismatch(P,T),
+   token_due(P,godfather,T,outsiders_in_play).

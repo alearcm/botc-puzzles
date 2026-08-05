@@ -1,0 +1,24 @@
+# A poisoned Saint's execution does NOT end the game.
+id: poisoned-saint-safe
+tier: T0
+source: Saint almanac (poisoned example)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+given:
+  - initial(p1,imp)
+  - initial(p2,baron)
+  - initial(p3,poisoner)
+  - initial(p4,saint)
+  - initial(p5,recluse)
+  - initial(p6,chef)
+  - initial(p7,soldier)
+  - initial(p8,mayor)
+  - initial(p9,monk)
+  - initial(p10,empath)
+  - picked(p3,poisoner,1,p4)
+  - executed(p4,1)
+  - "badend :- ended(2,evil)"
+  - ":- not badend"
+assert:
+  exists: false

@@ -1,0 +1,18 @@
+id: exorcist-no-repeat
+tier: T1
+source: Exorcist ability text (different player to last night)
+script: bmr
+horizon: 3
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,pukka)
+  - initial(p2,assassin)
+  - initial(p3,exorcist)
+  - initial(p4,sailor)
+  - initial(p5,tealady)
+  - initial(p6,fool)
+  - initial(p7,grandmother)
+  - picked(p3,exorcist,2,p1)
+  - picked(p3,exorcist,3,p1)
+assert:
+  exists: false

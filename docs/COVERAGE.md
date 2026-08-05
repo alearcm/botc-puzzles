@@ -1,11 +1,10 @@
 # Coverage
 
-Per-character engine coverage. `full` = mechanics faithfully modelled 
-(within engine v1 scope: no win conditions, travellers, or madness 
-enforcement); `partial` = core behaviour modelled with named 
-simplifications; `deferred` = present as data, not yet executable.
+Per-character engine coverage for the three base scripts. `full` =
+mechanics faithfully modelled within the engine's v1 scope (below);
+notes name any deliberate simplification or rulings default in play.
 
-Totals: 44 full / 25 partial / 3 deferred (72 characters).
+Totals: 72 full / 0 partial / 0 deferred (72 characters).
 
 | Script | Character | Team | Coverage | Notes |
 |---|---|---|---|---|
@@ -21,20 +20,20 @@ Totals: 44 full / 25 partial / 3 deferred (72 characters).
 | Trouble Brewing | virgin | townsfolk | full | nomination proc in mech.lp from day inputs |
 | Trouble Brewing | slayer | townsfolk | full | public day shot in mech.lp from day inputs |
 | Trouble Brewing | soldier | townsfolk | full |  |
-| Trouble Brewing | mayor | townsfolk | partial | night bounce in death.lp; no-execution-good-wins deferred (win conditions) |
-| Trouble Brewing | butler | outsider | partial | master choice modelled (wakes, picks); vote-legality constraint deferred |
+| Trouble Brewing | mayor | townsfolk | full | night bounce; 3-alive-no-execution day win in endgame.lp |
+| Trouble Brewing | butler | outsider | full | master choice + vote-legality constraint (votes are day inputs) |
 | Trouble Brewing | drunk | outsider | full | shadow ability charade, scope S1 |
 | Trouble Brewing | recluse | outsider | full | per-occurrence misregistration in info.lp |
-| Trouble Brewing | saint | outsider | partial | execution-loss win condition deferred |
+| Trouble Brewing | saint | outsider | full | functioning execution ends game for evil (endgame.lp) |
 | Trouble Brewing | poisoner | minion | full |  |
-| Trouble Brewing | spy | minion | partial | misregistration full; grimoire peek is unconstrained evil info (wakes for chambermaid) |
+| Trouble Brewing | spy | minion | full | misregistration full; grimoire peek is true-but-unconstrained evil info by design |
 | Trouble Brewing | scarletwoman | minion | full | demon-death takeover in mech.lp |
 | Trouble Brewing | baron | minion | full |  |
 | Trouble Brewing | imp | demon | full | star pass in mech.lp |
 | Bad Moon Rising | grandmother | townsfolk | full |  |
 | Bad Moon Rising | sailor | townsfolk | full | either-or drunking + cant_die in mech.lp/death.lp |
-| Bad Moon Rising | chambermaid | townsfolk | partial | not-yourself pick restriction not yet enforced |
-| Bad Moon Rising | exorcist | townsfolk | partial | demon-block full; different-player-to-last-night not yet enforced |
+| Bad Moon Rising | chambermaid | townsfolk | full |  |
+| Bad Moon Rising | exorcist | townsfolk | full |  |
 | Bad Moon Rising | innkeeper | townsfolk | full |  |
 | Bad Moon Rising | gambler | townsfolk | full |  |
 | Bad Moon Rising | gossip | townsfolk | full | day statement inputs + conditional ST kill in mech.lp |
@@ -44,53 +43,59 @@ Totals: 44 full / 25 partial / 3 deferred (72 characters).
 | Bad Moon Rising | tealady | townsfolk | full |  |
 | Bad Moon Rising | pacifist | townsfolk | full |  |
 | Bad Moon Rising | fool | townsfolk | full |  |
-| Bad Moon Rising | tinker | outsider | partial | night ST-kill licence; day deaths not yet modelled |
-| Bad Moon Rising | moonchild | outsider | partial | choice comes as public day input; night-death trigger variant deferred |
-| Bad Moon Rising | goon | outsider | partial | first-targeter drunk + alignment flip; ST-targeting subtleties simplified |
-| Bad Moon Rising | lunatic | outsider | partial | charade full (incl. fake attacks as picks); real-demon feed not constrained |
-| Bad Moon Rising | godfather | minion | partial | outsider-death kill full; night-1 outsider list token deferred |
-| Bad Moon Rising | devilsadvocate | minion | partial | execution save full; not-same-player-twice not enforced |
+| Bad Moon Rising | tinker | outsider | full | ST-kill licence night and day |
+| Bad Moon Rising | moonchild | outsider | full | public choice is a day input; good choice dies the following night |
+| Bad Moon Rising | goon | outsider | full | first-targeter drunk + alignment flip via reified targeting order |
+| Bad Moon Rising | lunatic | outsider | full | charade full (fake attacks as picks); demon feed is evil info, unconstrained by design |
+| Bad Moon Rising | godfather | minion | full | outsider list token (spy may appear); outsider-death kill |
+| Bad Moon Rising | devilsadvocate | minion | full |  |
 | Bad Moon Rising | assassin | minion | full | pierce kill in death.lp |
-| Bad Moon Rising | mastermind | minion | deferred | extra-day-after-demon-death needs win/endgame semantics |
-| Bad Moon Rising | zombuul | demon | partial | fake first death + off-night blocking; deadness registration edges open |
-| Bad Moon Rising | pukka | demon | partial | poison-now/die-next-night; interaction with protection mid-chain simplified |
-| Bad Moon Rising | shabaloth | demon | partial | regurgitation modelled; "chose a dead player" edge simplified |
-| Bad Moon Rising | po | demon | partial | self-pick convention = charge; 3-kill burst modelled |
+| Bad Moon Rising | mastermind | minion | full | extension day + executed-team-loses in endgame.lp |
+| Bad Moon Rising | zombuul | demon | full | fake first death registers dead everywhere (app_alive); off-night blocking |
+| Bad Moon Rising | pukka | demon | full | poison-now/die-next-night through the kill pipeline; protection saves the life, poison expiry unchanged |
+| Bad Moon Rising | shabaloth | demon | full | regurgitation of a previous victim |
+| Bad Moon Rising | po | demon | full | self-pick convention = charge; exactly-3 burst (fewer if fewer alive) |
 | Sects & Violets | clockmaker | townsfolk | full |  |
 | Sects & Violets | dreamer | townsfolk | full |  |
-| Sects & Violets | snakecharmer | townsfolk | partial | swap applied at night boundary; new demon does not act the same night |
-| Sects & Violets | mathematician | townsfolk | partial | malfunction := acted-while-impaired or charade; see RULINGS charade-mathematician |
+| Sects & Violets | snakecharmer | townsfolk | full | same-night demon handover: new demon acts, old demon blocked, new charmer permanently poisoned |
+| Sects & Violets | mathematician | townsfolk | full | malfunction := acted-while-impaired or charade (RULINGS charade-mathematician default) |
 | Sects & Violets | flowergirl | townsfolk | full |  |
 | Sects & Violets | towncrier | townsfolk | full |  |
 | Sects & Violets | oracle | townsfolk | full |  |
 | Sects & Violets | savant | townsfolk | full | day-visit statement pairs as quoted formulas; exactly-one-true pattern; Vortox both-false |
-| Sects & Violets | seamstress | townsfolk | partial | not-yourself restriction and dead-pickable edge simplified |
-| Sects & Violets | philosopher | townsfolk | deferred | ability copying (first-class abilities) not yet in engine |
+| Sects & Violets | seamstress | townsfolk | full |  |
+| Sects & Violets | philosopher | townsfolk | full | ability copying with relative schedules; in-play holder drunk while held |
 | Sects & Violets | artist | townsfolk | full | once-per-game day question as quoted formula |
 | Sects & Violets | juggler | townsfolk | full | registration evaluated at guess time |
 | Sects & Violets | sage | townsfolk | full | on-demon-death token in mech.lp |
-| Sects & Violets | mutant | outsider | partial | madness has no enforcement semantics; ST-execution licence is via day inputs |
+| Sects & Violets | mutant | outsider | full | madness as claim-layer semantics (mutant claims a townsfolk); ST execution via day inputs |
 | Sects & Violets | sweetheart | outsider | full |  |
 | Sects & Violets | barber | outsider | full |  |
-| Sects & Violets | klutz | outsider | deferred | on-death choice recorded; good-loses outcome needs win semantics |
-| Sects & Violets | eviltwin | minion | partial | opposite-alignment pair modelled; win-veto deferred |
+| Sects & Violets | klutz | outsider | full | on-death choice input; evil pick ends game for evil (registration applies) |
+| Sects & Violets | eviltwin | minion | full | pair + good-twin-executed evil win + both-alive blocks good wins |
 | Sects & Violets | witch | minion | full |  |
-| Sects & Violets | cerenovus | minion | partial | madness flag only |
-| Sects & Violets | pithag | minion | partial | transform + arbitrary-deaths licence; created first-night abilities per relative schedule |
+| Sects & Violets | cerenovus | minion | full | madness flag feeds claim-layer semantics; enforcement is ST licence via day inputs |
+| Sects & Violets | pithag | minion | full | transform + in-play guard + arbitrary-deaths licence; created first-night abilities fire on first held night |
 | Sects & Violets | fanggu | demon | full |  |
-| Sects & Violets | vigormortis | demon | partial | minion ability persistence + adjacent-townsfolk poison; poison scoping simplified |
+| Sects & Violets | vigormortis | demon | full | minion ability persists dead; poisons an alive townsfolk neighbour of the minion |
 | Sects & Violets | nodashii | demon | full |  |
-| Sects & Violets | vortox | demon | partial | ALL_FALSE info full; no-execution-evil-wins deferred (win semantics) |
+| Sects & Violets | vortox | demon | full | ALL_FALSE info + no-execution evil win (endgame.lp) |
 
-## Engine-wide v1 scope limits
+## Engine-wide v1 scope
 
-- Win/endgame conditions are not modelled (Saint, Mayor day-win, Klutz,
-  Evil Twin veto, Mastermind, Vortox execution rule are all flagged).
+- Win/endgame semantics ARE modelled (endgame.lp): demon elimination,
+  2-alive, Saint, Klutz, Mayor day win, Vortox no-execution, Evil Twin
+  (good-twin execution + both-alive block), Mastermind extension day.
+  Puzzles automatically assume play is ongoing (`assume_ongoing`),
+  making survival-to-the-current-phase itself evidence.
 - Travellers and Fabled are out of scope.
-- Madness (Cerenovus, Mutant) is recorded, not enforced.
+- Madness is claim-layer semantics (mutant claims a townsfolk;
+  cerenovus-mad players claim their mad character); ST enforcement
+  executions arrive as day inputs.
 - Day events (nominations, votes, executions, slayer shots, juggles,
-  gossip/savant/artist statements) are observation inputs, not choices.
-- Within-night character swaps take effect at the night boundary
-  (Snake Charmer / Barber / star-pass timing simplifications).
-- Evil-team private info (minion/demon info, Spy grimoire, Lunatic feed)
-  is unconstrained (ST-may-say-anything) in v1.
+  gossip/savant/artist statements, moonchild/klutz choices) are
+  observation inputs, not engine choices.
+- Evil private info (minion/demon info, Spy grimoire, Lunatic feed,
+  Evil Twin sightings) is real but unconstrained for the solver.
+- Death-triggered effects apply at the death's night-order position
+  (earlier same-night acts already resolved unimpaired).

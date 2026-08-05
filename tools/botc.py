@@ -17,7 +17,7 @@ import clingo
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-ENGINE_FILES = ["core.lp", "death.lp", "info.lp", "mech.lp"]
+ENGINE_FILES = ["core.lp", "death.lp", "info.lp", "mech.lp", "endgame.lp"]
 
 
 # ---------------- cards ----------------
@@ -208,6 +208,10 @@ def claim_rules(claims: list[dict]) -> list[str]:
         out.append(f"claim_ok({p}) :- {drunk_body}.")
         out.append(f"claim_ok({p}) :- initial({p},C), role(C,minion,_).")
         out.append(f"claim_ok({p}) :- initial({p},C), role(C,demon,_).")
+        # madness: a mutant claims a townsfolk (fabricated info); a
+        # cerenovus-mad player claims their mad character
+        out.append(f"claim_ok({p}) :- initial({p},mutant), role({char},townsfolk,_).")
+        out.append(f"claim_ok({p}) :- mad({p},{char},_).")
         out.append(f":- not claim_ok({p}).")
     return out
 
@@ -222,6 +226,8 @@ def load_puzzle(path: Path) -> tuple[Instance, dict]:
         statements=doc.get("statements", {}),
     )
     inst.given.extend(claim_rules(doc.get("claims", [])))
+    if doc.get("assume_ongoing", True):
+        inst.given.append("assume_ongoing")
     return inst, doc
 
 

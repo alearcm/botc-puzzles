@@ -37,6 +37,7 @@ Memory — the author's, a Storyteller's, or a model's — is never a source.
 | `vortox-savant` | Vortoxed Savant receives two false statements — Vortox is claim-wise falsification (`ALL_FALSE`), not pattern negation. | Almanac |
 | `reg-survives-death` | Registration flavour survives death: the executed Recluse may show as the Imp to the Undertaker. | Recluse almanac example |
 | `night-sheet-order` | The base editions' printed night sheets differ from the modern global order (TB: Butler before Undertaker; BMR: Innkeeper before Courtier, Professor before Gossip). Engine uses the printed sheets per script. | Official edition night sheets (see data/raw/night_orders_notes.md) |
+| `death-trigger-timing` | Death-triggered ongoing effects (e.g. Sweetheart's drunking) begin at the death's position in the night order; abilities that already resolved that night were unimpaired. | Night-order semantics; caught by `snakecharmer-same-night` fixture |
 
 ## Switches
 

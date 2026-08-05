@@ -16,10 +16,12 @@ neigh(P,Q) :- succ_seat(Q,P).
 
 % alive neighbours at night T (skipping dead seats around the circle)
 % next living clockwise: walk successor seats
+% neighbours are computed over APPARENT life: a fake-dead Zombuul registers
+% dead to everything, including neighbour-based abilities.
 reach_cw(P,Q,T) :- succ_seat(P,Q), night(T).
-reach_cw(P,R,T) :- reach_cw(P,Q,T), not alive(Q,T), succ_seat(Q,R), R != P.
-alive_neigh_cw(P,Q,T) :- reach_cw(P,Q,T), alive(Q,T),
-    #false : reach_cw(P,R,T), alive(R,T), before_cw(P,R,Q).
+reach_cw(P,R,T) :- reach_cw(P,Q,T), not app_alive(Q,T), succ_seat(Q,R), R != P.
+alive_neigh_cw(P,Q,T) :- reach_cw(P,Q,T), app_alive(Q,T),
+    #false : reach_cw(P,R,T), app_alive(R,T), before_cw(P,R,Q).
 % before_cw(P,R,Q): walking clockwise from P, R comes strictly before Q
 before_cw(P,R,Q) :- walk(P,R,N1), walk(P,Q,N2), N1 < N2.
 walk(P,Q,1) :- succ_seat(P,Q).
@@ -27,9 +29,9 @@ walk(P,R,N+1) :- walk(P,Q,N), succ_seat(Q,R), N < 15, R != P.
 alive_neighbor(P,Q,T) :- alive_neigh_cw(P,Q,T).
 alive_neighbor(P,Q,T) :- alive_neigh_ccw(P,Q,T).
 reach_ccw(P,Q,T) :- succ_seat(Q,P), night(T).
-reach_ccw(P,R,T) :- reach_ccw(P,Q,T), not alive(Q,T), succ_seat(R,Q), R != P.
-alive_neigh_ccw(P,Q,T) :- reach_ccw(P,Q,T), alive(Q,T),
-    #false : reach_ccw(P,R,T), alive(R,T), before_ccw(P,R,Q).
+reach_ccw(P,R,T) :- reach_ccw(P,Q,T), not app_alive(Q,T), succ_seat(R,Q), R != P.
+alive_neigh_ccw(P,Q,T) :- reach_ccw(P,Q,T), app_alive(Q,T),
+    #false : reach_ccw(P,R,T), app_alive(R,T), before_ccw(P,R,Q).
 before_ccw(P,R,Q) :- walkc(P,R,N1), walkc(P,Q,N2), N1 < N2.
 walkc(P,Q,1) :- succ_seat(Q,P).
 walkc(P,R,N+1) :- walkc(P,Q,N), succ_seat(R,Q), N < 15, R != P.
@@ -85,6 +87,7 @@ char(P,C,1) :- initial(P,C).
 char(P,C,T+1) :- char(P,C,T), night(T+1), not char_changed(P,T).
 char(P,C,T+1) :- becomes(P,C,T), night(T+1).
 char_changed(P,T) :- becomes(P,_,T).
+:- char(P,C1,T), char(P,C2,T), C1 < C2.   % one character per player per night
 
 % ---------- believed character (self-misinformation) ----------
 % self_misinformed(C, BelievedTeam): drunk thinks townsfolk, lunatic thinks demon
@@ -102,6 +105,19 @@ shadow(P,B,T) :- believed_init(P,B), initial(P,C), self_misinformed(C,_),
 sched(C,1,I) :- order(S,first,I,C), script(S).
 sched(C,T,I) :- order(S,other,I,C), script(S), night(T), T > 1.
 
+% ---------- ability acquisition time (relative schedules) ----------
+ability_start(P,C,1) :- initial(P,C).
+ability_start(P,C,T+1) :- becomes(P,C,T), night(T+1).
+% asched: schedule extended with a pseudo-position for abilities gained
+% mid-game whose card has no other-night entry (first-night-only abilities
+% fire on the first night the ability is held).
+asched(C,T,I) :- sched(C,T,I).
+% philosopher-gained abilities run at the philosopher's own position
+asched(C,T,I) :- phil_gains(_,C,T), sched(philosopher,T,I).
+phil_sched(C,T) :- phil_gains(_,C,T).
+asched(C,T,98) :- ability_start(P,C,T), T > 1, not sched(C,T,_),
+                  not phil_sched(C,T).
+
 % ---------- ability possession ----------
 % dead players lose abilities, unless kept (persists_dead from mech layer)
 has_ability(P,C,T) :- char(P,C,T), alive(P,T).
@@ -109,9 +125,12 @@ has_ability(P,C,T) :- char(P,C,T), not alive(P,T), persists_dead(P,C,T).
 
 % ---------- acting ----------
 % acts(C, first|other|each, PickSpec) from cards.
-due(C,P,T) :- acts(C,first,_), sched(C,1,_), T=1, has_ability(P,C,T).
+due(C,P,T) :- acts(C,first,_), sched(C,1,_), T=1, has_ability(P,C,T),
+              ability_start(P,C,1).
+% first-night-only abilities gained mid-game fire on their first held night
+due(C,P,T) :- acts(C,first,_), ability_start(P,C,T), T>1, has_ability(P,C,T).
 due(C,P,T) :- acts(C,other,_), sched(C,T,_), T>1, has_ability(P,C,T).
-due(C,P,T) :- acts(C,each,_),  sched(C,T,_),      has_ability(P,C,T).
+due(C,P,T) :- acts(C,each,_),  asched(C,T,_),     has_ability(P,C,T).
 % once-per-game night powers: used marker constrains
 due_once(C,P,T) :- acts_once(C,PhaseSel), sched(C,T,_), has_ability(P,C,T),
                    phase_ok(PhaseSel,T).
@@ -138,14 +157,36 @@ shadow_acting(P,B,T) :- shadow(P,B,T), acts(B,each,_), sched(B,T,_),
 % p2_players, p1_and_char, char_only
 1 { picked(P,C,T,Q) : player(Q) } 1 :-
     acting(P,C,T), acts_pick(C,p1_any).
-1 { picked(P,C,T,Q) : alive(Q,T) } 1 :-
+1 { picked(P,C,T,Q) : app_alive(Q,T) } 1 :-
     acting(P,C,T), acts_pick(C,p1_alive).
-1 { picked(P,C,T,Q) : alive(Q,T), Q != P } 1 :-
+1 { picked(P,C,T,Q) : app_alive(Q,T), Q != P } 1 :-
     acting(P,C,T), acts_pick(C,p1_alive_not_self).
 1 { picked(P,C,T,Q) : player(Q), Q != P } 1 :-
     acting(P,C,T), acts_pick(C,p1_not_self).
-1 { picked2(P,C,T,Q1,Q2) : alive(Q1,T), alive(Q2,T), Q1 < Q2 } 1 :-
+1 { picked2(P,C,T,Q1,Q2) : app_alive(Q1,T), app_alive(Q2,T), Q1 < Q2 } 1 :-
     acting(P,C,T), acts_pick(C,p2_alive).
+1 { picked2(P,C,T,Q1,Q2) : app_alive(Q1,T), app_alive(Q2,T), Q1 < Q2,
+                           Q1 != P, Q2 != P } 1 :-
+    acting(P,C,T), acts_pick(C,p2_alive_not_self).
+% no_repeat_pick(C): may not choose the same player two nights running
+:- no_repeat_pick(C), picked(P,C,T,Q), picked(P,C,T-1,Q).
+
+% pick legality as integrity constraints (instance-supplied picks included)
+:- acts_pick(C,p1_alive), picked(P,C,T,Q), not app_alive(Q,T).
+:- acts_pick(C,p1_alive_not_self), picked(P,C,T,Q), not app_alive(Q,T).
+:- acts_pick(C,p1_alive_not_self), picked(P,C,T,P).
+:- acts_pick(C,p1_not_self), picked(P,C,T,P).
+:- acts_pick(C,p2_alive), picked2(P,C,T,Q,_), not app_alive(Q,T).
+:- acts_pick(C,p2_alive), picked2(P,C,T,_,Q), not app_alive(Q,T).
+:- acts_pick(C,p2_alive_not_self), picked2(P,C,T,Q,_), not app_alive(Q,T).
+:- acts_pick(C,p2_alive_not_self), picked2(P,C,T,_,Q), not app_alive(Q,T).
+:- acts_pick(C,p2_alive_not_self), picked2(P,C,T,P,_).
+:- acts_pick(C,p2_alive_not_self), picked2(P,C,T,_,P).
+% at most one pick atom per acting instance (instance facts add, not join)
+:- picked(P,C,T,Q1), picked(P,C,T,Q2), Q1 < Q2, acts_pick(C,PS),
+   PS != p1_and_char.
+:- picked2(P,C,T,Q1,Q2), picked2(P,C,T,Q3,Q4), Q1 != Q3.
+:- picked2(P,C,T,Q1,Q2), picked2(P,C,T,Q3,Q4), Q2 != Q4.
 1 { picked2(P,C,T,Q1,Q2) : player(Q1), player(Q2), Q1 < Q2 } 1 :-
     acting(P,C,T), acts_pick(C,p2_players).
 1 { pickedc(P,C,T,CC) : on_script(CC) } 1 :-
@@ -173,18 +214,22 @@ status_on(Q,K,T,I) :- applied(Q,K,Src,T,J,_), acts_idx(T,I), J < I,
 % carry-over from previous nights, by expiry
 status_on(Q,K,T,I) :- applied(Q,K,Src,T0,_,permanent), T0 < T, acts_idx(T,I),
                       not voided(Q,K,Src,T).
+% permanent_sticky: outlives the source's ability (sweetheart, snake charmer)
+status_on(Q,K,T,I) :- applied(Q,K,_,T0,_,permanent_sticky), T0 < T, acts_idx(T,I).
+status_on(Q,K,T,I) :- applied(Q,K,_,T,J,permanent_sticky), acts_idx(T,I), J < I.
+status_on_day(Q,K,D) :- applied(Q,K,_,T0,_,permanent_sticky), T0 <= D, day(D).
 status_on(Q,K,T,I) :- applied(Q,K,Src,T0,_,nights(N,T0)), T0 < T, T <= T0+N-1,
                       acts_idx(T,I), not voided(Q,K,Src,T).
 status_on_day(Q,K,D) :- applied(Q,K,Src,D,_,until_dusk(D)), day(D),
                         not voided(Q,K,Src,D).
 status_on_day(Q,K,D) :- applied(Q,K,Src,T0,_,permanent), T0 <= D, day(D),
                         not voided(Q,K,Src,D).
-acts_idx(T,I) :- sched(_,T,I).
+acts_idx(T,I) :- asched(_,T,I).
 acts_idx(T,99) :- night(T).   % end-of-night evaluation point
 
 % default: a status ends if its source loses the ability that granted it
-% (unless the applying effect is marked sticky/1 by the mech layer)
-voided(Q,K,src(P,C),T) :- applied(Q,K,src(P,C),_,_,_), not sticky(K),
+% (permanent_sticky expiries are exempt and bypass this entirely)
+voided(Q,K,src(P,C),T) :- applied(Q,K,src(P,C),_,_,E), E != permanent_sticky,
                           not has_ability(P,C,T), night(T).
 
 % ---------- impairment & functioning ----------
@@ -200,11 +245,11 @@ functioning_at(P,C,T,I) :- has_ability(P,C,T), acts_idx(T,I), sober_healthy(P,T)
 % sober_healthy: barista-style override (unused in base scripts; kept for shape)
 
 % trace: woke / acted / malfunctioned
-woke(P,T) :- acting(P,C,T), sched(C,T,_).
+woke(P,T) :- acting(P,C,T), asched(C,T,_).
 woke(P,T) :- shadow_acting(P,B,T), sched(B,T,_).
 % evil first-night info (minion info / demon info sheet entries)
 woke(P,1) :- char(P,C,1), team_of(C,minion), nplayers(N), N >= 7.
 woke(P,1) :- char(P,C,1), team_of(C,demon), nplayers(N), N >= 7.
 acted(P,C,T) :- acting(P,C,T).
-malfunctioned(P,T) :- acting(P,C,T), sched(C,T,I), impaired_at(P,T,I).
+malfunctioned(P,T) :- acting(P,C,T), asched(C,T,I), impaired_at(P,T,I).
 malfunctioned(P,T) :- shadow_acting(P,_,T).   % a charade never truly functions

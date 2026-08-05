@@ -1,0 +1,19 @@
+# The philosopher-Clockmaker's token is constrained sound (steps = 1 here).
+id: philosopher-token-true
+tier: T1
+source: Philosopher ability text
+script: snv
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6]
+given:
+  - initial(p1,nodashii)
+  - initial(p2,witch)
+  - initial(p3,clockmaker)
+  - initial(p4,sweetheart)
+  - initial(p5,philosopher)
+  - initial(p6,sage)
+  - uses_once(p5,philosopher,2)
+  - phil_pick(p5,2,clockmaker)
+  - shown_num(p5,clockmaker,2,3)
+assert:
+  exists: false

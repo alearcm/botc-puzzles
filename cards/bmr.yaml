@@ -2,139 +2,158 @@
 
 - id: grandmother
   team: townsfolk
-  acts: {phase: first}
-  learns: {phase: first, schema: grandchild}
+  acts:
+    phase: first
+  learns:
+    phase: first
+    schema: grandchild
   facts:
-    - "st_kill(G,T) :- final_kill(Q,src(_,CD),T,_,demon), death_event(Q,T), grandchild(G,Q), char(G,grandmother,T), has_ability(G,grandmother,T)"
+  - st_kill(G,T) :- final_kill(Q,src(_,CD),T,_,demon), death_event(Q,T), grandchild(G,Q), char(G,grandmother,T),
+    has_ability(G,grandmother,T)
   coverage: full
-
 - id: sailor
   team: townsfolk
-  acts: {phase: each, pick: p1_alive_not_self}
+  acts:
+    phase: each
+    pick: p1_alive_not_self
   coverage: full
   notes: either-or drunking + cant_die in mech.lp/death.lp
-
 - id: chambermaid
   team: townsfolk
-  acts: {phase: each, pick: p2_alive}
-  learns: {phase: each, schema: woke_count2}
-  coverage: partial
-  notes: not-yourself pick restriction not yet enforced
-
+  acts:
+    phase: each
+    pick: p2_alive_not_self
+  learns:
+    phase: each
+    schema: woke_count2
+  coverage: full
 - id: exorcist
   team: townsfolk
-  acts: {phase: other, pick: p1_alive}
-  coverage: partial
-  notes: demon-block full; different-player-to-last-night not yet enforced
-
+  acts:
+    phase: other
+    pick: p1_alive
+  coverage: full
+  facts:
+  - no_repeat_pick(exorcist)
 - id: innkeeper
   team: townsfolk
-  acts: {phase: other, pick: p2_alive}
+  acts:
+    phase: other
+    pick: p2_alive
   coverage: full
-
 - id: gambler
   team: townsfolk
-  acts: {phase: other, pick: p1_and_char}
+  acts:
+    phase: other
+    pick: p1_and_char
   coverage: full
-
 - id: gossip
   team: townsfolk
   coverage: full
   notes: day statement inputs + conditional ST kill in mech.lp
-
 - id: courtier
   team: townsfolk
-  acts: {phase: each, once: true}
+  acts:
+    phase: each
+    once: true
   coverage: full
-
 - id: professor
   team: townsfolk
-  acts: {phase: other, once: true}
+  acts:
+    phase: other
+    once: true
   coverage: full
-
 - id: minstrel
   team: townsfolk
   coverage: full
-
 - id: tealady
   team: townsfolk
   coverage: full
-
 - id: pacifist
   team: townsfolk
   coverage: full
-
 - id: fool
   team: townsfolk
   coverage: full
-
 - id: tinker
   team: outsider
-  coverage: partial
-  notes: night ST-kill licence; day deaths not yet modelled
-
+  coverage: full
+  notes: ST-kill licence night and day
 - id: moonchild
   team: outsider
-  coverage: partial
-  notes: choice comes as public day input; night-death trigger variant deferred
-
+  coverage: full
+  notes: public choice is a day input; good choice dies the following night
 - id: goon
   team: outsider
-  coverage: partial
-  notes: first-targeter drunk + alignment flip; ST-targeting subtleties simplified
-
+  coverage: full
+  notes: first-targeter drunk + alignment flip via reified targeting order
 - id: lunatic
   team: outsider
   self_misinformed: demon
-  coverage: partial
-  notes: charade full (incl. fake attacks as picks); real-demon feed not constrained
-
+  coverage: full
+  notes: charade full (fake attacks as picks); demon feed is evil info, unconstrained by design
 - id: godfather
   team: minion
-  setup_delta: {choice: [1, -1]}
-  coverage: partial
-  notes: outsider-death kill full; night-1 outsider list token deferred
-
+  setup_delta:
+    choice:
+    - 1
+    - -1
+  coverage: full
+  notes: outsider list token (spy may appear); outsider-death kill
+  learns:
+    phase: first
+    schema: outsiders_in_play
+  acts:
+    phase: first
 - id: devilsadvocate
   team: minion
-  acts: {phase: each, pick: p1_alive}
-  coverage: partial
-  notes: execution save full; not-same-player-twice not enforced
-
+  acts:
+    phase: each
+    pick: p1_alive
+  coverage: full
+  facts:
+  - no_repeat_pick(devilsadvocate)
 - id: assassin
   team: minion
-  acts: {phase: other, once: true, pick: p1_any}
+  acts:
+    phase: other
+    once: true
+    pick: p1_any
   coverage: full
   notes: pierce kill in death.lp
-
 - id: mastermind
   team: minion
-  coverage: deferred
-  notes: extra-day-after-demon-death needs win/endgame semantics
-
+  coverage: full
+  notes: extension day + executed-team-loses in endgame.lp
 - id: zombuul
   team: demon
-  acts: {phase: other, pick: p1_any}
+  acts:
+    phase: other
+    pick: p1_any
   kill: p1
-  coverage: partial
-  notes: fake first death + off-night blocking; deadness registration edges open
-
+  coverage: full
+  notes: fake first death registers dead everywhere (app_alive); off-night blocking
 - id: pukka
   team: demon
-  acts: {phase: each, pick: p1_alive}
-  coverage: partial
-  notes: poison-now/die-next-night; interaction with protection mid-chain simplified
-
+  acts:
+    phase: each
+    pick: p1_alive
+  coverage: full
+  notes: poison-now/die-next-night through the kill pipeline; protection saves the life, poison expiry
+    unchanged
 - id: shabaloth
   team: demon
-  acts: {phase: other, pick: p2_players}
+  acts:
+    phase: other
+    pick: p2_players
   kill: p2
-  coverage: partial
-  notes: regurgitation modelled; "chose a dead player" edge simplified
-
+  coverage: full
+  notes: regurgitation of a previous victim
 - id: po
   team: demon
-  acts: {phase: other, pick: p1_any}
+  acts:
+    phase: other
+    pick: p1_any
   kill: p1
-  coverage: partial
-  notes: self-pick convention = charge; 3-kill burst modelled
+  coverage: full
+  notes: self-pick convention = charge; exactly-3 burst (fewer if fewer alive)

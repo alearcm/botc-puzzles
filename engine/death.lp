@@ -15,7 +15,8 @@ app_dead(P,T) :- player(P), night(T), not app_alive(P,T).
 % eff_kill(C, PickSpec): acting C's pick dies (demon-kind unless eff_kill_kind)
 kill_prop(Q, src(P,C), T, I, demon) :-
     eff_kill(C, p1), picked(P,C,T,Q), acting(P,C,T), sched(C,T,I),
-    functioning_at(P,C,T,I), team_of(C,demon), not demon_blocked(P,T).
+    functioning_at(P,C,T,I), team_of(C,demon), not demon_blocked(P,T),
+    not kill_suppressed(P,C,T).
 kill_prop(Q1, src(P,C), T, I, demon) :-
     eff_kill(C, p2), picked2(P,C,T,Q1,_), acting(P,C,T), sched(C,T,I),
     functioning_at(P,C,T,I), not demon_blocked(P,T).

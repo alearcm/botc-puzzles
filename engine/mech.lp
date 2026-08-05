@@ -4,13 +4,13 @@
 % ---------- generic status effects ----------
 % eff_status(C, Kind, Expiry): applied to picked1 target when C acts
 applied(Q,K,src(P,C),T,I,until_dusk(T)) :-
-    eff_status(C,K,until_dusk), picked(P,C,T,Q), acting(P,C,T), sched(C,T,I),
+    eff_status(C,K,until_dusk), picked(P,C,T,Q), acting(P,C,T), asched(C,T,I),
     functioning_at(P,C,T,I).
 applied(Q,K,src(P,C),T,I,tonight(T)) :-
-    eff_status(C,K,tonight), picked(P,C,T,Q), acting(P,C,T), sched(C,T,I),
+    eff_status(C,K,tonight), picked(P,C,T,Q), acting(P,C,T), asched(C,T,I),
     functioning_at(P,C,T,I).
 applied(Q,K,src(P,C),T,I,permanent) :-
-    eff_status(C,K,permanent), picked(P,C,T,Q), acting(P,C,T), sched(C,T,I),
+    eff_status(C,K,permanent), picked(P,C,T,Q), acting(P,C,T), asched(C,T,I),
     functioning_at(P,C,T,I).
 
 % ---------- TB ----------
@@ -125,9 +125,27 @@ applied(Q,exec_safe,src(P,devilsadvocate),T,I,until_dusk(T)) :-
 st_kill(Q,T) :- moonchild_choice(P,Q,D), T = D+1, night(T), char(P,moonchild,D),
     align(Q,good,T).
 
-% tinker: may die at any time (night version)
+% tinker: may die at any time (night or day)
 0 { tinker_dies(P,T) } 1 :- char(P,tinker,T), alive(P,T), night(T).
 st_kill(P,T) :- tinker_dies(P,T).
+0 { tinker_dies_day(P,D) } 1 :- char(P,tinker,D), alive(P,D), day(D),
+                                not dies_night(P,D).
+day_kill(P,D) :- tinker_dies_day(P,D).
+
+% butler: may only vote if the chosen master votes (votes are day inputs)
+:- voted(P,D), char(P,butler,D), not impaired_day(P,D),
+   picked(P,butler,D,M), not voted(M,D).
+
+% philosopher: once per game, gain a good character's ability; if that
+% character is in play, its holder is drunk (while the philosopher has it)
+1 { phil_pick(P,T,CC) : role(CC,TM,_), good_team(TM), on_script(CC),
+                        CC != philosopher } 1 :- uses_once(P,philosopher,T).
+phil_gains(P,CC,T) :- phil_pick(P,T,CC), asched(philosopher,T,I),
+                      functioning_at(P,philosopher,T,I).
+has_ability(P,CC,T2) :- phil_gains(P,CC,T), night(T2), T2 >= T, alive(P,T2).
+ability_start(P,CC,T) :- phil_gains(P,CC,T).
+applied(Q,drunk,src(P,philosopher),T,I,permanent) :-
+    phil_gains(P,CC,T), char(Q,CC,T), Q != P, asched(philosopher,T,I).
 
 % professor: once, revive a dead townsfolk
 1 { picked(P,professor,T,Q) : is_dead(Q,T) } 1 :- uses_once(P,professor,T).
@@ -154,6 +172,7 @@ align_change(G,A,T) :- goon_first(G,P,C,T,I), align(P,A,T).
 % zombuul: only acts if nobody died today
 demon_blocked(P,T) :- char(P,zombuul,T), T = D+1, day(D), died_today(D).
 died_today(D) :- dies_day(_,D).
+died_today(D) :- zombuul_first_exec(_,D).        % town SAW a death
 died_today(D) :- announced_dead(_,D2), D2 = D.   % night deaths announce at dawn D
 
 % pukka: poison now, victim dies next night then healthy
@@ -171,16 +190,23 @@ shab_victim(Q,T0) :- picked2(_,shabaloth,T0,_,Q).
     char(P,shabaloth,T), acting(P,shabaloth,T), night(T), T > 1.
 
 % po: charge or kill (p1 pick = kill; charge modelled as self-pick)
-po_charged(P,T) :- picked(P,po,T,P).     % convention: self-pick = charge
-1 { po_extra(P,T,Q) : alive(Q,T) } 3 :- po_charged(P,T0), T = T0+1, night(T),
-    char(P,po,T), acting(P,po,T).
+po_charged(P,T) :- picked(P,po,T,P), not po_ready(P,T).
+% on a burst night the regular pick is inert (self-pick by convention)
+kill_suppressed(P,po,T) :- po_ready(P,T).
+% after charging: exactly 3 targets (or all remaining if fewer than 3 alive)
+po_ready(P,T) :- po_charged(P,T0), T = T0+1, night(T), acting(P,po,T).
+po_pool(P,T,K) :- po_ready(P,T), K = #count{ Q : app_alive(Q,T) }.
+3 { po_extra(P,T,Q) : app_alive(Q,T) } 3 :- po_ready(P,T), po_pool(P,T,K), K >= 3.
+K { po_extra(P,T,Q) : app_alive(Q,T) } K :- po_ready(P,T), po_pool(P,T,K), K < 3.
 kill_prop(Q,src(P,po),T,I,demon) :- po_extra(P,T,Q), sched(po,T,I),
     functioning_at(P,po,T,I).
 % (normal po kill comes from eff_kill(po,p1); self-pick must not kill)
 prevented(P,src(P,po),T,I) :- final_kill(P,src(P,po),T,I,demon), po_charged(P,T).
 
 % ---------- S&V ----------
-% snake charmer: hits the actual demon -> swap (night-boundary approximation)
+% snake charmer: hits the actual demon -> swap, effective SAME night: the new
+% demon (ex-charmer) acts at the demon's position tonight; the old demon
+% (now snake charmer) does not act again.
 sc_hit(P,Q,T) :- picked(P,snakecharmer,T,Q), acting(P,snakecharmer,T),
     sched(snakecharmer,T,I), functioning_at(P,snakecharmer,T,I),
     char(Q,C,T), team_of(C,demon).
@@ -188,9 +214,13 @@ becomes(P,CD,T) :- sc_hit(P,Q,T), char(Q,CD,T).
 becomes(Q,snakecharmer,T) :- sc_hit(P,Q,T).
 align_change(P,evil,T) :- sc_hit(P,Q,T).
 align_change(Q,good,T) :- sc_hit(P,Q,T).
-applied(Q,poisoned,src(P,snakecharmer),T,I,permanent) :-
+% new snake charmer is poisoned forever (outlives everything)
+applied(Q,poisoned,src(P,snakecharmer),T,I,permanent_sticky) :-
     sc_hit(P,Q,T), sched(snakecharmer,T,I).
-sticky(poisoned_sc).   % (the sc poison outlives the source relationship)
+% same-night demon handover
+demon_blocked(Q,T) :- sc_hit(_,Q,T).
+has_ability(P,CD,T) :- sc_hit(P,Q,T), char(Q,CD,T).
+acting(P,CD,T) :- sc_hit(P,Q,T), char(Q,CD,T), acts(CD,other,_), T > 1.
 
 % witch: cursed player dies if they nominate
 applied(Q,cursed,src(P,witch),T,I,until_dusk(T)) :-
@@ -229,8 +259,10 @@ vm_kill(P,Q,T) :- death_event(Q,T), final_kill(Q,src(P,vigormortis),T,_,demon),
     char(Q,CM,T), team_of(CM,minion).
 persists_dead(Q,CM,T2) :- vm_kill(P,Q,T), char(Q,CM,T), night(T2), T2 > T,
     char(P,vigormortis,T2), has_ability(P,vigormortis,T2).
-1 { vm_poison(P,Q,R,T) : neigh(Q,R), char(R,CT,T), team_of(CT,townsfolk) } 1 :-
-    vm_kill(P,Q,T), neigh(Q,R2), char(R2,CT2,T), team_of(CT2,townsfolk).
+1 { vm_poison(P,Q,R,T) : alive_neighbor(Q,R,T), char(R,CT,T),
+                         team_of(CT,townsfolk) } 1 :-
+    vm_kill(P,Q,T), alive_neighbor(Q,R2,T), char(R2,CT2,T),
+    team_of(CT2,townsfolk).
 applied(R,poisoned,src(P,vigormortis),T,I,permanent) :-
     vm_poison(P,Q,R,T), sched(vigormortis,T,I).
 
@@ -254,14 +286,21 @@ status_on_day(R,poisoned,D) :- nd_poisons(P,R,D), day(D), not dies_night(R,D).
 % sweetheart: on death, ST picks someone drunk permanently
 1 { sw_drunk(P,Q,T) : player(Q) } 1 :- death_event(P,T), char(P,sweetheart,T).
 1 { sw_drunk(P,Q,D) : player(Q) } 1 :- dies_day(P,D), char(P,sweetheart,D).
-applied(Q,drunk,src(P,sweetheart),T,0,permanent) :- sw_drunk(P,Q,T).
-sticky(drunk).   % sweetheart-drunk persists after the sweetheart is gone
+% the drunking starts AT the moment of death, not retroactively: abilities
+% earlier in the same night already resolved sober
+death_idx(Q,T,I) :- final_kill(Q,_,T,I,_), death_event(Q,T).
+death_idx(Q,T,99) :- st_kill(Q,T), death_event(Q,T).
+applied(Q,drunk,src(P,sweetheart),T,I,permanent_sticky) :-
+    sw_drunk(P,Q,T), death_idx(P,T,I), night(T).
+applied(Q,drunk,src(P,sweetheart),D,0,permanent_sticky) :-
+    sw_drunk(P,Q,D), dies_day(P,D).
 
 % barber: on death, demon may swap two players' characters
 0 { barber_swap(Q1,Q2,T) : player(Q1), player(Q2), Q1 < Q2 } 1 :-
     death_event(P,T), char(P,barber,T).
-0 { barber_swap(Q1,Q2,T) : player(Q1), player(Q2), Q1 < Q2, T = D+1, night(T) } 1 :-
-    dies_day(P,D), char(P,barber,D).
+% day-death: the swap happens the following night (chars change at its end)
+0 { barber_swap(Q1,Q2,D) : player(Q1), player(Q2), Q1 < Q2 } 1 :-
+    dies_day(P,D), char(P,barber,D), night(D+1).
 becomes(Q1,C2,T) :- barber_swap(Q1,Q2,T), char(Q2,C2,T).
 becomes(Q2,C1,T) :- barber_swap(Q1,Q2,T), char(Q1,C1,T).
 

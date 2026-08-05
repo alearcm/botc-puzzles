@@ -1,0 +1,27 @@
+# Zombuul executed day 1: registers dead, is alive, and kills on a later
+# night on which nobody died the previous day.
+id: zombuul-fake-death
+tier: T0
+source: Zombuul ability text
+script: bmr
+horizon: 3
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,zombuul)
+  - initial(p2,assassin)
+  - initial(p3,sailor)
+  - initial(p4,minstrel)
+  - initial(p5,pacifist)
+  - initial(p6,grandmother)
+  - initial(p7,courtier)
+  - picked(p3,sailor,1,p4)
+  - picked(p3,sailor,2,p4)
+  - picked(p3,sailor,3,p4)
+  - ":- uses_once(p2,assassin,T), night(T)"
+  - ":- uses_once(p7,courtier,T), night(T)"
+  - executed(p1,1)
+  - picked(p1,zombuul,3,p5)
+assert:
+  certain:
+    - app_dead(p1,2)
+    - announced_dead(p5,3)

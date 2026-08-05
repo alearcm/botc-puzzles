@@ -1,0 +1,24 @@
+# Demon executed with Mastermind alive: play continues; executing a good
+# player the next day loses for good.
+id: mastermind-extension
+tier: T0
+source: Mastermind ability text
+script: bmr
+horizon: 3
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,po)
+  - initial(p2,mastermind)
+  - initial(p3,sailor)
+  - initial(p4,tealady)
+  - initial(p5,chambermaid)
+  - initial(p6,grandmother)
+  - initial(p7,gambler)
+  - picked(p3,sailor,1,p4)
+  - picked(p3,sailor,2,p4)
+  - picked(p3,sailor,3,p4)
+  - executed(p1,1)
+  - executed(p3,2)
+assert:
+  certain:
+    - ended(4,evil)
