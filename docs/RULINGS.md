@@ -35,6 +35,8 @@ Memory — the author's, a Storyteller's, or a model's — is never a source.
 | `recluse-ogre` | Jinx: if the Recluse registers as evil to the Ogre, the Ogre learns they are evil (effect attached to a registration outcome). | Official jinx |
 | `pithag-ogre` | Jinx: an evil player turned into the Ogre can't turn good via their own ability. | Official jinx |
 | `vortox-savant` | Vortoxed Savant receives two false statements — Vortox is claim-wise falsification (`ALL_FALSE`), not pattern negation. | Almanac |
+| `reg-survives-death` | Registration flavour survives death: the executed Recluse may show as the Imp to the Undertaker. | Recluse almanac example |
+| `night-sheet-order` | The base editions' printed night sheets differ from the modern global order (TB: Butler before Undertaker; BMR: Innkeeper before Courtier, Professor before Gossip). Engine uses the printed sheets per script. | Official edition night sheets (see data/raw/night_orders_notes.md) |
 
 ## Switches
 
@@ -83,7 +85,8 @@ Mathematician (below), madness-enforcement scope.
 | `gossip-eval-time` | Gossip statement truth evaluated at utterance or at night resolution (state may change during the day after the statement)? |
 | `cannibal-registration` | Cannibal's evil-check goes through registration (Spy meal may register good → healthy Cannibal with the real Spy ability; Recluse meal may register evil)? Believed almanac-consistent; needs the citation. |
 | `pithag-created-first-night` | Which first-night-only abilities fire on the night of creation vs the next night, for Pit-Hag-created characters? (Relative-schedule default: the night the ability is gained counts as "first night".) |
-| `charade-mathematician` | Does a shadow-ability (charade) wake or its FREE info count as an ability "working abnormally" for the Mathematician? |
+| `charade-mathematician` | Does a shadow-ability (charade) wake or its FREE info count as an ability "working abnormally" for the Mathematician? (Engine v1 default: yes, a charade always malfunctions.) |
+| `droison-strips-misreg` | Does a poisoned/drunk Recluse or Spy lose misregistration? (Engine v1 default: yes.) |
 
 ## Planned entries (raised, not yet worked)
 

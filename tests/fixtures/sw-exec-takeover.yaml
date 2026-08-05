@@ -1,0 +1,19 @@
+# Demon executed with 5+ alive: the Scarlet Woman becomes the Imp. Certain.
+id: sw-exec-takeover
+tier: T0
+source: Scarlet Woman ability text
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,chef)
+  - initial(p4,soldier)
+  - initial(p5,mayor)
+  - initial(p6,empath)
+  - initial(p7,virgin)
+  - executed(p1,1)
+assert:
+  certain:
+    - char(p2,imp,2)

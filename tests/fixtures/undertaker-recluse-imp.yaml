@@ -1,0 +1,27 @@
+# T0 — Recluse almanac: the executed Recluse may show as the Imp to the
+# Undertaker (registration survives death).
+id: undertaker-recluse-imp
+tier: T0
+source: Recluse almanac example
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+given:
+  - initial(p1,imp)
+  - initial(p2,baron)
+  - initial(p3,recluse)
+  - initial(p4,saint)
+  - initial(p5,undertaker)
+  - initial(p6,chef)
+  - initial(p7,soldier)
+  - initial(p8,mayor)
+  - initial(p9,monk)
+  - initial(p10,poisoner)
+  - picked(p10,poisoner,1,p10)
+  - picked(p10,poisoner,2,p10)
+  - executed(p3,1)
+  - picked(p9,monk,2,p5)
+  - picked(p1,imp,2,p7)
+  - shown_char(p5,undertaker,2,imp)
+assert:
+  exists: true

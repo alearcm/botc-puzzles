@@ -1,0 +1,116 @@
+{
+  "tb": {
+    "first": [
+      "MINION_INFO",
+      "DEMON_INFO",
+      "poisoner",
+      "washerwoman",
+      "librarian",
+      "investigator",
+      "chef",
+      "empath",
+      "fortuneteller",
+      "butler",
+      "spy",
+      "DAWN"
+    ],
+    "other": [
+      "DUSK",
+      "poisoner",
+      "monk",
+      "scarletwoman",
+      "imp",
+      "ravenkeeper",
+      "empath",
+      "fortuneteller",
+      "butler",
+      "undertaker",
+      "spy",
+      "DAWN"
+    ]
+  },
+  "bmr": {
+    "first": [
+      "MINION_INFO",
+      "lunatic",
+      "DEMON_INFO",
+      "sailor",
+      "courtier",
+      "godfather",
+      "devilsadvocate",
+      "pukka",
+      "grandmother",
+      "chambermaid",
+      "DAWN"
+    ],
+    "other": [
+      "DUSK",
+      "sailor",
+      "innkeeper",
+      "courtier",
+      "gambler",
+      "devilsadvocate",
+      "lunatic",
+      "exorcist",
+      "zombuul",
+      "pukka",
+      "shabaloth",
+      "po",
+      "assassin",
+      "godfather",
+      "professor",
+      "gossip",
+      "tinker",
+      "moonchild",
+      "grandmother",
+      "chambermaid",
+      "DAWN"
+    ]
+  },
+  "snv": {
+    "first": [
+      "philosopher",
+      "MINION_INFO",
+      "DEMON_INFO",
+      "snakecharmer",
+      "eviltwin",
+      "witch",
+      "cerenovus",
+      "clockmaker",
+      "dreamer",
+      "seamstress",
+      "mathematician",
+      "DAWN"
+    ],
+    "other": [
+      "DUSK",
+      "philosopher",
+      "snakecharmer",
+      "witch",
+      "cerenovus",
+      "pithag",
+      "fanggu",
+      "nodashii",
+      "vortox",
+      "vigormortis",
+      "barber",
+      "sweetheart",
+      "sage",
+      "sweetheart",
+      "sage",
+      "dreamer",
+      "flowergirl",
+      "towncrier",
+      "oracle",
+      "seamstress",
+      "juggler",
+      "mathematician",
+      "DAWN"
+    ]
+  },
+  "sources": {
+    "tb": "https://github.com/tjhowse/botc/blob/b71c37051e9ebcf355b64001877f594fa83e2b24/official_pdfs/Trouble%20Brewing%20script.pdf",
+    "bmr": "https://github.com/tjhowse/botc/blob/b71c37051e9ebcf355b64001877f594fa83e2b24/official_pdfs/Bad%20Moon%20Rising%20script.pdf",
+    "snv": "https://github.com/tjhowse/botc/blob/b71c37051e9ebcf355b64001877f594fa83e2b24/official_pdfs/Sects%20%26%20Violets%20script.pdf"
+  }
+}

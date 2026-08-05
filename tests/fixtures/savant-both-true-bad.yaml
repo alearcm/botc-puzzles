@@ -1,0 +1,20 @@
+# No Vortox, sober Savant: both statements true is NOT consistent.
+id: savant-both-true-bad
+tier: T1
+source: Savant ability text
+script: snv
+horizon: 2
+players: [p1, p2, p3, p4, p5]
+statements:
+  s1: initial(p1,nodashii)
+  s2: initial(p2,witch)
+given:
+  - initial(p1,nodashii)
+  - initial(p2,witch)
+  - initial(p3,clockmaker)
+  - initial(p4,savant)
+  - initial(p5,sage)
+  - stmt(s1,p4,savant,1)
+  - stmt(s2,p4,savant,1)
+assert:
+  exists: false

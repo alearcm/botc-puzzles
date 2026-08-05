@@ -1,0 +1,19 @@
+# ...and equally legally may register good and survive: both worlds exist.
+id: recluse-slayer-lives
+tier: T0
+source: Recluse/Slayer almanac
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,baron)
+  - initial(p3,recluse)
+  - initial(p4,saint)
+  - initial(p5,slayer)
+  - initial(p6,chef)
+  - initial(p7,soldier)
+  - slayer_shot(p5,p3,1)
+  - ":- day_kill(p3,1)"
+assert:
+  exists: true

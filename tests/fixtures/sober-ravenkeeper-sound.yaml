@@ -1,0 +1,23 @@
+# A sober Ravenkeeper pointing at the Imp must learn Imp.
+id: sober-ravenkeeper-sound
+tier: T1
+source: Ravenkeeper ability text
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,poisoner)
+  - initial(p3,ravenkeeper)
+  - initial(p4,soldier)
+  - initial(p5,chef)
+  - initial(p6,mayor)
+  - initial(p7,monk)
+  - picked(p2,poisoner,1,p2)
+  - picked(p2,poisoner,2,p2)
+  - picked(p1,imp,2,p3)
+  - picked(p7,monk,2,p4)
+  - picked(p3,ravenkeeper,2,p1)
+assert:
+  certain:
+    - shown_char(p3,ravenkeeper,2,imp)

@@ -1,0 +1,140 @@
+# Bad Moon Rising — 25 characters as data.
+
+- id: grandmother
+  team: townsfolk
+  acts: {phase: first}
+  learns: {phase: first, schema: grandchild}
+  facts:
+    - "st_kill(G,T) :- final_kill(Q,src(_,CD),T,_,demon), death_event(Q,T), grandchild(G,Q), char(G,grandmother,T), has_ability(G,grandmother,T)"
+  coverage: full
+
+- id: sailor
+  team: townsfolk
+  acts: {phase: each, pick: p1_alive_not_self}
+  coverage: full
+  notes: either-or drunking + cant_die in mech.lp/death.lp
+
+- id: chambermaid
+  team: townsfolk
+  acts: {phase: each, pick: p2_alive}
+  learns: {phase: each, schema: woke_count2}
+  coverage: partial
+  notes: not-yourself pick restriction not yet enforced
+
+- id: exorcist
+  team: townsfolk
+  acts: {phase: other, pick: p1_alive}
+  coverage: partial
+  notes: demon-block full; different-player-to-last-night not yet enforced
+
+- id: innkeeper
+  team: townsfolk
+  acts: {phase: other, pick: p2_alive}
+  coverage: full
+
+- id: gambler
+  team: townsfolk
+  acts: {phase: other, pick: p1_and_char}
+  coverage: full
+
+- id: gossip
+  team: townsfolk
+  coverage: full
+  notes: day statement inputs + conditional ST kill in mech.lp
+
+- id: courtier
+  team: townsfolk
+  acts: {phase: each, once: true}
+  coverage: full
+
+- id: professor
+  team: townsfolk
+  acts: {phase: other, once: true}
+  coverage: full
+
+- id: minstrel
+  team: townsfolk
+  coverage: full
+
+- id: tealady
+  team: townsfolk
+  coverage: full
+
+- id: pacifist
+  team: townsfolk
+  coverage: full
+
+- id: fool
+  team: townsfolk
+  coverage: full
+
+- id: tinker
+  team: outsider
+  coverage: partial
+  notes: night ST-kill licence; day deaths not yet modelled
+
+- id: moonchild
+  team: outsider
+  coverage: partial
+  notes: choice comes as public day input; night-death trigger variant deferred
+
+- id: goon
+  team: outsider
+  coverage: partial
+  notes: first-targeter drunk + alignment flip; ST-targeting subtleties simplified
+
+- id: lunatic
+  team: outsider
+  self_misinformed: demon
+  coverage: partial
+  notes: charade full (incl. fake attacks as picks); real-demon feed not constrained
+
+- id: godfather
+  team: minion
+  setup_delta: {choice: [1, -1]}
+  coverage: partial
+  notes: outsider-death kill full; night-1 outsider list token deferred
+
+- id: devilsadvocate
+  team: minion
+  acts: {phase: each, pick: p1_alive}
+  coverage: partial
+  notes: execution save full; not-same-player-twice not enforced
+
+- id: assassin
+  team: minion
+  acts: {phase: other, once: true, pick: p1_any}
+  coverage: full
+  notes: pierce kill in death.lp
+
+- id: mastermind
+  team: minion
+  coverage: deferred
+  notes: extra-day-after-demon-death needs win/endgame semantics
+
+- id: zombuul
+  team: demon
+  acts: {phase: other, pick: p1_any}
+  kill: p1
+  coverage: partial
+  notes: fake first death + off-night blocking; deadness registration edges open
+
+- id: pukka
+  team: demon
+  acts: {phase: each, pick: p1_alive}
+  coverage: partial
+  notes: poison-now/die-next-night; interaction with protection mid-chain simplified
+
+- id: shabaloth
+  team: demon
+  acts: {phase: other, pick: p2_players}
+  kill: p2
+  coverage: partial
+  notes: regurgitation modelled; "chose a dead player" edge simplified
+
+- id: po
+  team: demon
+  acts: {phase: other, pick: p1_any}
+  kill: p1
+  coverage: partial
+  notes: self-pick convention = charge; 3-kill burst modelled

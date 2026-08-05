@@ -11,7 +11,18 @@ interactions (Vortox×Savant/Barista, Pit-Hag×Gossip, Cannibal×evil-Ogre) and
 all five almanac corrections are expressible in the spec without engine-level
 special cases. Done on paper; M1 makes it executable.
 
-## M1 — Trouble Brewing kernel
+## M1 — Base-scripts kernel *(in progress — first executable cut landed)*
+
+Status: engine (clingo core + card compiler) runs all three base scripts;
+72 characters as card data (44 full / 25 partial / 3 deferred — see
+`docs/COVERAGE.md`); per-script printed night sheets transcribed from the
+official PDFs (`data/raw/night_orders_notes.md`); 21-fixture seed corpus
+green, including chef-1 per-pair registration, Vortoxed-Savant both-false,
+the drunk-Ravenkeeper charade anchor, mayor-bounce-to-Soldier, star pass,
+and registration-survives-death. Almanac Examples transcription is the big
+open item.
+
+Originally scoped as:
 
 - Engine core in clingo: trace, ontology, registration, claims/patterns with
   modifier precedence, kill pipeline, statuses/expiries, schedules.

@@ -1,0 +1,16 @@
+# Vortox: a false Clockmaker number is fine (true distance here is 1).
+id: vortox-clockmaker-wrong-ok
+tier: T0
+source: Vortox ability text
+script: snv
+horizon: 1
+players: [p1, p2, p3, p4, p5]
+given:
+  - initial(p1,vortox)
+  - initial(p2,witch)
+  - initial(p3,clockmaker)
+  - initial(p4,savant)
+  - initial(p5,sage)
+  - shown_num(p3,clockmaker,1,2)
+assert:
+  exists: true

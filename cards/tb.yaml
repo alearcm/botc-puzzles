@@ -1,0 +1,126 @@
+# Trouble Brewing — 22 characters as pure data.
+# coverage: full | partial | deferred (see docs/COVERAGE.md)
+
+- id: washerwoman
+  team: townsfolk
+  acts: {phase: first}
+  learns: {phase: first, schema: among2(townsfolk)}
+  coverage: full
+
+- id: librarian
+  team: townsfolk
+  acts: {phase: first}
+  learns: {phase: first, schema: among2(outsider)}
+  coverage: full
+
+- id: investigator
+  team: townsfolk
+  acts: {phase: first}
+  learns: {phase: first, schema: among2(minion)}
+  coverage: full
+
+- id: chef
+  team: townsfolk
+  acts: {phase: first}
+  learns: {phase: first, schema: count_pairs_evil}
+  coverage: full
+
+- id: empath
+  team: townsfolk
+  acts: {phase: each}
+  learns: {phase: each, schema: count_evil_neighbors}
+  coverage: full
+
+- id: fortuneteller
+  team: townsfolk
+  acts: {phase: each, pick: p2_players}
+  learns: {phase: each, schema: yesno_demon_among2}
+  coverage: full
+
+- id: undertaker
+  team: townsfolk
+  acts: {phase: other}
+  learns: {phase: other, schema: char_of_executee}
+  coverage: full
+
+- id: monk
+  team: townsfolk
+  acts: {phase: other, pick: p1_alive_not_self}
+  status: {kind: safe_from_demon, expiry: tonight}
+  coverage: full
+
+- id: ravenkeeper
+  team: townsfolk
+  coverage: full
+  notes: on-death trigger wired in mech.lp (incl. shadow charade)
+
+- id: virgin
+  team: townsfolk
+  coverage: full
+  notes: nomination proc in mech.lp from day inputs
+
+- id: slayer
+  team: townsfolk
+  coverage: full
+  notes: public day shot in mech.lp from day inputs
+
+- id: soldier
+  team: townsfolk
+  innate: [safe_from_demon]
+  coverage: full
+
+- id: mayor
+  team: townsfolk
+  coverage: partial
+  notes: night bounce in death.lp; no-execution-good-wins deferred (win conditions)
+
+- id: butler
+  team: outsider
+  acts: {phase: each, pick: p1_not_self}
+  coverage: partial
+  notes: master choice modelled (wakes, picks); vote-legality constraint deferred
+
+- id: drunk
+  team: outsider
+  self_misinformed: townsfolk
+  coverage: full
+  notes: shadow ability charade, scope S1
+
+- id: recluse
+  team: outsider
+  coverage: full
+  notes: per-occurrence misregistration in info.lp
+
+- id: saint
+  team: outsider
+  coverage: partial
+  notes: execution-loss win condition deferred
+
+- id: poisoner
+  team: minion
+  acts: {phase: each, pick: p1_any}
+  status: {kind: poisoned, expiry: until_dusk}
+  coverage: full
+
+- id: spy
+  team: minion
+  acts: {phase: each}
+  coverage: partial
+  notes: misregistration full; grimoire peek is unconstrained evil info (wakes for chambermaid)
+
+- id: scarletwoman
+  team: minion
+  coverage: full
+  notes: demon-death takeover in mech.lp
+
+- id: baron
+  team: minion
+  setup_delta: {outsider: 2}
+  coverage: full
+
+- id: imp
+  team: demon
+  acts: {phase: other, pick: p1_any}
+  kill: p1
+  coverage: full
+  notes: star pass in mech.lp

@@ -1,0 +1,27 @@
+# T0 anchor of charade-persistence: the dead Drunk who thinks they are the
+# Ravenkeeper is woken to choose and learns an (arbitrary) character.
+id: drunk-ravenkeeper-charade
+tier: T0
+source: Ravenkeeper almanac (Drunk example)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7, p8]
+given:
+  - initial(p1,imp)
+  - initial(p2,poisoner)
+  - initial(p3,drunk)
+  - believed_init(p3,ravenkeeper)
+  - initial(p4,soldier)
+  - initial(p5,chef)
+  - initial(p6,mayor)
+  - initial(p7,monk)
+  - initial(p8,virgin)
+  - picked(p2,poisoner,1,p2)
+  - picked(p2,poisoner,2,p2)
+  - picked(p1,imp,2,p3)
+  - picked(p7,monk,2,p4)
+  - picked(p3,ravenkeeper,2,p1)
+  - shown_char(p3,ravenkeeper,2,librarian)
+assert:
+  certain:
+    - woke(p3,2)

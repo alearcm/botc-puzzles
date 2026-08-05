@@ -1,0 +1,23 @@
+# A sober Chef cannot see 3 pairs when only 2 adjacencies involve evil-capable
+# players (imp-recluse, recluse-poisoner; baron isolated among good players).
+id: chef-3-impossible
+tier: T1
+source: implied by Chef ability text
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+given:
+  - initial(p1,imp)
+  - initial(p2,recluse)
+  - initial(p3,poisoner)
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,baron)
+  - initial(p7,mayor)
+  - initial(p8,virgin)
+  - initial(p9,saint)
+  - initial(p10,monk)
+  - picked(p3,poisoner,1,p3)
+  - shown_num(p4,chef,1,3)
+assert:
+  exists: false

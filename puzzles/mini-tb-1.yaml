@@ -1,0 +1,14 @@
+# A minimal authored TB puzzle: night-1 info only, 5 players.
+# Question: who is the Imp?
+id: mini-tb-1
+script: tb
+horizon: 1
+players: [alice, bob, carol, dana, eli]
+claims:
+  - {player: alice, character: washerwoman,
+     info: ["shown_among2(alice,washerwoman,1,chef,bob,carol)"]}
+  - {player: bob, character: chef, info: ["shown_num(bob,chef,1,0)"]}
+  - {player: carol, character: empath, info: ["shown_num(carol,empath,1,2)"]}
+  - {player: dana, character: investigator,
+     info: ["shown_among2(dana,investigator,1,poisoner,bob,eli)"]}
+  - {player: eli, character: soldier, info: []}
