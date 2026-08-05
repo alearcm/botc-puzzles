@@ -1,14 +1,21 @@
 # Rulings Registry
 
-Every entry: **status** (`settled` / `switch` / `principle` / `open`), source,
-engine encoding, and — once M1 lands — a pointer to the executable test that
-pins it. `settled` requires a citation (almanac, wiki, official jinx list).
-`switch` means TPI materials genuinely conflict or delegate; puzzles must
-declare a side. `principle` is a generalization from cited instances with an
-explicit **scope ladder** — the instances are hard constraints, the reach of
-the generalization is the declared parameter (switches are the two-rung
-special case). `open` means we have not found a source yet — an `open` entry
-must not be load-bearing for any puzzle until resolved.
+This registry is the human-readable catalog behind the corpus/candidate
+architecture (DESIGN §10): almanac citations are **test fixtures**, the game
+rules are **candidate rule files** (base + named deltas), and a candidate
+contradicting a cited fixture is falsified.
+
+How entry statuses compile:
+
+- `settled` → **T0 fixtures** (falsifying; requires a citation — almanac,
+  wiki, official jinx list). Mind ∃ vs ∀: most examples assert an outcome is
+  *admissible*, not mandatory.
+- `switch` → a pair of named **deltas**; both sides currently T0-viable.
+  Fixtures distinguishing them get tiers by argument strength.
+- `principle` → a scope ladder where each rung is a delta; the anchoring
+  instance is a T0 fixture, each rung's consequences become T1/T2 fixtures.
+- `open` → fixture drafted but unsourced; excluded from scoring and never
+  load-bearing for a puzzle.
 
 Statuses migrate: a hedge that turns out to be cited moves to `settled`; a
 "settled" claim that meets a countervailing citation becomes a `switch`.

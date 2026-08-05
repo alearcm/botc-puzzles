@@ -19,12 +19,16 @@ special cases. Done on paper; M1 makes it executable.
   data**.
 - Queries: `models(o)` (enumerate), `certain(o)` (projected intersection).
 - Horizon: dynamic history, capped (target: 3 nights / 2 days).
-- Tests: per-character micro-scenarios plus interaction pins from RULINGS
-  (`chef-1`, poisoned-Ravenkeeper, Recluse-Slayer, star-pass to dead-but-abled
-  SW, Mayor-bounce-to-Soldier, drunk-Empath-accidentally-true, …).
+- Ruleset build: base logic + named deltas composed into candidate rulesets
+  (DESIGN §10); no runtime switch machinery.
+- Almanac corpus v1: transcribe every TB character's almanac Examples section
+  into fixtures (tiered T0/T1/T2, each tagged ∃ or ∀), plus interaction pins
+  from RULINGS (`chef-1`, poisoned-Ravenkeeper, Recluse-Slayer, star-pass to
+  dead-but-abled SW, Mayor-bounce-to-Soldier,
+  drunk-Empath-accidentally-true, …).
 
 **Gate:** every TB character is data (zero hand-written per-character ASP);
-all rulings tests green.
+the default candidate passes all T0 fixtures; T1/T2 conformance reported.
 
 ## M2 — Puzzle corpus + solver CLI
 
