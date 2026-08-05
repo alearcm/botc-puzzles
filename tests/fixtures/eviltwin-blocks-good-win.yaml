@@ -1,0 +1,19 @@
+# Demon executed but both twins alive: good does NOT win.
+id: eviltwin-blocks-good-win
+tier: T0
+source: Evil Twin ability text
+script: snv
+horizon: 2
+players: [p1, p2, p3, p4, p5]
+given:
+  - initial(p1,fanggu)
+  - initial(p2,eviltwin)
+  - initial(p3,sweetheart)
+  - initial(p4,clockmaker)
+  - initial(p5,sage)
+  - twin_pair(p2,p4)
+  - executed(p1,1)
+  - "goodwin :- ended(2,good)"
+  - ":- not goodwin"
+assert:
+  exists: false

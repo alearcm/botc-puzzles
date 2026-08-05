@@ -1,0 +1,23 @@
+# BMR: the Assassin kills even a player the Innkeeper is protecting.
+id: assassin-pierces-innkeeper
+tier: T0
+source: Assassin ability text ("even if for some reason they could not die")
+script: bmr
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,pukka)
+  - initial(p2,assassin)
+  - initial(p3,innkeeper)
+  - initial(p4,grandmother)
+  - initial(p5,chambermaid)
+  - initial(p6,tealady)
+  - initial(p7,fool)
+  - picked(p1,pukka,1,p1)
+  - picked(p1,pukka,2,p1)
+  - picked2(p3,innkeeper,2,p5,p6)
+  - uses_once(p2,assassin,2)
+  - picked(p2,assassin,2,p5)
+assert:
+  certain:
+    - announced_dead(p5,2)

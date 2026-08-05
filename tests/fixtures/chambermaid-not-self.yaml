@@ -1,0 +1,17 @@
+id: chambermaid-not-self
+tier: T1
+source: Chambermaid ability text (choose 2 alive players, not yourself)
+script: bmr
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,pukka)
+  - initial(p2,assassin)
+  - initial(p3,chambermaid)
+  - initial(p4,sailor)
+  - initial(p5,tealady)
+  - initial(p6,fool)
+  - initial(p7,grandmother)
+  - picked2(p3,chambermaid,1,p3,p4)
+assert:
+  exists: false

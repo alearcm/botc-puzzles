@@ -1,0 +1,20 @@
+# T0 — Vortoxed Savant gets TWO false statements: a true one is impossible.
+id: vortox-savant-both-false
+tier: T0
+source: Savant/Vortox almanac
+script: snv
+horizon: 2
+players: [p1, p2, p3, p4, p5]
+statements:
+  s1: initial(p1,vortox)
+  s2: initial(p2,clockmaker)
+given:
+  - initial(p1,vortox)
+  - initial(p2,witch)
+  - initial(p3,clockmaker)
+  - initial(p4,savant)
+  - initial(p5,sage)
+  - stmt(s1,p4,savant,1)
+  - stmt(s2,p4,savant,1)
+assert:
+  exists: false

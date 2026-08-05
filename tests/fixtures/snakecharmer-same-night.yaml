@@ -1,0 +1,24 @@
+# Snake Charmer hits the demon: swap is same-night — the ex-charmer kills
+# tonight as the demon; the new charmer is permanently poisoned.
+id: snakecharmer-same-night
+tier: T0
+source: Snake Charmer ability text + almanac
+script: snv
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6]
+given:
+  - initial(p1,vortox)
+  - initial(p2,pithag)
+  - initial(p3,snakecharmer)
+  - initial(p4,clockmaker)
+  - initial(p5,sage)
+  - initial(p6,sweetheart)
+  - picked(p3,snakecharmer,2,p1)
+  - picked(p2,pithag,2,p2)
+  - pickedc(p2,pithag,2,pithag)
+  - picked(p3,vortox,2,p5)
+  - "scp :- status_on(p1,poisoned,2,99)"
+assert:
+  certain:
+    - announced_dead(p5,2)
+    - scp

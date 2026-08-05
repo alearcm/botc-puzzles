@@ -1,0 +1,19 @@
+# A poisoned Empath's number is ST-arbitrary and may be accidentally TRUE.
+id: poisoned-empath-true
+tier: T1
+source: droison semantics (rulebook)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,poisoner)
+  - initial(p2,empath)
+  - initial(p3,soldier)
+  - initial(p4,imp)
+  - initial(p5,chef)
+  - initial(p6,mayor)
+  - initial(p7,monk)
+  - picked(p1,poisoner,1,p2)
+  - shown_num(p2,empath,1,1)
+assert:
+  exists: true

@@ -1,0 +1,18 @@
+# Spy neighbour may register good: Empath 0 with an evil neighbour is legal.
+id: empath-spy-good
+tier: T0
+source: Spy ability text / almanac
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,spy)
+  - initial(p2,empath)
+  - initial(p3,soldier)
+  - initial(p4,imp)
+  - initial(p5,chef)
+  - initial(p6,mayor)
+  - initial(p7,monk)
+  - shown_num(p2,empath,1,0)
+assert:
+  exists: true

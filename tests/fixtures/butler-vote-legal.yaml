@@ -1,0 +1,19 @@
+id: butler-vote-legal
+tier: T1
+source: Butler ability text
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,baron)
+  - initial(p3,butler)
+  - initial(p4,recluse)
+  - initial(p5,chef)
+  - initial(p6,soldier)
+  - initial(p7,mayor)
+  - picked(p3,butler,1,p5)
+  - voted(p5,1)
+  - voted(p3,1)
+assert:
+  exists: true

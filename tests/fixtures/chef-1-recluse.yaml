@@ -1,0 +1,23 @@
+# T0 — Recluse almanac: Imp–Recluse–Poisoner seating, Chef learns 1: the
+# Recluse registers evil for the Imp pair and good for the Poisoner pair.
+id: chef-1-recluse
+tier: T0
+source: Recluse almanac example
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+given:
+  - initial(p1,imp)
+  - initial(p2,recluse)
+  - initial(p3,poisoner)
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,baron)
+  - initial(p7,mayor)
+  - initial(p8,virgin)
+  - initial(p9,saint)
+  - initial(p10,monk)
+  - picked(p3,poisoner,1,p3)
+  - shown_num(p4,chef,1,1)
+assert:
+  exists: true

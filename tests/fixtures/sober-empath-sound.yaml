@@ -1,0 +1,20 @@
+# A sober Empath between poisoner(evil) and soldier(good), with the spy-free
+# world pinned: the number is forced (exactly 1).
+id: sober-empath-sound
+tier: T1
+source: Empath ability text
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,poisoner)
+  - initial(p2,empath)
+  - initial(p3,soldier)
+  - initial(p4,imp)
+  - initial(p5,chef)
+  - initial(p6,mayor)
+  - initial(p7,monk)
+  - picked(p1,poisoner,1,p1)
+  - shown_num(p2,empath,1,0)
+assert:
+  exists: false

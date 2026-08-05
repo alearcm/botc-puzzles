@@ -1,0 +1,168 @@
+# Sects & Violets — 25 characters as data.
+
+- id: clockmaker
+  team: townsfolk
+  acts:
+    phase: first
+  learns:
+    phase: first
+    schema: steps_demon_minion
+  coverage: full
+- id: dreamer
+  team: townsfolk
+  acts:
+    phase: each
+    pick: p1_not_self
+  learns:
+    phase: each
+    schema: dreamer_pair
+  coverage: full
+- id: snakecharmer
+  team: townsfolk
+  acts:
+    phase: each
+    pick: p1_alive
+  coverage: full
+  notes: 'same-night demon handover: new demon acts, old demon blocked, new charmer permanently poisoned'
+- id: mathematician
+  team: townsfolk
+  acts:
+    phase: each
+  learns:
+    phase: each
+    schema: malfunction_count
+  coverage: full
+  notes: malfunction := acted-while-impaired or charade (RULINGS charade-mathematician default)
+- id: flowergirl
+  team: townsfolk
+  acts:
+    phase: other
+  learns:
+    phase: other
+    schema: yesno_day(demon_voted)
+  coverage: full
+- id: towncrier
+  team: townsfolk
+  acts:
+    phase: other
+  learns:
+    phase: other
+    schema: yesno_day(minion_nominated)
+  coverage: full
+- id: oracle
+  team: townsfolk
+  acts:
+    phase: other
+  learns:
+    phase: other
+    schema: count_dead_evil
+  coverage: full
+- id: savant
+  team: townsfolk
+  coverage: full
+  notes: day-visit statement pairs as quoted formulas; exactly-one-true pattern; Vortox both-false
+- id: seamstress
+  team: townsfolk
+  acts:
+    phase: each
+    once: true
+    pick: p2_alive_not_self
+  learns:
+    phase: each
+    schema: same_alignment_yesno
+  coverage: full
+- id: philosopher
+  team: townsfolk
+  coverage: full
+  notes: ability copying with relative schedules; in-play holder drunk while held
+  acts:
+    phase: each
+    once: true
+- id: artist
+  team: townsfolk
+  coverage: full
+  notes: once-per-game day question as quoted formula
+- id: juggler
+  team: townsfolk
+  acts:
+    phase: other
+  learns:
+    phase: other
+    schema: juggle_count
+  coverage: full
+  notes: registration evaluated at guess time
+- id: sage
+  team: townsfolk
+  coverage: full
+  notes: on-demon-death token in mech.lp
+- id: mutant
+  team: outsider
+  coverage: full
+  notes: madness as claim-layer semantics (mutant claims a townsfolk); ST execution via day inputs
+- id: sweetheart
+  team: outsider
+  coverage: full
+- id: barber
+  team: outsider
+  coverage: full
+- id: klutz
+  team: outsider
+  coverage: full
+  notes: on-death choice input; evil pick ends game for evil (registration applies)
+- id: eviltwin
+  team: minion
+  coverage: full
+  notes: pair + good-twin-executed evil win + both-alive blocks good wins
+- id: witch
+  team: minion
+  acts:
+    phase: each
+    pick: p1_alive
+  coverage: full
+- id: cerenovus
+  team: minion
+  acts:
+    phase: each
+    pick: p1_and_char
+  coverage: full
+  notes: madness flag feeds claim-layer semantics; enforcement is ST licence via day inputs
+- id: pithag
+  team: minion
+  acts:
+    phase: other
+    pick: p1_and_char
+  coverage: full
+  notes: transform + in-play guard + arbitrary-deaths licence; created first-night abilities fire on first
+    held night
+- id: fanggu
+  team: demon
+  acts:
+    phase: other
+    pick: p1_any
+  kill: p1
+  setup_delta:
+    outsider: 1
+  coverage: full
+- id: vigormortis
+  team: demon
+  acts:
+    phase: other
+    pick: p1_any
+  kill: p1
+  coverage: full
+  notes: minion ability persists dead; poisons an alive townsfolk neighbour of the minion
+- id: nodashii
+  team: demon
+  acts:
+    phase: other
+    pick: p1_any
+  kill: p1
+  coverage: full
+- id: vortox
+  team: demon
+  acts:
+    phase: other
+    pick: p1_any
+  kill: p1
+  coverage: full
+  notes: ALL_FALSE info + no-execution evil win (endgame.lp)

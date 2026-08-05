@@ -1,0 +1,15 @@
+id: vortox-no-exec-evil-wins
+tier: T0
+source: Vortox ability text
+script: snv
+horizon: 2
+players: [p1, p2, p3, p4, p5]
+given:
+  - initial(p1,vortox)
+  - initial(p2,witch)
+  - initial(p3,clockmaker)
+  - initial(p4,savant)
+  - initial(p5,sage)
+assert:
+  certain:
+    - ended(2,evil)

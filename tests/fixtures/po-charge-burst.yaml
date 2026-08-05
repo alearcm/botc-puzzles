@@ -1,0 +1,28 @@
+# Po: charge night 2 (self-pick convention), then exactly 3 kills night 3.
+id: po-charge-burst
+tier: T0
+source: Po ability text
+script: bmr
+horizon: 3
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,po)
+  - initial(p2,assassin)
+  - initial(p3,minstrel)
+  - initial(p4,pacifist)
+  - initial(p5,professor)
+  - initial(p6,grandmother)
+  - initial(p7,courtier)
+  - ":- uses_once(p2,assassin,T), night(T)"
+  - ":- uses_once(p7,courtier,T), night(T)"
+  - ":- uses_once(p5,professor,T), night(T)"
+  - picked(p1,po,2,p1)
+  - picked(p1,po,3,p1)
+  - po_extra(p1,3,p3)
+  - po_extra(p1,3,p4)
+  - po_extra(p1,3,p6)
+assert:
+  certain:
+    - announced_dead(p3,3)
+    - announced_dead(p4,3)
+    - announced_dead(p6,3)

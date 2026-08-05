@@ -1,0 +1,23 @@
+# Poisoned Ravenkeeper killed at night learns an arbitrary character.
+id: poisoned-ravenkeeper-arbitrary
+tier: T0
+source: Ravenkeeper/Poisoner almanac
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,poisoner)
+  - initial(p3,ravenkeeper)
+  - initial(p4,soldier)
+  - initial(p5,chef)
+  - initial(p6,mayor)
+  - initial(p7,monk)
+  - picked(p2,poisoner,1,p2)
+  - picked(p2,poisoner,2,p3)
+  - picked(p1,imp,2,p3)
+  - picked(p7,monk,2,p4)
+  - picked(p3,ravenkeeper,2,p1)
+  - shown_char(p3,ravenkeeper,2,virgin)
+assert:
+  exists: true

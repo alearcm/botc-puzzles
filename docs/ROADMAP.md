@@ -11,7 +11,21 @@ interactions (Vortox×Savant/Barista, Pit-Hag×Gossip, Cannibal×evil-Ogre) and
 all five almanac corrections are expressible in the spec without engine-level
 special cases. Done on paper; M1 makes it executable.
 
-## M1 — Trouble Brewing kernel
+## M1 — Base-scripts kernel *(in progress — first executable cut landed)*
+
+Status: engine (clingo core + card compiler) runs all three base scripts;
+**all 72 characters at full coverage** (see `docs/COVERAGE.md` for the
+per-card notes and the v1 scope: win/endgame semantics modelled, madness as
+claim-layer semantics, day events as inputs, travellers out). Per-script
+printed night sheets transcribed from the official PDFs
+(`data/raw/night_orders_notes.md`); 39-fixture corpus green, covering
+registration granularity, charades, Vortox patterns, endgame conditions
+(Saint/Mayor/Vortox/Evil Twin/Mastermind), Philosopher ability copying,
+Zombuul deadness registration, Po charge bursts, same-night Snake Charmer
+handover, and death-trigger timing. Almanac Examples transcription is the
+big open item.
+
+Originally scoped as:
 
 - Engine core in clingo: trace, ontology, registration, claims/patterns with
   modifier precedence, kill pipeline, statuses/expiries, schedules.

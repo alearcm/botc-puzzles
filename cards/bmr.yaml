@@ -1,0 +1,159 @@
+# Bad Moon Rising — 25 characters as data.
+
+- id: grandmother
+  team: townsfolk
+  acts:
+    phase: first
+  learns:
+    phase: first
+    schema: grandchild
+  facts:
+  - st_kill(G,T) :- final_kill(Q,src(_,CD),T,_,demon), death_event(Q,T), grandchild(G,Q), char(G,grandmother,T),
+    has_ability(G,grandmother,T)
+  coverage: full
+- id: sailor
+  team: townsfolk
+  acts:
+    phase: each
+    pick: p1_alive_not_self
+  coverage: full
+  notes: either-or drunking + cant_die in mech.lp/death.lp
+- id: chambermaid
+  team: townsfolk
+  acts:
+    phase: each
+    pick: p2_alive_not_self
+  learns:
+    phase: each
+    schema: woke_count2
+  coverage: full
+- id: exorcist
+  team: townsfolk
+  acts:
+    phase: other
+    pick: p1_alive
+  coverage: full
+  facts:
+  - no_repeat_pick(exorcist)
+- id: innkeeper
+  team: townsfolk
+  acts:
+    phase: other
+    pick: p2_alive
+  coverage: full
+- id: gambler
+  team: townsfolk
+  acts:
+    phase: other
+    pick: p1_and_char
+  coverage: full
+- id: gossip
+  team: townsfolk
+  coverage: full
+  notes: day statement inputs + conditional ST kill in mech.lp
+- id: courtier
+  team: townsfolk
+  acts:
+    phase: each
+    once: true
+  coverage: full
+- id: professor
+  team: townsfolk
+  acts:
+    phase: other
+    once: true
+  coverage: full
+- id: minstrel
+  team: townsfolk
+  coverage: full
+- id: tealady
+  team: townsfolk
+  coverage: full
+- id: pacifist
+  team: townsfolk
+  coverage: full
+- id: fool
+  team: townsfolk
+  coverage: full
+- id: tinker
+  team: outsider
+  coverage: full
+  notes: ST-kill licence night and day
+- id: moonchild
+  team: outsider
+  coverage: full
+  notes: public choice is a day input; good choice dies the following night
+- id: goon
+  team: outsider
+  coverage: full
+  notes: first-targeter drunk + alignment flip via reified targeting order
+- id: lunatic
+  team: outsider
+  self_misinformed: demon
+  coverage: full
+  notes: charade full (fake attacks as picks); demon feed is evil info, unconstrained by design
+- id: godfather
+  team: minion
+  setup_delta:
+    choice:
+    - 1
+    - -1
+  coverage: full
+  notes: outsider list token (spy may appear); outsider-death kill
+  learns:
+    phase: first
+    schema: outsiders_in_play
+  acts:
+    phase: first
+- id: devilsadvocate
+  team: minion
+  acts:
+    phase: each
+    pick: p1_alive
+  coverage: full
+  facts:
+  - no_repeat_pick(devilsadvocate)
+- id: assassin
+  team: minion
+  acts:
+    phase: other
+    once: true
+    pick: p1_any
+  coverage: full
+  notes: pierce kill in death.lp
+- id: mastermind
+  team: minion
+  coverage: full
+  notes: extension day + executed-team-loses in endgame.lp
+- id: zombuul
+  team: demon
+  acts:
+    phase: other
+    pick: p1_any
+  kill: p1
+  coverage: full
+  notes: fake first death registers dead everywhere (app_alive); off-night blocking
+- id: pukka
+  team: demon
+  acts:
+    phase: each
+    pick: p1_alive
+  coverage: full
+  notes: poison-now/die-next-night through the kill pipeline; protection saves the life, poison expiry
+    unchanged
+- id: shabaloth
+  team: demon
+  acts:
+    phase: other
+    pick: p2_players
+  kill: p2
+  coverage: full
+  notes: regurgitation of a previous victim
+- id: po
+  team: demon
+  acts:
+    phase: other
+    pick: p1_any
+  kill: p1
+  coverage: full
+  notes: self-pick convention = charge; exactly-3 burst (fewer if fewer alive)

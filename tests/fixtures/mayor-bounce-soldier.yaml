@@ -1,0 +1,24 @@
+# T0 — Mayor almanac: the demon kill may bounce onto the Soldier and fizzle.
+id: mayor-bounce-soldier
+tier: T0
+source: Mayor almanac
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,poisoner)
+  - initial(p3,mayor)
+  - initial(p4,soldier)
+  - initial(p5,chef)
+  - initial(p6,empath)
+  - initial(p7,monk)
+  - picked(p2,poisoner,1,p2)
+  - picked(p2,poisoner,2,p2)
+  - picked(p1,imp,2,p3)
+  - picked(p7,monk,2,p5)
+  - "bounced :- redirect(p3,src(p1,imp),2,I,p4)"
+  - ":- not bounced"
+  - ":- announced_dead(P,2), player(P)"
+assert:
+  exists: true
