@@ -1,0 +1,23 @@
+# Slayer almanac ex2 — "The Slayer chooses the Recluse. The Storyteller
+# decides that the Recluse registers as the Imp, so the Recluse dies, but the
+# game continues."
+# https://wiki.bloodontheclocktower.com/Slayer
+# (Same event as Recluse ex1 / tests/fixtures/recluse-slayer-dies.yaml.)
+id: slayer-ex2-recluse-dies
+tier: T0
+source: Slayer almanac example 2 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,baron)
+  - initial(p3,recluse)
+  - initial(p4,saint)
+  - initial(p5,slayer)
+  - initial(p6,chef)
+  - initial(p7,soldier)
+  - slayer_shot(p5,p3,1)
+  - ":- not day_kill(p3,1)"
+assert:
+  exists: true

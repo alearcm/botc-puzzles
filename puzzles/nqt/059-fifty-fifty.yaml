@@ -1,0 +1,51 @@
+# Weekly Puzzle #59 — "Fifty-Fifty" (Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1ohgy3j/
+# 9 players, TB. One Imp + one minion of {Poisoner, Spy, Baron, Scarlet Woman}.
+# Default outsiders two; Baron adds two. You are not evil, might be the Drunk.
+# Day 1: Jasmine nominates Fraser (Virgin) and is executed (proc).
+# Night 2: You die. Day 2: Olivia executed. Night 3: Steph dies.
+# Day 3: Matthew executed. Night 4: Josh dies.
+# Question: who is the Demon and who is the Minion?
+# CONFIRMED ANSWER (author-endorsed): Jasmine = Spy, Oscar = Imp. REPRODUCED
+# (uniquely, after adding mid-night source-loss status voiding).
+id: nqt-059
+script: tb
+horizon: 4
+players: [josh, fraser, jasmine, matthew, adam, you, steph, olivia, oscar]
+claims:
+  - {player: josh, character: recluse, info: []}
+  - {player: fraser, character: virgin, info: []}
+  - {player: jasmine, character: empath,
+     info: ["shown_num(jasmine,empath,1,1)"]}
+  - {player: matthew, character: chef,
+     info: ["shown_num(matthew,chef,1,0)"]}
+  - {player: adam, character: undertaker,
+     info: ["shown_char(adam,undertaker,2,empath)",
+            "shown_char(adam,undertaker,3,investigator)",
+            "shown_char(adam,undertaker,4,chef)"]}
+  - {player: you, character: ravenkeeper,
+     info: ["picked(you,ravenkeeper,2,matthew)",
+            "shown_char(you,ravenkeeper,2,chef)"]}
+  - {player: steph, character: saint, info: []}
+  - {player: olivia, character: investigator,
+     info: ["shown_among2(olivia,investigator,1,spy,adam,jasmine)"]}
+  - {player: oscar, character: butler, info: []}
+given:
+  # day events
+  - "nominated(jasmine,fraser,1)"
+  - "proc_virgin(jasmine,1)"
+  - "executed(jasmine,1)"
+  - "executed(olivia,2)"
+  - "executed(matthew,3)"
+  # you are not evil
+  - ":- align(you,evil,1)"
+  # night deaths: exactly you(2), steph(3), josh(4); none night 1
+  - ":- announced_dead(P,1), player(P)"
+  - ":- not announced_dead(you,2)"
+  - ":- announced_dead(P,2), P != you, player(P)"
+  - ":- not announced_dead(steph,3)"
+  - ":- announced_dead(P,3), P != steph, player(P)"
+  - ":- not announced_dead(josh,4)"
+  - ":- announced_dead(P,4), P != josh, player(P)"
+  # no day kills beyond executions
+  - ":- day_kill(P,D), player(P), day(D)"

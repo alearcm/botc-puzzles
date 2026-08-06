@@ -1,0 +1,30 @@
+# Poisoner almanac ex5 — "The Poisoner poisons the Mayor, then becomes the Imp.
+# The Mayor is no longer poisoned because there is no Poisoner in play."
+# https://wiki.bloodontheclocktower.com/Poisoner
+# Night 2: Poisoner poisons the Mayor, the Imp star-passes to the Poisoner
+# (only minion). The almanac says the poison ends once the Poisoner stops
+# existing, i.e. the Mayor is NOT poisoned during day 2.
+# EXPECTED FAIL (engine seam): core.lp voids a status only when the source
+# lacks has_ability(P,C,T) at night T; the ex-Poisoner still had the poisoner
+# ability during night 2 (char changes at night 3), so the engine keeps the
+# Mayor poisoned through day 2.
+id: poisoner-ex5-star-pass-poison-ends
+tier: T0
+source: Poisoner almanac example 5 (wiki)
+script: tb
+horizon: 3
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,poisoner)
+  - initial(p3,mayor)
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,empath)
+  - initial(p7,virgin)
+  - picked(p2,poisoner,1,p2)
+  - picked(p2,poisoner,2,p3)
+  - picked(p1,imp,2,p1)
+  - ":- status_on_day(p3,poisoned,2)"
+assert:
+  exists: true

@@ -1,0 +1,27 @@
+# Monk almanac ex3 — "The Monk protects the Imp. The Imp chooses to kill
+# themself tonight, but nothing happens. The Imp stays alive and a new Imp is
+# not created."
+# https://wiki.bloodontheclocktower.com/Monk
+id: monk-ex3-protect-imp
+tier: T0
+source: Monk almanac example 3 (wiki)
+script: tb
+horizon: 3
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,monk)
+  - initial(p4,soldier)
+  - initial(p5,chef)
+  - initial(p6,empath)
+  - initial(p7,mayor)
+  - picked(p3,monk,2,p1)
+  - picked(p1,imp,2,p1)
+  - "new_imp :- becomes(Q,imp,2), player(Q)"
+  - "no_new_imp :- not new_imp"
+assert:
+  certain:
+    - alive(p1,3)
+    - char(p1,imp,3)
+    - no_new_imp

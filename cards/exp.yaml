@@ -1,0 +1,50 @@
+# Experimental (post-base-3) characters imported by NQT puzzles.
+# Added per-puzzle, text-first, with minimal mechanics; same schema as the
+# base card files.
+- id: leviathan
+  team: demon
+  coverage: full
+  notes: "text: no night kill at all; 'if more than 1 good player is executed, you win' and 'after day 5, evil wins' live in endgame.lp; 'all players know you are in play' is epistemic only (no mechanical effect)"
+- id: goblin
+  team: minion
+  coverage: partial
+  notes: "text: 'if you publicly claim to be the Goblin when nominated & are executed that day, your team wins' — social win path not yet encoded (needs a public-claim input); no night mechanics. Fine for puzzles where no Goblin claim is made."
+- id: villageidiot
+  team: townsfolk
+  coverage: full
+  notes: "text: 'Each night, choose a player: you learn their alignment.
+    [+0 to +2 Village Idiots. 1 of the extras is drunk]' — duplicates
+    allowed (dup_ok), at most 3 in the bag; with 2+ REAL VIs exactly one is
+    lowercase-drunk from setup (NQT #20 author clarification: bluffing evils
+    and a Drunk-as-VI don't count). Night slot is a chosen late-info
+    position (exp_roles.json), official number unverified."
+  acts:
+    phase: each
+    pick: p1_any
+  learns:
+    phase: each
+    schema: alignment_of_picked
+  facts:
+    - "dup_ok(villageidiot)"
+    - ":- 4 <= #count{ P : initial(P,villageidiot) }"
+    - "vi_count(K) :- K = #count{ P : initial(P,villageidiot) }"
+    - "1 { vi_drunk(P) : initial(P,villageidiot) } 1 :- vi_count(K), K >= 2"
+    - "applied(P,drunk,src(P,vi_extra),1,0,permanent_sticky) :- vi_drunk(P)"
+- id: widow
+  team: minion
+  coverage: full
+  notes: "text: 'On your 1st night, look at the Grimoire & choose a player:
+    they are poisoned. 1 good player knows a Widow is in play.' Grimoire
+    look is epistemic (evil private info unconstrained); the poison is a
+    permanent status ending the moment the Widow stops holding the ability
+    (death OR star pass — generic src_lost_mid, wiki how-to-run: 'the
+    poisoning ends immediately upon the Widow's death'); the ping goes to
+    one chosen good player (widow_ping/1)."
+  acts:
+    phase: first
+    pick: p1_any
+  status:
+    kind: poisoned
+    expiry: permanent
+  facts:
+    - "1 { widow_ping(Q) : player(Q), align(Q,good,1) } 1 :- acting(P,widow,1)"

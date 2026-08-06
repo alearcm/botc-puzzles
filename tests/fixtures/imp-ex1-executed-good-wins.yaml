@@ -1,0 +1,31 @@
+# Imp almanac ex1 — "It is the first night. The Imp learns that Evin and Sarah
+# are the Minions. The Imp also learns that the Monk, Chef, and Librarian are
+# not in play. The Imp bluffs as the Chef, then bluffs as Mayor halfway
+# through the game. Eventually, the Imp is executed and good wins."
+# https://wiki.bloodontheclocktower.com/Imp
+# NOTE: minion info and bluffs are evil private info — real but unconstrained
+# in the engine by design; the cast simply omits monk/chef/librarian. Only the
+# mechanical outcome (Imp executed, no Scarlet Woman -> good wins) is
+# asserted.
+id: imp-ex1-executed-good-wins
+tier: T0
+source: Imp almanac example 1 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+given:
+  - initial(p1,imp)
+  - initial(p2,poisoner)   # Evin
+  - initial(p3,spy)        # Sarah
+  - initial(p4,washerwoman)
+  - initial(p5,investigator)
+  - initial(p6,empath)
+  - initial(p7,undertaker)
+  - initial(p8,ravenkeeper)
+  - initial(p9,virgin)
+  - initial(p10,slayer)
+  - picked(p2,poisoner,1,p2)
+  - executed(p1,1)
+assert:
+  certain:
+    - ended(2,good)

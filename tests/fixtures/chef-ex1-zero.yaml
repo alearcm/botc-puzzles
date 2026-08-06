@@ -1,0 +1,21 @@
+# Chef almanac ex1 — "No evil players are sitting next to each other. The Chef
+# learns a '0'."
+# https://wiki.bloodontheclocktower.com/Chef
+# Evil at p1 and p4, separated by good players on both sides.
+id: chef-ex1-zero
+tier: T0
+source: Chef almanac example 1 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,chef)
+  - initial(p3,soldier)
+  - initial(p4,scarletwoman)
+  - initial(p5,mayor)
+  - initial(p6,empath)
+  - initial(p7,virgin)
+  - shown_num(p2,chef,1,0)
+assert:
+  exists: true

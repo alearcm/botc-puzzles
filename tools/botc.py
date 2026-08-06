@@ -21,11 +21,23 @@ ENGINE_FILES = ["core.lp", "death.lp", "info.lp", "mech.lp", "endgame.lp"]
 
 
 # ---------------- cards ----------------
+# Scripts are just character sets. Cards live in per-edition files for
+# organisation only; an Instance's character pool is any set of ids, with
+# edition names as shorthand for "every character in that edition".
 
 def load_cards(script: str) -> list[dict]:
     cards = yaml.safe_load((ROOT / "cards" / f"{script}.yaml").read_text())
     assert isinstance(cards, list)
     return cards
+
+
+def card_index() -> dict[str, tuple[dict, str]]:
+    """id -> (card, home edition) across every cards/*.yaml."""
+    idx: dict[str, tuple[dict, str]] = {}
+    for path in sorted((ROOT / "cards").glob("*.yaml")):
+        for c in load_cards(path.stem):
+            idx[c["id"]] = (c, path.stem)
+    return idx
 
 
 def card_facts(card: dict, script: str) -> list[str]:
@@ -67,37 +79,49 @@ def card_facts(card: dict, script: str) -> list[str]:
 
 
 # ---------------- night order ----------------
+# TPI publishes deviating printed night sheets for the base editions; that
+# deviation applies only when the game IS that edition. Any other pool is a
+# custom script and uses the script tool's global order.
 
-def night_order_facts(script: str, cards: list[dict]) -> list[str]:
-    """Per-script printed sheet order if gathered; else townsquare fallback."""
-    ids = {c["id"] for c in cards if not c.get("traveller")}
+def sheet_order_facts(script: str, ids: set[str]) -> list[str]:
+    """nord facts from an edition's printed sheet, or [] if not gathered."""
     no_path = ROOT / "data" / "raw" / "night_orders.json"
-    fs = []
-    if no_path.exists():
-        data = json.loads(no_path.read_text())
-        if script in data:
-            for kind in ("first", "other"):
-                idx = 0
-                seen: set[str] = set()
-                for entry in data[script][kind]:
-                    if entry.isupper():
-                        continue  # DUSK/DAWN/MINION_INFO/DEMON_INFO markers
-                    if entry in ids and entry not in seen:
-                        seen.add(entry)  # snv sheet prints sweetheart/sage twice
-                        idx += 1
-                        fs.append(f"order({script},{kind},{idx},{entry}).")
-            if fs:
-                return fs
-    # fallback: townsquare global numbers restricted to this script
+    fs: list[str] = []
+    if not no_path.exists():
+        return fs
+    data = json.loads(no_path.read_text())
+    if script not in data:
+        return fs
+    for kind in ("first", "other"):
+        idx = 0
+        seen: set[str] = set()
+        for entry in data[script][kind]:
+            if entry.isupper():
+                continue  # DUSK/DAWN/MINION_INFO/DEMON_INFO markers
+            if entry in ids and entry not in seen:
+                seen.add(entry)  # snv sheet prints sweetheart/sage twice
+                idx += 1
+                fs.append(f"nord({kind},{idx},{entry}).")
+    return fs
+
+
+def _all_roles() -> list[dict]:
     roles = json.loads((ROOT / "data" / "raw" / "townsquare_roles.json").read_text())
-    by_id = {r["id"]: r for r in roles}
+    exp = ROOT / "data" / "raw" / "exp_roles.json"
+    if exp.exists():
+        roles = roles + json.loads(exp.read_text())
+    return roles
+
+
+def global_order_facts(ids: set[str]) -> list[str]:
+    """nord facts from the script-tool global order, restricted to the pool."""
+    roles = _all_roles()
+    fs = []
     for kind, key in (("first", "firstNight"), ("other", "otherNight")):
-        ordered = sorted(
-            (r for r in roles if r["id"] in ids and r.get(key)),
-            key=lambda r: r[key],
-        )
+        ordered = sorted((r for r in roles if r["id"] in ids and r.get(key)),
+                         key=lambda r: r[key])
         for idx, r in enumerate(ordered, 1):
-            fs.append(f"order({script},{kind},{idx},{r['id']}).")
+            fs.append(f"nord({kind},{idx},{r['id']}).")
     return fs
 
 
@@ -105,14 +129,36 @@ def night_order_facts(script: str, cards: list[dict]) -> list[str]:
 
 @dataclass
 class Instance:
-    script: str
-    players: list[str]
+    script: str | list[str] | None = None  # edition shorthand(s) for the pool
+    players: list[str] = field(default_factory=list)
     horizon: int = 2
     given: list[str] = field(default_factory=list)
     statements: dict[str, str] = field(default_factory=dict)  # stmt id -> ASP body
+    roster: list[str] = field(default_factory=list)  # extra character ids
+
+    @property
+    def scripts(self) -> list[str]:
+        if self.script is None:
+            return []
+        return [self.script] if isinstance(self.script, str) else list(self.script)
+
+    def pool(self) -> dict[str, tuple[dict, str]]:
+        """id -> (card, home edition) for this game's character pool."""
+        idx = card_index()
+        out: dict[str, tuple[dict, str]] = {}
+        for s in self.scripts:
+            for c in load_cards(s):
+                out[c["id"]] = (c, s)
+        for cid in self.roster:
+            if cid not in idx:
+                raise ValueError(f"unknown character '{cid}' in roster")
+            out.setdefault(cid, idx[cid])
+        if not out:
+            raise ValueError("empty character pool: set script and/or roster")
+        return out
 
     def facts(self) -> str:
-        out = [f"script({self.script})."]
+        out = []
         for i, p in enumerate(self.players):
             out.append(f"player({p}).")
             out.append(f"seat({p},{i}).")
@@ -125,11 +171,19 @@ class Instance:
 
 
 def build_program(inst: Instance) -> str:
-    cards = load_cards(inst.script)
     parts = [(ROOT / "engine" / f).read_text() for f in ENGINE_FILES]
-    for c in cards:
-        parts.append("\n".join(card_facts(c, inst.script)))
-    parts.append("\n".join(night_order_facts(inst.script, cards)))
+    pool = inst.pool()
+    for cid, (card, home) in pool.items():
+        parts.append("\n".join(card_facts(card, home)))
+        parts.append(f"pool({cid}).")
+    ids = {cid for cid, (c, _) in pool.items() if not c.get("traveller")}
+    # printed-sheet order only when the pool IS exactly one base edition
+    nord: list[str] = []
+    if not inst.roster and len(inst.scripts) == 1:
+        nord = sheet_order_facts(inst.scripts[0], ids)
+    if not nord:
+        nord = global_order_facts(ids)
+    parts.append("\n".join(nord))
     parts.append(inst.facts())
     return "\n".join(parts)
 
@@ -163,14 +217,31 @@ def worlds(inst: Instance, show: list[str], limit: int = 200) -> list[frozenset[
     return out
 
 
+def worlds_proj(inst: Instance, show: list[str], limit: int = 2000,
+                extra: str = "") -> tuple[list[frozenset[str]], bool]:
+    """DISTINCT projections onto `show` via clingo --project (each projected
+    world enumerated once, soundly — no duplicate full models inflating or
+    truncating the projection). Returns (worlds, truncated)."""
+    shows = "\n".join(f"#show {s}." for s in show)
+    ctl = clingo.Control([f"-c horizon={inst.horizon}", "--project", str(limit)])
+    ctl.add("base", [], build_program(inst) + "\n#show.\n" + shows + "\n" + extra)
+    ctl.ground([("base", [])])
+    out = []
+    with ctl.solve(yield_=True) as h:
+        for m in h:
+            out.append(frozenset(str(a) for a in m.symbols(shown=True)))
+    return out, len(out) >= limit
+
+
 def load_fixture(path: Path) -> tuple[Instance, dict]:
     doc = yaml.safe_load(path.read_text())
     inst = Instance(
-        script=doc["script"],
+        script=doc.get("script"),
         players=doc["players"],
         horizon=doc.get("horizon", 2),
         given=doc.get("given", []),
         statements=doc.get("statements", {}),
+        roster=doc.get("roster", []),
     )
     return inst, doc
 
@@ -193,25 +264,56 @@ def check_fixture(path: Path) -> tuple[bool, str]:
 
 # ---------------- puzzles ----------------
 
-def claim_rules(claims: list[dict]) -> list[str]:
-    """Puzzle-convention claim semantics: a good claimant truthfully reports
-    their believed character and tokens (the drunk's charade included); evil
-    claimants are unconstrained."""
+def claim_rules(claims: list[dict], horizon: int) -> list[str]:
+    """Puzzle-convention claim semantics. A claim is a STANDING public
+    record, not a one-shot statement: it must be covered on EVERY day D of
+    the window by one of — truthful believed character (drunk charade
+    included), living Mutant fabricating a townsfolk role, cerenovus-mad as
+    the claimed character that day, or being evil that day. Players evil at
+    the END claim freely, retroactively included ("An Outsider who became
+    the Fang Gu may lie about the role they had when they were good", #55).
+    An ex-evil player good at the end must be covered like any good player
+    (caught on nqt-011: good snake charmers claiming other roles with a
+    single final-day madness were spurious demons)."""
     out = []
+    days = list(range(1, horizon + 1))
+    if claims:
+        # evil_day(P,D): alignment DURING day D (night-D changes applied)
+        out.append("evil_day(P,D) :- player(P), align(P,evil,D), "
+                   "not align_changed(P,D), night(D).")
+        out.append("evil_day(P,D) :- player(P), align_change(P,evil,D).")
+        out.append("evil_at_end(P) :- evil_day(P,horizon).")
+        out.append("alive_day(P,D) :- alive(P,D), not dies_night(P,D).")
+        out.append("alive_at_end(P) :- alive_day(P,horizon).")
+        # character DURING day D, defined through the final morning
+        out.append("char_day(P,C,D) :- char_d(P,C,D), day(D).")
+        out.append("char_day(P,C,horizon) :- char(P,C,horizon), "
+                   "not char_changed(P,horizon).")
+        out.append("char_day(P,C,horizon) :- becomes(P,C,horizon).")
     for cl in claims:
         p, char = cl["player"], cl["character"]
         shown = [s.strip().rstrip(".") for s in cl.get("info", [])]
-        body = ", ".join([f"initial({p},{char})"] + shown) or f"initial({p},{char})"
-        out.append(f"claim_ok({p}) :- {body}.")
-        drunk_body = ", ".join(
-            [f"initial({p},drunk)", f"believed_init({p},{char})"] + shown)
-        out.append(f"claim_ok({p}) :- {drunk_body}.")
-        out.append(f"claim_ok({p}) :- initial({p},C), role(C,minion,_).")
-        out.append(f"claim_ok({p}) :- initial({p},C), role(C,demon,_).")
-        # madness: a mutant claims a townsfolk (fabricated info); a
-        # cerenovus-mad player claims their mad character
-        out.append(f"claim_ok({p}) :- initial({p},mutant), role({char},townsfolk,_).")
-        out.append(f"claim_ok({p}) :- mad({p},{char},_).")
+        for d in days:
+            body = ", ".join([f"char_day({p},{char},{d})"] + shown)
+            drunk_body = ", ".join(
+                [f"char_day({p},drunk,{d})", f"believed_init({p},{char})"]
+                + shown)
+            out.append(f"ccov({p},{d}) :- {body}.")
+            out.append(f"ccov({p},{d}) :- {drunk_body}.")
+            # madness compliance belongs to whoever IS the mutant that
+            # day (a mutant pit-hagged away loses the cover, a player
+            # turned INTO the mutant gains it)
+            out.append(f"ccov({p},{d}) :- char_day({p},mutant,{d}), "
+                       f"role({char},townsfolk,_), alive_day({p},{d}).")
+            out.append(f"ccov({p},{d}) :- mad({p},{char},{d}).")
+            out.append(f"ccov({p},{d}) :- evil_day({p},{d}).")
+        all_days = ", ".join(f"ccov({p},{d})" for d in days)
+        out.append(f"claim_ok({p}) :- {all_days}.")
+        # reveal-on-end: madness that ends or changes makes the target
+        # reveal they were cerenovus-targeted (NQT convention, ALL players
+        # incl. evil/dead) — no claim shows a reveal, so madness persists
+        out.append(f":- mad({p},CC,D), night(D2), D2 = D+1, "
+                   f"not mad({p},CC,D2).")
         out.append(f":- not claim_ok({p}).")
     return out
 
@@ -219,24 +321,40 @@ def claim_rules(claims: list[dict]) -> list[str]:
 def load_puzzle(path: Path) -> tuple[Instance, dict]:
     doc = yaml.safe_load(Path(path).read_text())
     inst = Instance(
-        script=doc["script"],
+        script=doc.get("script"),
         players=doc["players"],
         horizon=doc.get("horizon", 2),
         given=doc.get("given", []),
         statements=doc.get("statements", {}),
+        roster=doc.get("roster", []),
     )
-    inst.given.extend(claim_rules(doc.get("claims", [])))
+    pool = inst.pool()
+    for cl in doc.get("claims", []):
+        if cl["character"] not in pool:
+            raise ValueError(
+                f"claimed character '{cl['character']}' is not in the pool "
+                f"(scripts {inst.scripts} + roster {inst.roster}) — add it "
+                f"to `roster:` (silent UNSAT otherwise; see nqt-022)")
+    inst.given.extend(claim_rules(doc.get("claims", []), inst.horizon))
     if doc.get("assume_ongoing", True):
         inst.given.append("assume_ongoing")
     return inst, doc
 
 
-def solve_puzzle(path: Path, limit: int = 500) -> dict:
+def solve_puzzle(path: Path, limit: int = 200) -> dict:
+    """Demon candidates via SOUND per-player satisfiability queries (immune
+    to enumeration truncation); certain atoms via targeted certain() checks
+    on the sampled worlds' shared assignment."""
     inst, doc = load_puzzle(path)
+    demons = []
+    for p in inst.players:
+        probe = (f"is_demon_probe :- initial({p},C), role(C,demon,_).\n"
+                 f":- not is_demon_probe.")
+        if sat(inst, probe):
+            demons.append(p)
     ws = worlds(inst, ["initial/2"], limit=limit)
-    demons: set[str] = set()
-    all_atoms = None
     per_world = []
+    shared = None
     for w in ws:
         assignment = {}
         for a in w:
@@ -244,22 +362,72 @@ def solve_puzzle(path: Path, limit: int = 500) -> dict:
             p, c = inner.split(",")
             assignment[p] = c
         per_world.append(assignment)
-        cards = {c["id"]: c for c in load_cards(inst.script)}
-        for p, c in assignment.items():
-            if cards[c]["team"] == "demon":
-                demons.add(p)
         atoms = frozenset(w)
-        all_atoms = atoms if all_atoms is None else (all_atoms & atoms)
+        shared = atoms if shared is None else (shared & atoms)
+    # verify sample-shared atoms as genuinely certain (sound check)
+    certain_atoms = [a for a in sorted(shared or []) if certain(inst, a)]
     return {
-        "worlds": len(per_world),
+        "worlds_sampled": len(per_world),
         "truncated": len(per_world) >= limit,
-        "demon_candidates": sorted(demons),
-        "certain": sorted(all_atoms) if all_atoms else [],
-        "sample": per_world[:5],
+        "demon_candidates": demons,
+        "certain": certain_atoms,
+        "sample": per_world[:3],
     }
 
 
-if __name__ == "__main__":
+# ---------------- query surface (M3) ----------------
+
+def query_worlds(path: Path, show: list[str], limit: int = 2000) -> dict:
+    """All distinct worlds of the observation, projected onto `show`."""
+    inst, doc = load_puzzle(path)
+    ws, truncated = worlds_proj(inst, show, limit=limit)
+    return {"projection": show, "count": len(ws), "truncated": truncated,
+            "worlds": [sorted(w) for w in sorted(ws)]}
+
+
+def query_certain(path: Path, limit: int = 2000) -> dict:
+    """Who can you figure out: per-player possible initial characters across
+    ALL worlds (sound when not truncated), split into pinned / ambiguous."""
+    inst, doc = load_puzzle(path)
+    ws, truncated = worlds_proj(inst, ["initial/2"], limit=limit)
+    poss: dict[str, set[str]] = {p: set() for p in inst.players}
+    for w in ws:
+        for a in w:
+            p, c = a[len("initial("):-1].split(",")
+            poss[p].add(c)
+    return {
+        "worlds": len(ws), "truncated": truncated,
+        "pinned": {p: sorted(cs)[0] for p, cs in poss.items() if len(cs) == 1},
+        "ambiguous": {p: sorted(cs) for p, cs in poss.items() if len(cs) > 1},
+    }
+
+
+def _main() -> None:
+    import argparse
     import pprint
-    import sys as _sys
-    pprint.pprint(solve_puzzle(Path(_sys.argv[1])))
+    ap = argparse.ArgumentParser(description="BotC world-enumeration queries")
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    for name in ("solve", "worlds", "certain", "count"):
+        sp = sub.add_parser(name)
+        sp.add_argument("puzzle", type=Path)
+        if name in ("worlds", "count"):
+            sp.add_argument("--show", default="initial/2",
+                            help="comma-separated projection atoms (name/arity)")
+        if name != "solve":
+            sp.add_argument("--limit", type=int, default=2000)
+    args = ap.parse_args()
+    if args.cmd == "solve":
+        pprint.pprint(solve_puzzle(args.puzzle))
+    elif args.cmd == "worlds":
+        pprint.pprint(query_worlds(args.puzzle, args.show.split(","),
+                                   args.limit))
+    elif args.cmd == "count":
+        r = query_worlds(args.puzzle, args.show.split(","), args.limit)
+        print(f"{r['count']}{'+' if r['truncated'] else ''} distinct worlds "
+              f"(projection {r['projection']})")
+    elif args.cmd == "certain":
+        pprint.pprint(query_certain(args.puzzle, args.limit))
+
+
+if __name__ == "__main__":
+    _main()

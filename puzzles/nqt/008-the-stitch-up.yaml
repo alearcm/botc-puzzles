@@ -1,0 +1,46 @@
+# Weekly Puzzle #8 — "The Stitch-Up" (Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1ftqc28/
+# Homebrew: every Townsfolk is a Seamstress (duplicates allowed). One Imp,
+# one Poisoner, no Outsiders. Each Seamstress used their ability night 1.
+# CONFIRMED ANSWER (author-endorsed in thread): Josh and Steph are evil. REPRODUCED.
+# All seven claim Seamstress; each reports a "different alignments" result
+# (a "no" on the same-alignment check). Question: who is on the evil team?
+id: nqt-008
+script: [snv, tb]
+horizon: 2
+players: [anna, tim, matthew, fraser, you, josh, steph]
+claims:
+  - {player: anna, character: seamstress,
+     info: ["uses_once(anna,seamstress,1)",
+            "picked2(anna,seamstress,1,josh,matthew)",
+            "shown_bool(anna,seamstress,1,no)"]}
+  - {player: tim, character: seamstress,
+     info: ["uses_once(tim,seamstress,1)",
+            "picked2(tim,seamstress,1,josh,you)",
+            "shown_bool(tim,seamstress,1,no)"]}
+  - {player: matthew, character: seamstress,
+     info: ["uses_once(matthew,seamstress,1)",
+            "picked2(matthew,seamstress,1,fraser,steph)",
+            "shown_bool(matthew,seamstress,1,no)"]}
+  - {player: fraser, character: seamstress,
+     info: ["uses_once(fraser,seamstress,1)",
+            "picked2(fraser,seamstress,1,anna,steph)",
+            "shown_bool(fraser,seamstress,1,no)"]}
+  - {player: you, character: seamstress,
+     info: ["uses_once(you,seamstress,1)",
+            "picked2(you,seamstress,1,anna,matthew)",
+            "shown_bool(you,seamstress,1,no)"]}
+  - {player: josh, character: seamstress,
+     info: ["uses_once(josh,seamstress,1)",
+            "picked2(josh,seamstress,1,anna,tim)",
+            "shown_bool(josh,seamstress,1,no)"]}
+  - {player: steph, character: seamstress,
+     info: ["uses_once(steph,seamstress,1)",
+            "picked2(steph,seamstress,1,matthew,tim)",
+            "shown_bool(steph,seamstress,1,no)"]}
+given:
+  - "dup_ok(seamstress)"
+  - ":- initial(P,C), role(C,townsfolk,_), C != seamstress"
+  - ":- initial(P,C), role(C,outsider,_)"
+  - ":- initial(P,C), role(C,minion,_), C != poisoner"
+  - ":- initial(P,C), role(C,demon,_), C != imp"

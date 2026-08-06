@@ -14,6 +14,7 @@ given:
   - initial(p6,sage)
   - uses_once(p5,philosopher,2)
   - phil_pick(p5,2,clockmaker)
+  - picked(p1,nodashii,2,p6)
   - shown_num(p5,clockmaker,2,3)
 assert:
   exists: false

@@ -1,0 +1,27 @@
+# Drunk almanac ex3 — "The Drunk, who thinks they are the Ravenkeeper, is
+# killed at night. They choose the Saint, but learn that this player is the
+# Poisoner."
+# https://wiki.bloodontheclocktower.com/Drunk
+# 9p (5/2/1/1) so Drunk and Saint are the two outsiders.
+id: drunk-ex3-thinks-ravenkeeper
+tier: T0
+source: Drunk almanac example 3 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7, p8, p9]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,drunk)
+  - believed_init(p3,ravenkeeper)
+  - initial(p4,saint)
+  - initial(p5,chef)
+  - initial(p6,soldier)
+  - initial(p7,mayor)
+  - initial(p8,virgin)
+  - initial(p9,slayer)
+  - picked(p1,imp,2,p3)
+  - picked(p3,ravenkeeper,2,p4)
+  - shown_char(p3,ravenkeeper,2,poisoner)
+assert:
+  exists: true

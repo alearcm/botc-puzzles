@@ -1,0 +1,25 @@
+# Virgin almanac ex2 — "The Drunk, who thinks they are the Chef, nominates the
+# Virgin. The Drunk remains alive, and the Virgin loses their ability. Players
+# may now vote on whether or not to execute the Virgin. (This happens because
+# the Drunk is not a Townsfolk.)"
+# https://wiki.bloodontheclocktower.com/Virgin
+# The Virgin's ability loss is engine-side (virgin_spent from the nomination).
+id: virgin-ex2-drunk-no-proc
+tier: T0
+source: Virgin almanac example 2 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,virgin)
+  - initial(p4,drunk)
+  - believed_init(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,mayor)
+  - nominated(p4,p3,1)
+  - no_proc_virgin(p4,1)
+  - picked(p1,imp,2,p5)
+assert:
+  exists: true

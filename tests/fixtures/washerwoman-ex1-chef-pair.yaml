@@ -1,0 +1,20 @@
+# Washerwoman almanac ex1 — "Evin is the Chef, and Amy is the Ravenkeeper. The
+# Washerwoman learns that either Evin or Amy is the Chef."
+# https://wiki.bloodontheclocktower.com/Washerwoman
+id: washerwoman-ex1-chef-pair
+tier: T0
+source: Washerwoman almanac example 1 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,washerwoman)
+  - initial(p2,chef)          # Evin
+  - initial(p3,ravenkeeper)   # Amy
+  - initial(p4,soldier)
+  - initial(p5,mayor)
+  - initial(p6,scarletwoman)
+  - initial(p7,imp)
+  - shown_among2(p1,washerwoman,1,chef,p2,p3)
+assert:
+  exists: true

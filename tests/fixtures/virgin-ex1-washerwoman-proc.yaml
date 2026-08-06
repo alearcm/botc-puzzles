@@ -1,0 +1,23 @@
+# Virgin almanac ex1 — "The Washerwoman nominates the Virgin. The Washerwoman
+# is immediately executed and the day ends."
+# https://wiki.bloodontheclocktower.com/Virgin
+id: virgin-ex1-washerwoman-proc
+tier: T0
+source: Virgin almanac example 1 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,virgin)
+  - initial(p4,washerwoman)
+  - initial(p5,chef)
+  - initial(p6,soldier)
+  - initial(p7,mayor)
+  - nominated(p4,p3,1)
+  - proc_virgin(p4,1)
+  - executed(p4,1)
+  - picked(p1,imp,2,p5)
+assert:
+  exists: true

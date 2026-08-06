@@ -1,0 +1,21 @@
+# Investigator almanac ex1 — "Amy is the Baron, and Julian is the Mayor. The
+# Investigator learns that either Amy or Julian is the Baron."
+# https://wiki.bloodontheclocktower.com/Investigator
+# 7p with Baron: 3 townsfolk + 2 outsiders.
+id: investigator-ex1-baron-pair
+tier: T0
+source: Investigator almanac example 1 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,investigator)
+  - initial(p2,baron)   # Amy
+  - initial(p3,mayor)   # Julian
+  - initial(p4,saint)
+  - initial(p5,butler)
+  - initial(p6,chef)
+  - initial(p7,imp)
+  - shown_among2(p1,investigator,1,baron,p2,p3)
+assert:
+  exists: true

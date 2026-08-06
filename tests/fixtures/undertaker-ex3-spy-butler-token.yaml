@@ -1,0 +1,25 @@
+# Undertaker almanac ex3 — "The Spy is executed. Two Travellers are exiled.
+# That night, the Undertaker is shown the Butler token, because the Spy is
+# registering as the Butler, and because the exiles are not executions."
+# https://wiki.bloodontheclocktower.com/Undertaker
+# NOTE: the traveller-exile clause is omitted (travellers out of engine
+# scope); the transcribed content is the dead Spy registering as the Butler.
+id: undertaker-ex3-spy-butler-token
+tier: T0
+source: Undertaker almanac example 3 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,spy)
+  - initial(p3,undertaker)
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,mayor)
+  - initial(p7,virgin)
+  - executed(p2,1)
+  - picked(p1,imp,2,p4)
+  - shown_char(p3,undertaker,2,butler)
+assert:
+  exists: true

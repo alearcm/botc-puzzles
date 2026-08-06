@@ -1,0 +1,24 @@
+# Spy almanac ex2 — "The Spy neighbours the Imp and the Empath. The Chef
+# learns a '1' because the Spy is registering as evil. Later that night, the
+# Empath learns a '0' because the Spy is now registering as good."
+# https://wiki.bloodontheclocktower.com/Spy
+# Registration is per occurrence: evil at the Chef's site, good at the
+# Empath's site, in the same night.
+id: spy-ex2-chef-empath-flicker
+tier: T0
+source: Spy almanac example 2 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,spy)
+  - initial(p3,empath)
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,mayor)
+  - initial(p7,virgin)
+  - shown_num(p4,chef,1,1)
+  - shown_num(p3,empath,1,0)
+assert:
+  exists: true

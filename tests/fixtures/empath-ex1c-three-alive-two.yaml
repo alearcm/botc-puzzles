@@ -1,0 +1,26 @@
+# Empath almanac ex1 (part c) — "There are only three players left alive: the
+# Empath, the Imp, and the Baron. No matter who is seated where, the Empath
+# learns a '2'."
+# https://wiki.bloodontheclocktower.com/Empath
+# 5p with Baron (1 townsfolk + 2 outsiders). Butler executed day 1, Saint
+# killed night 2, leaving empath/imp/baron alive on night 3. "No matter who is
+# seated where" => certain. Every death and ST choice affecting the number is
+# pinned; no Spy/Recluse/Poisoner in play.
+id: empath-ex1c-three-alive-two
+tier: T0
+source: Empath almanac example 1, third paragraph (wiki)
+script: tb
+horizon: 3
+players: [p1, p2, p3, p4, p5]
+given:
+  - initial(p1,empath)
+  - initial(p2,saint)
+  - initial(p3,imp)
+  - initial(p4,baron)
+  - initial(p5,butler)
+  - executed(p5,1)
+  - picked(p3,imp,2,p2)
+  - picked(p3,imp,3,p1)
+assert:
+  certain:
+    - shown_num(p1,empath,3,2)

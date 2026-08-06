@@ -9,10 +9,11 @@ demon_after_night(T) :- char(P,C,T), team_of(C,demon), alive(P,T),
 demon_after_night(T) :- becomes(P,C,T), team_of(C,demon), alive(P,T),
     not dies_night(P,T), night(T).
 % zombuul fake-dead is mechanically alive: covered by alive/4 above
-demon_after_day(D) :- char(P,C,D), team_of(C,demon), alive(P,D),
-    not dies_night(P,D), not dies_day(P,D), not char_changed(P,D), day(D).
-demon_after_day(D) :- becomes(P,C,D), team_of(C,demon), alive(P,D),
+demon_after_day(D) :- char_d(P,C,D), team_of(C,demon), alive(P,D),
+    not dies_night(P,D), not dies_day(P,D), day(D), not day_changed(P,D).
+demon_after_day(D) :- becomes_day(P,C,D), team_of(C,demon), alive(P,D),
     not dies_night(P,D), not dies_day(P,D), day(D).
+day_changed(P,D) :- becomes_day(P,_,D).
 
 % ---------- good wins: demon eliminated ----------
 ended(2*T-1,good) :- night(T), not demon_after_night(T), not twin_block_n(T).
@@ -37,15 +38,15 @@ ended(2*D,evil) :- day(D), demon_after_day(D),
                    #count{ P : alive_after_day(P,D) } <= 2.
 
 % ---------- saint: executed while functioning -> evil wins ----------
-ended(2*D,evil) :- exec_death(P,D), char(P,saint,D), not impaired_day(P,D).
+ended(2*D,evil) :- exec_death(P,D), char_d(P,saint,D), not impaired_day(P,D).
 
 % ---------- klutz: on-death public choice (input klutz_choice/3) ----------
 site_al(klz(P,D,Q),Q,D) :- klutz_choice(P,Q,D).
-ended(2*D,evil) :- klutz_choice(P,Q,D), char(P,klutz,D),
+ended(2*D,evil) :- klutz_choice(P,Q,D), char_d(P,klutz,D),
                    not impaired_day(P,D), reg_evil(Q,klz(P,D,Q)).
 
 % ---------- mayor: 3 alive, no execution -> good wins ----------
-ended(2*D,good) :- day(D), char(P,mayor,D), functioning_day(P,mayor,D),
+ended(2*D,good) :- day(D), char_d(P,mayor,D), functioning_day(P,mayor,D),
     not dies_day(P,D), #count{ Q : alive_after_day(Q,D) } = 3,
     not any_exec(D), not twin_block_d(D).
 any_exec(D) :- executed(_,D).
@@ -53,9 +54,16 @@ any_exec(D) :- executed(_,D).
 % ---------- vortox: no execution in a day -> evil wins ----------
 ended(2*D,evil) :- day(D), vortox_alive(D), not any_exec(D).
 
+% ---------- leviathan: execution-count clock (no night kill) ----------
+% "If more than 1 good player is executed, you win. After day 5, evil wins."
+lev_alive(D) :- day(D), char_d(P,leviathan,D), alive(P,D), not dies_night(P,D).
+ended(2*D,evil) :- lev_alive(D),
+    #count{ P,D2 : exec_death(P,D2), day(D2), D2 <= D, align(P,good,D2) } >= 2.
+ended(2*D,evil) :- lev_alive(D), D >= 5.
+
 % ---------- mastermind: demon executed -> one more day ----------
-mm_active(D) :- exec_death(P,D), char(P,C,D), team_of(C,demon),
-    char(M,mastermind,D), alive(M,D), not dies_day(M,D),
+mm_active(D) :- exec_death(P,D), char_d(P,C,D), team_of(C,demon),
+    char_d(M,mastermind,D), alive(M,D), not dies_day(M,D),
     not impaired_day(M,D), not demon_after_day(D).
 mm_window(D2) :- mm_active(D), D2 = D+1, day(D2).
 ended(2*D2,evil) :- mm_window(D2), exec_death(Q,D2), align(Q,good,D2).
@@ -63,5 +71,7 @@ ended(2*D2,good) :- mm_window(D2), exec_death(Q,D2), align(Q,evil,D2).
 ended(2*D2,good) :- mm_window(D2), not any_exec(D2).
 
 % ---------- ongoing-play constraint ----------
-:- assume_ongoing, ended(K,_), horizon(H2), K < 2*H2-1.
+% a puzzle posed about a live game means the game has not ended at ALL —
+% including the final phase (a demon suicide on the last night still ends it)
+:- assume_ongoing, ended(_,_).
 horizon(horizon).

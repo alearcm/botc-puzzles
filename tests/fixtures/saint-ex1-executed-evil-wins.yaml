@@ -1,0 +1,27 @@
+# Saint almanac ex1 — "There are seven players alive and nominations are in
+# progress. The Saint gets four votes and is about to die. Then, the Baron is
+# nominated but only gets three votes. No more nominations occur today. The
+# Saint is executed, and evil wins."
+# https://wiki.bloodontheclocktower.com/Saint
+# NOTE: the per-nomination vote tallies (4 vs 3) are NOT encodable — voted/2
+# carries no nominee argument, so two same-day tallies cannot be
+# distinguished. Only the outcome (Saint executed while functioning -> evil
+# wins) is transcribed.
+id: saint-ex1-executed-evil-wins
+tier: T0
+source: Saint almanac example 1 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,baron)
+  - initial(p3,saint)
+  - initial(p4,butler)
+  - initial(p5,chef)
+  - initial(p6,soldier)
+  - initial(p7,mayor)
+  - executed(p3,1)
+assert:
+  certain:
+    - ended(2,evil)

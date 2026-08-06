@@ -1,0 +1,24 @@
+# Slayer almanac ex1 — "The Slayer chooses the Imp. The Imp dies, and good
+# wins!"
+# https://wiki.bloodontheclocktower.com/Slayer
+# Poisoner pinned to self-poison so the Slayer is certainly functioning.
+id: slayer-ex1-shoots-imp
+tier: T0
+source: Slayer almanac example 1 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,poisoner)
+  - initial(p3,slayer)
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,mayor)
+  - initial(p7,virgin)
+  - picked(p2,poisoner,1,p2)
+  - slayer_shot(p3,p1,1)
+assert:
+  certain:
+    - day_kill(p1,1)
+    - ended(2,good)

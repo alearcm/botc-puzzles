@@ -1,0 +1,21 @@
+# Recluse almanac ex3 — "The Investigator learns that either the Recluse or
+# the Saint is the Scarlet Woman."
+# https://wiki.bloodontheclocktower.com/Recluse
+# 7p with Baron: 3 townsfolk + 2 outsiders (Recluse, Saint).
+id: recluse-ex3-investigator-sw
+tier: T0
+source: Recluse almanac example 3 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,investigator)
+  - initial(p2,recluse)
+  - initial(p3,saint)
+  - initial(p4,baron)
+  - initial(p5,chef)
+  - initial(p6,soldier)
+  - initial(p7,imp)
+  - shown_among2(p1,investigator,1,scarletwoman,p2,p3)
+assert:
+  exists: true

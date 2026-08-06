@@ -1,0 +1,29 @@
+# Poisoner almanac ex4 (first part) — "The Undertaker is poisoned. Even though
+# the Imp died today, they learn that the Virgin died."
+# https://wiki.bloodontheclocktower.com/Poisoner
+# 10p so the Scarlet Woman can take over after the Imp's execution and the
+# game continues.
+id: poisoner-ex4-undertaker-false
+tier: T0
+source: Poisoner almanac example 4, first part (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+given:
+  - initial(p1,imp)
+  - initial(p2,poisoner)
+  - initial(p3,scarletwoman)
+  - initial(p4,undertaker)
+  - initial(p5,virgin)
+  - initial(p6,chef)
+  - initial(p7,soldier)
+  - initial(p8,mayor)
+  - initial(p9,empath)
+  - initial(p10,slayer)
+  - picked(p2,poisoner,1,p2)
+  - executed(p1,1)
+  - picked(p2,poisoner,2,p4)
+  - picked(p3,imp,2,p7)
+  - shown_char(p4,undertaker,2,virgin)
+assert:
+  exists: true

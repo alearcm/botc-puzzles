@@ -1,4 +1,4 @@
-# Po: charge night 2 (self-pick convention), then exactly 3 kills night 3.
+# Po: charge night 2 (genuinely chooses no-one), then exactly 3 kills night 3.
 id: po-charge-burst
 tier: T0
 source: Po ability text
@@ -16,8 +16,7 @@ given:
   - ":- uses_once(p2,assassin,T), night(T)"
   - ":- uses_once(p7,courtier,T), night(T)"
   - ":- uses_once(p5,professor,T), night(T)"
-  - picked(p1,po,2,p1)
-  - picked(p1,po,3,p1)
+  - ":- picked(p1,po,2,Q), player(Q)"
   - po_extra(p1,3,p3)
   - po_extra(p1,3,p4)
   - po_extra(p1,3,p6)

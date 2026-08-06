@@ -1,0 +1,23 @@
+# Monk almanac ex1 — "The Monk protects the Fortune Teller. The Imp attacks
+# the Fortune Teller. No deaths occur tonight."
+# https://wiki.bloodontheclocktower.com/Monk
+id: monk-ex1-protect-fortuneteller
+tier: T0
+source: Monk almanac example 1 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,monk)
+  - initial(p4,fortuneteller)
+  - initial(p5,chef)
+  - initial(p6,soldier)
+  - initial(p7,mayor)
+  - red_herring(p5)
+  - picked(p3,monk,2,p4)
+  - picked(p1,imp,2,p4)
+  - ":- announced_dead(P,2), player(P)"
+assert:
+  exists: true

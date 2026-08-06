@@ -1,0 +1,21 @@
+# Drunk almanac ex1 — "The Drunk, who thinks they are the Soldier, is attacked
+# by the Imp. The Drunk dies."
+# https://wiki.bloodontheclocktower.com/Drunk
+id: drunk-ex1-thinks-soldier
+tier: T0
+source: Drunk almanac example 1 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,drunk)
+  - believed_init(p3,soldier)
+  - initial(p4,chef)
+  - initial(p5,mayor)
+  - initial(p6,empath)
+  - picked(p1,imp,2,p3)
+assert:
+  certain:
+    - announced_dead(p3,2)

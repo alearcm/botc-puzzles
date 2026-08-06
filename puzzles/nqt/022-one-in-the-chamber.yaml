@@ -1,0 +1,53 @@
+# Weekly Puzzle #22 — "One in the Chamber" (Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1hvum3b/
+# 8 players, TB. One Imp + one minion of {Baron, Spy, Poisoner, Scarlet Woman}.
+# Default one Outsider; Baron adds two; Outsiders possible: Saint, Recluse,
+# Drunk. You are not evil, might be the Drunk.
+# Day 1: Oscar executed. Night 2: Sarah dies. Day 2: Fraser executed.
+# Night 3: Anna dies. Day 3: Aoife shot Tim — nothing happened.
+# Question: who is the Demon and who is the Minion?
+# CONFIRMED ANSWER (author-endorsed): Sarah = starting Imp (self-kill N2,
+# star pass), Steph = Baron who becomes the Imp, You = the Drunk. REPRODUCED
+# sound-unique. Forced two engine/format fixes: shadow picks generalized to
+# all pick specs; compiler validation that claimed characters are in the
+# character pool.
+id: nqt-022
+script: tb
+roster: [chambermaid]   # single imported character; custom pool -> global order
+horizon: 4
+players: [tim, fraser, oscar, steph, you, anna, aoife, sarah]
+claims:
+  - {player: tim, character: saint, info: []}
+  - {player: fraser, character: recluse, info: []}
+  - {player: oscar, character: librarian,
+     info: ["shown_among2(oscar,librarian,1,drunk,sarah,you)"]}
+  - {player: steph, character: washerwoman,
+     info: ["shown_among2(steph,washerwoman,1,chambermaid,aoife,you)"]}
+  - {player: you, character: chambermaid,
+     info: ["picked2(you,chambermaid,1,anna,steph)",
+            "shown_num(you,chambermaid,1,2)",
+            "picked2(you,chambermaid,2,steph,tim)",
+            "shown_num(you,chambermaid,2,0)",
+            "picked2(you,chambermaid,3,steph,tim)",
+            "shown_num(you,chambermaid,3,1)"]}
+  - {player: anna, character: investigator,
+     info: ["shown_among2(anna,investigator,1,baron,aoife,steph)"]}
+  - {player: aoife, character: slayer, info: []}
+  - {player: sarah, character: ravenkeeper,
+     info: ["picked(sarah,ravenkeeper,2,steph)",
+            "shown_char(sarah,ravenkeeper,2,washerwoman)"]}
+given:
+  # roster: TB game importing only the Chambermaid from BMR
+  - ":- initial(P,C), role(C,demon,_), C != imp"
+  - ":- initial(P,C), role(C,minion,_), C != baron, C != spy, C != poisoner, C != scarletwoman"
+  - ":- initial(P,C), role(C,outsider,_), C != saint, C != recluse, C != drunk"
+  - "executed(oscar,1)"
+  - "executed(fraser,2)"
+  - "slayer_shot(aoife,tim,3)"
+  - ":- align(you,evil,1)"
+  - ":- announced_dead(P,1), player(P)"
+  - ":- not announced_dead(sarah,2)"
+  - ":- announced_dead(P,2), P != sarah, player(P)"
+  - ":- not announced_dead(anna,3)"
+  - ":- announced_dead(P,3), P != anna, player(P)"
+  - ":- day_kill(P,D), player(P), day(D)"

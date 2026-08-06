@@ -1,0 +1,22 @@
+# Fortune Teller almanac ex2 — "The Fortune Teller chooses the Imp and the
+# Empath, and learns a 'yes'."
+# https://wiki.bloodontheclocktower.com/Fortune_Teller
+id: fortuneteller-ex2-imp-empath-yes
+tier: T0
+source: Fortune Teller almanac example 2 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,fortuneteller)
+  - initial(p2,imp)
+  - initial(p3,empath)
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,mayor)
+  - initial(p7,scarletwoman)
+  - red_herring(p1)
+  - picked2(p1,fortuneteller,1,p2,p3)
+  - shown_bool(p1,fortuneteller,1,yes)
+assert:
+  exists: true

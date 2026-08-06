@@ -15,6 +15,7 @@ given:
   - initial(p6,sage)
   - uses_once(p5,philosopher,2)
   - phil_pick(p5,2,clockmaker)
+  - picked(p1,nodashii,2,p6)
   - "pd :- status_on(p3,drunk,2,99)"
 assert:
   certain:

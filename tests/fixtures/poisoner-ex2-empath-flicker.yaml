@@ -1,0 +1,25 @@
+# Poisoner almanac ex2 — "The poisoned Empath, who neighbours two evil
+# players, learns a '0'. The next night, the Empath, no longer poisoned,
+# learns the correct information: a '2'."
+# https://wiki.bloodontheclocktower.com/Poisoner
+id: poisoner-ex2-empath-flicker
+tier: T0
+source: Poisoner almanac example 2 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,empath)
+  - initial(p3,poisoner)
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,mayor)
+  - initial(p7,virgin)
+  - picked(p3,poisoner,1,p2)
+  - shown_num(p2,empath,1,0)
+  - picked(p3,poisoner,2,p3)
+  - picked(p1,imp,2,p5)
+  - shown_num(p2,empath,2,2)
+assert:
+  exists: true

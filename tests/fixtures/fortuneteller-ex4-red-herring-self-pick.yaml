@@ -1,0 +1,21 @@
+# Fortune Teller almanac ex4 — "The Fortune Teller chooses themselves and a
+# Saint. The Saint is the Red Herring. The Fortune Teller learns a 'yes'."
+# https://wiki.bloodontheclocktower.com/Fortune_Teller
+id: fortuneteller-ex4-red-herring-self-pick
+tier: T0
+source: Fortune Teller almanac example 4 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6]
+given:
+  - initial(p1,fortuneteller)
+  - initial(p2,saint)
+  - initial(p3,imp)
+  - initial(p4,soldier)
+  - initial(p5,mayor)
+  - initial(p6,scarletwoman)
+  - red_herring(p2)
+  - picked2(p1,fortuneteller,1,p1,p2)
+  - shown_bool(p1,fortuneteller,1,yes)
+assert:
+  exists: true

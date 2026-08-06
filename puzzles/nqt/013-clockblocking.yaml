@@ -1,0 +1,58 @@
+# Weekly Puzzle #13 — "Clockblocking" (Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1gka3js/
+# 7 players, TB. One Imp + one minion of {Poisoner, Spy, Baron, Scarlet
+# Woman}. Default zero Outsiders (two if Baron); possible: Recluse, Drunk.
+# Hidden roles box: Imp, Poisoner, Spy, Baron, Scarlet Woman, Drunk.
+# You are not evil but might be the Drunk.
+# Day 1: Aoife executed. Night 2: Tim dies. Day 2: Fraser shoots Oscar —
+# nothing happens. Question: who is the Demon and who is the Minion?
+# CONFIRMED ANSWER (author-endorsed): Fraser = Imp, Oscar = Baron,
+# Tim = Drunk. REPRODUCED sound-unique after the site-clock refactor:
+# registration evaluates at the observer's night-order position, so in the
+# once-spurious world (Tim = starting Imp star-passing to Jasmine) Sarah's
+# night-2 Fortune Teller check on (Jasmine, You) sees the NEW Imp — the
+# Imp acts earlier in the order — forcing a yes that contradicts the
+# claimed no. No interaction-specific rule involved
+# (state-reads-at-site-position in RULINGS).
+id: nqt-013
+script: [tb, snv]   # Clockmaker is imported from S&V
+horizon: 3   # day 2 (the Slayer shot) needs day(2); night 3 is unobserved
+players: [tim, sarah, fraser, aoife, you, jasmine, oscar]
+claims:
+  - {player: tim, character: ravenkeeper,
+     info: ["picked(tim,ravenkeeper,2,oscar)",
+            "shown_char(tim,ravenkeeper,2,librarian)"]}
+  - {player: sarah, character: fortuneteller,
+     info: ["picked2(sarah,fortuneteller,1,oscar,you)",
+            "shown_bool(sarah,fortuneteller,1,no)",
+            "picked2(sarah,fortuneteller,2,jasmine,you)",
+            "shown_bool(sarah,fortuneteller,2,no)"]}
+  - {player: fraser, character: slayer, info: []}
+  - {player: aoife, character: recluse, info: []}
+  - {player: you, character: investigator,
+     info: ["shown_among2(you,investigator,1,scarletwoman,aoife,sarah)"]}
+  - {player: jasmine, character: clockmaker,
+     info: ["shown_num(jasmine,clockmaker,1,3)"]}
+  - {player: oscar, character: librarian,
+     info: ["shown_none(oscar,librarian,1)"]}
+given:
+  # roster + hidden-roles box
+  - ":- initial(P,C), role(C,demon,_), C != imp"
+  - ":- initial(P,C), role(C,minion,_), C != poisoner, C != spy, C != baron, C != scarletwoman"
+  - ":- initial(P,C), role(C,outsider,_), C != recluse, C != drunk"
+  - "hidden13(imp; poisoner; spy; baron; scarletwoman; drunk)"
+  - ":- initial(tim,C), C != ravenkeeper, not hidden13(C)"
+  - ":- initial(sarah,C), C != fortuneteller, not hidden13(C)"
+  - ":- initial(fraser,C), C != slayer, not hidden13(C)"
+  - ":- initial(aoife,C), C != recluse, not hidden13(C)"
+  - ":- initial(you,C), C != investigator, not hidden13(C)"
+  - ":- initial(jasmine,C), C != clockmaker, not hidden13(C)"
+  - ":- initial(oscar,C), C != librarian, not hidden13(C)"
+  - ":- align(you,evil,1)"
+  # events
+  - "executed(aoife,1)"
+  - "slayer_shot(fraser,oscar,2)"
+  - ":- announced_dead(P,1), player(P)"
+  - ":- not announced_dead(tim,2)"
+  - ":- announced_dead(P,2), P != tim, player(P)"
+  - ":- day_kill(P,D), player(P), day(D)"

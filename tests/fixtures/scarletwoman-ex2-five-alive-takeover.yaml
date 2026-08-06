@@ -1,0 +1,39 @@
+# Scarlet Woman almanac ex2 — "There are five players alive: the Imp, the
+# Scarlet Woman, the Baron, and two Townsfolk. The Imp is executed. The
+# Scarlet Woman becomes the Imp, and the game continues."
+# https://wiki.bloodontheclocktower.com/Scarlet_Woman
+# 10p (7/0/2/1; Baron shifts to 5/2/2/1) whittled to exactly 5 alive by day 4:
+# butler executed d1, saint killed n2, chef executed d2, soldier killed n3,
+# virgin executed d3; the imp attacks the already-dead saint on n4 (no death).
+# Day 4 alive: imp, scarlet woman, baron, mayor, slayer. Imp executed d4.
+# EXPECTED FAIL (engine seam): the almanac counts the dying Imp among the
+# "five players alive", but mech.lp's sw_takes_day counts app_alive AND NOT
+# dies_day (= 4 here), so the engine denies the takeover. The night-death rule
+# sw_takes counts the dying demon (inclusive); the day rule is exclusive.
+id: scarletwoman-ex2-five-alive-takeover
+tier: T0
+source: Scarlet Woman almanac example 2 (wiki)
+script: tb
+horizon: 5
+players: [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,baron)
+  - initial(p4,mayor)
+  - initial(p5,slayer)
+  - initial(p6,chef)
+  - initial(p7,soldier)
+  - initial(p8,virgin)
+  - initial(p9,saint)
+  - initial(p10,butler)
+  - executed(p10,1)
+  - picked(p1,imp,2,p9)
+  - executed(p6,2)
+  - picked(p1,imp,3,p7)
+  - executed(p8,3)
+  - picked(p1,imp,4,p9)
+  - executed(p1,4)
+assert:
+  certain:
+    - char(p2,imp,5)

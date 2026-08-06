@@ -1,0 +1,71 @@
+# Weekly Puzzle #34 — "The Vortox Conjecture" (Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1joxqgy/
+# 7 players, S&V. One Demon (No Dashii or Vortox) + one Minion (Witch).
+# No Outsiders. You are not evil.
+# Day 1: Steph dies when nominating (Witch curse); Aoife is executed.
+# Night 2: Fraser dies. Question: who is the Demon and who is the Minion?
+# CONFIRMED ANSWER (author-endorsed): Sula = Vortox, Sarah = Witch. REPRODUCED
+# sound-unique WITH witch self-curse legal. Forced engine fixes: strict
+# ongoing-play; Mathematician counts Vortox-falsified townsfolk AND impaired
+# token-receivers (a poisoned Sage counts), own token excluded. The
+# witch-self-curse world dies on the Mathematician's night-2 count, not on
+# any witch restriction.
+# Hidden-roles box (No Dashii/Vortox/Witch) added after the turned-evil
+# claim-freedom rule (from #55) admitted lying swapped-Snake-Charmer lines;
+# the "didn't become the Demon" claim content moved into the good claim
+# branch (aoife_no_swap) instead of a world-level constraint.
+id: nqt-034
+script: snv
+horizon: 2
+players: [sula, sarah, josh, aoife, you, fraser, steph]
+statements:
+  s_art: initial(aoife,nodashii)
+claims:
+  - {player: sula, character: clockmaker,
+     info: ["shown_num(sula,clockmaker,1,3)"]}
+  - {player: sarah, character: seamstress,
+     info: ["uses_once(sarah,seamstress,1)",
+            "picked2(sarah,seamstress,1,aoife,steph)",
+            "shown_bool(sarah,seamstress,1,yes)"]}
+  - {player: josh, character: juggler,
+     info: ["shown_num(josh,juggler,2,0)"]}
+  - {player: aoife, character: snakecharmer,
+     info: ["picked(aoife,snakecharmer,1,josh)", "aoife_no_swap"]}
+  - {player: you, character: mathematician,
+     info: ["shown_num(you,mathematician,1,1)",
+            "shown_num(you,mathematician,2,0)"]}
+  - {player: fraser, character: sage,
+     info: ["shown_pair(fraser,sage,2,josh,sarah)"]}
+  - {player: steph, character: artist,
+     info: ["shown_bool(steph,artist,1,yes)"]}
+given:
+  # day-1 public inputs
+  - "juggle(josh,steph,artist,1)"
+  - "juggle(josh,sula,clockmaker,1)"
+  - "artist_q(s_art,steph,1)"
+  - "stmt(s_art,steph,artist,1)"
+  - "nominated(steph,aoife,1)"
+  - "executed(aoife,1)"
+  # roster
+  - ":- initial(P,C), role(C,outsider,_), player(P)"
+  - ":- initial(P,C), role(C,demon,_), C != nodashii, C != vortox"
+  - ":- initial(P,C), role(C,minion,_), C != witch"
+  - ":- align(you,evil,1)"
+  # "Potential hidden roles" box: claimed role or one of these three
+  - "hidden34(nodashii; vortox; witch)"
+  - ":- initial(sula,C), C != clockmaker, not hidden34(C)"
+  - ":- initial(sarah,C), C != seamstress, not hidden34(C)"
+  - ":- initial(josh,C), C != juggler, not hidden34(C)"
+  - ":- initial(aoife,C), C != snakecharmer, not hidden34(C)"
+  - ":- initial(you,C), C != mathematician, not hidden34(C)"
+  - ":- initial(fraser,C), C != sage, not hidden34(C)"
+  - ":- initial(steph,C), C != artist, not hidden34(C)"
+  # claim content "I didn't become the Demon" — binding only via the good
+  # claim branch (an evil-at-end Aoife may be lying about it)
+  - "aoife_no_swap :- not sc_hit(aoife,josh,1)"
+  # deaths: day 1 steph (witch curse) — the death must be PRODUCED
+  - ":- not day_kill(steph,1)"
+  - ":- day_kill(P,1), P != steph, player(P)"
+  - ":- announced_dead(P,1), player(P)"
+  - ":- not announced_dead(fraser,2)"
+  - ":- announced_dead(P,2), P != fraser, player(P)"

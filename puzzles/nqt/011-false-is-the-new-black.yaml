@@ -1,0 +1,125 @@
+# Weekly Puzzle #11 — "False Is the New Black" (guest puzzle by u/Allison314,
+# posted by Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1g9k8ny/
+# 8 players, all-S&V. One Demon (Vortox) + one Minion (Cerenovus or Pit-Hag).
+# One Outsider (Mutant or Sweetheart) in play. The Mutant complies with
+# madness claiming ONE Townsfolk role; the Mutant always reveals their true
+# role after death. Cerenovus targets provide arbitrary info until the
+# effect ends/changes, then reveal they were targeted (nobody revealed).
+# You are not evil and not the Mutant.
+# Day 1: You executed. Night 2: Anna dies. Day 2: Sula executed.
+# Night 3: Tom dies. Question: who is the Demon and who is the Minion?
+#
+# Matthew's claim is a two-stage narrative ("I was the Seamstress ... I
+# became the Artist on night 2 ... asked if You were the Clockmaker, told
+# Yes") — hand-written claim_ok branches below instead of a claims entry:
+#   (a) genuine: pit-hagged Seamstress->Artist, told Yes
+#   (b) real Seamstress, cere-mad as Artist from night 2 (artist part
+#       fabricated; day-1 seamstress token real)
+#   (b') fully cere-fabricated: mad as Seamstress day 1, Artist days 2-3
+#   (c) pit-hagged Seamstress->MUTANT night 2 (author-accepted variant: the
+#       new Mutant's "I became the Artist" is madness-compliant fabrication)
+#   (d) evil at end (free)
+# Author-stated conventions (comments): the Mutant claims one Townsfolk
+# role (kills initial-Mutant-Matthew worlds); assume the Demon type is
+# never changed (no Pit-Hag demon creation).
+# OFFICIAL ANSWER (author-endorsed): Aoife = Vortox, Sarah = the Minion
+# (minion type deliberately ambiguous: Cerenovus and Pit-Hag variants both
+# work; Matthew's fate likewise varies with the same evil team).
+# STATUS: PARTIAL. Demon REPRODUCED unique (Aoife, end-state). Minion is
+# 3-way ambiguous {sarah, matthew, tom} under text-strict rules: in the
+# extra worlds the claimed-and-genuine Snake Charmer Aoife swaps with an
+# initial demon Tom/Matthew on NIGHT 1 (her "nothing happened" is an evil
+# lie; the swap precedes any day, so she has no good day to cover), and the
+# ex-demon lives on as a poisoned good Snake Charmer, cere-madded to cover
+# their claims. Every author-stated convention holds in these worlds; the
+# thread's eliminations of Tom/Matthew rest on stated soft priors ("Tom is
+# almost certainly good", "unlikely the Demon killed the Minion so early").
+# Not forced: per DEBT process rule 2, no rule without a citation. This
+# puzzle drove six general fixes: barber demon-exclusion, positional
+# snake-charmer checks (hpos + site clock for actions), per-day
+# standing-record claims, current-character madness/truth covers,
+# madness-reveal-on-end, first-person ground truth.
+id: nqt-011
+script: snv
+horizon: 3
+players: [matthew, anna, aoife, hannah, you, sula, sarah, tom]
+statements:
+  m_art: initial(you,clockmaker)
+  h_art: player(hannah)          # "is 1+1=2" — trivially true
+claims:
+  - {player: tom, character: sweetheart, info: []}
+  - {player: anna, character: sage,
+     info: ["shown_pair(anna,sage,2,hannah,matthew)"]}
+  - {player: sarah, character: dreamer,
+     info: ["picked(sarah,dreamer,1,matthew)",
+            "shown_dreamer(sarah,1,seamstress,cerenovus)",
+            "picked(sarah,dreamer,2,aoife)",
+            "shown_dreamer(sarah,2,mutant,vortox)",
+            "picked(sarah,dreamer,3,you)",
+            "shown_dreamer(sarah,3,mutant,vortox)"]}
+  - {player: aoife, character: snakecharmer,
+     info: ["picked(aoife,snakecharmer,1,tom)",
+            "picked(aoife,snakecharmer,2,hannah)",
+            "picked(aoife,snakecharmer,3,matthew)",
+            "not sc_hit_aoife"]}
+  - {player: hannah, character: artist,
+     info: ["shown_bool(hannah,artist,1,no)"]}
+  - {player: you, character: clockmaker,
+     info: ["shown_num(you,clockmaker,1,2)"]}
+  - {player: sula, character: philosopher,
+     info: ["uses_once(sula,philosopher,2)",
+            "phil_pick(sula,2,snakecharmer)",
+            "picked(sula,snakecharmer,2,sarah)",
+            "not sc_hit_sula"]}
+given:
+  # day questions (artist machinery constrains the answers)
+  - "artist_q(m_art,matthew,2)"
+  - "artist_q(h_art,hannah,1)"
+  # "nothing happened" helpers for the snake charmer claims
+  - "sc_hit_aoife :- sc_hit(aoife,Q,T), player(Q), night(T)"
+  - "sc_hit_sula :- sc_hit(sula,Q,T), player(Q), night(T)"
+  # Matthew's per-day claim covers (see header): each day of his narrative
+  # must be covered by truth / cere-madness / being the Mutant / being evil
+  - "ccov(matthew,1) :- char_day(matthew,seamstress,1),
+       picked2(matthew,seamstress,1,aoife,tom),
+       shown_bool(matthew,seamstress,1,yes)"
+  - "ccov(matthew,1) :- mad(matthew,seamstress,1)"
+  - "ccov(matthew,1) :- evil_day(matthew,1)"
+  - "ccov(matthew,2) :- becomes(matthew,artist,2),
+       shown_bool(matthew,artist,2,yes)"
+  - "ccov(matthew,2) :- mad(matthew,artist,2)"
+  - "ccov(matthew,2) :- char_day(matthew,mutant,2), alive_day(matthew,2)"
+  - "ccov(matthew,2) :- evil_day(matthew,2)"
+  - "ccov(matthew,3) :- becomes(matthew,artist,2), char_day(matthew,artist,3)"
+  - "ccov(matthew,3) :- mad(matthew,artist,3)"
+  - "ccov(matthew,3) :- char_day(matthew,mutant,3), alive_day(matthew,3)"
+  - "ccov(matthew,3) :- evil_day(matthew,3)"
+  - "claim_ok(matthew) :- ccov(matthew,1), ccov(matthew,2), ccov(matthew,3)"
+  # reveal-on-end for matthew: the narrated Seamstress->Artist switch is
+  # his one allowed madness change; nothing may silently end
+  - ":- mad(matthew,CC,1), not mad(matthew,CC,2), not mad(matthew,artist,2)"
+  - ":- mad(matthew,CC,2), not mad(matthew,CC,3)"
+  - ":- not claim_ok(matthew)"
+  # roster
+  - ":- initial(P,C), role(C,demon,_), C != vortox"
+  - ":- initial(P,C), role(C,minion,_), C != cerenovus, C != pithag"
+  - ":- initial(P,C), role(C,outsider,_), C != mutant, C != sweetheart"
+  # author convention: the Demon type is never changed (no Pit-Hag demons)
+  - ":- ph_change(_,_,C,_), role(C,demon,_)"
+  - ":- align(you,evil,1)"
+  - ":- initial(you,mutant)"
+  # first-person knowledge: YOU know your own character and token — this
+  # is ground truth, not a coverable claim (a cere-madded "you" would know)
+  - "initial(you,clockmaker)"
+  - "shown_num(you,clockmaker,1,2)"
+  - ":- mad(you,CC,D), night(D)"
+  # events
+  - "executed(you,1)"
+  - "executed(sula,2)"
+  - ":- announced_dead(P,1), player(P)"
+  - ":- not announced_dead(anna,2)"
+  - ":- announced_dead(P,2), P != anna, player(P)"
+  - ":- not announced_dead(tom,3)"
+  - ":- announced_dead(P,3), P != tom, player(P)"
+  - ":- day_kill(P,D), player(P), day(D)"

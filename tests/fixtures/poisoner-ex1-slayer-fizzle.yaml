@@ -1,0 +1,28 @@
+# Poisoner almanac ex1 — "During the night, the Poisoner poisons the Slayer.
+# The next day, the Slayer tries to slay the Imp. Nothing happens. The Slayer
+# now has no ability."
+# https://wiki.bloodontheclocktower.com/Poisoner
+# The "now has no ability" clause is engine-side (slayer_spent from the shot).
+id: poisoner-ex1-slayer-fizzle
+tier: T0
+source: Poisoner almanac example 1 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,poisoner)
+  - initial(p3,slayer)
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,mayor)
+  - initial(p7,virgin)
+  - picked(p2,poisoner,1,p3)
+  - slayer_shot(p3,p1,1)
+  - picked(p2,poisoner,2,p2)
+  - picked(p1,imp,2,p4)
+  - "imp_shot_dead :- day_kill(p1,1)"
+  - "shot_fizzled :- not imp_shot_dead"
+assert:
+  certain:
+    - shot_fizzled

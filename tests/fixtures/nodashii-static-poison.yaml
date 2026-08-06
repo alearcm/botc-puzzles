@@ -1,0 +1,21 @@
+# No Dashii's poison stays on a DEAD townsfolk neighbour — it does not jump
+# to the next living townsfolk (author ruling, NQT weekly puzzle #28 thread).
+id: nodashii-static-poison
+tier: T0
+source: No Dashii ability text ("Townsfolk neighbours"); NQT #28 ruling
+script: snv
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6]
+given:
+  - initial(p1,nodashii)
+  - initial(p2,clockmaker)
+  - initial(p3,sage)
+  - initial(p4,sweetheart)
+  - initial(p5,witch)
+  - initial(p6,seamstress)
+  - executed(p2,1)
+  - "sp :- status_on(p2,poisoned,2,99)"
+  - ":- status_on(p3,poisoned,2,99)"
+assert:
+  certain:
+    - sp

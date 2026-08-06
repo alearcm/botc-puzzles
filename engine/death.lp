@@ -29,8 +29,12 @@ kill_prop(Q, src(P,assassin), T, I, pierce) :-
     functioning_at(P,assassin,T,I).
 
 % ---------- mayor bounce ----------
+% a protected mayor's ability does not trigger (Monk almanac): no bounce
 bounceable(Q,Src,T,I) :- kill_prop(Q,Src,T,I,demon), char(Q,mayor,T),
-                         functioning_at(Q,mayor,T,I), alive(Q,T).
+                         functioning_at(Q,mayor,T,I), alive(Q,T),
+                         not status_or_innate(Q,safe_from_demon,T,I),
+                         not status_or_innate(Q,cant_die,T,I),
+                         not status_or_innate(Q,safe_night,T,I).
 1 { redirect(Q,Src,T,I,R) : alive(R,T) } 1 :- bounceable(Q,Src,T,I).
 final_kill(R,Src,T,I,demon) :- redirect(_,Src,T,I,R).
 final_kill(Q,Src,T,I,K) :- kill_prop(Q,Src,T,I,K), not bounceable(Q,Src,T,I).
@@ -86,28 +90,28 @@ announced_dead(Q,T) :- death_event(Q,T).
 
 % ---------- executions & day deaths ----------
 % observation supplies executed(P,D); death is the default outcome
-exec_prevented(P,D) :- executed(P,D), char(P,C,D), innate_status(C,exec_safe),
+exec_prevented(P,D) :- executed(P,D), char_d(P,C,D), innate_status(C,exec_safe),
                        functioning_day(P,C,D).
 % devil's advocate protection
 exec_prevented(P,D) :- executed(P,D), status_on_day(P,exec_safe,D).
 % pacifist: ST may spare an executed good player
 0 { pacifist_saves(P,D) } 1 :- executed(P,D), align(P,good,D),
-    char(Q,pacifist,D), functioning_day(Q,pacifist,D).
+    char_d(Q,pacifist,D), functioning_day(Q,pacifist,D).
 exec_prevented(P,D) :- pacifist_saves(P,D).
 % fool: first death, execution included
-0 { fool_saves_exec(P,D) } 1 :- executed(P,D), char(P,fool,D),
+0 { fool_saves_exec(P,D) } 1 :- executed(P,D), char_d(P,fool,D),
     functioning_day(P,fool,D), not fool_used(P,D).
 exec_prevented(P,D) :- fool_saves_exec(P,D).
 
 exec_death(P,D) :- executed(P,D), alive(P,D), not exec_prevented(P,D).
-zombuul_first_exec(P,D) :- exec_death(P,D), char(P,zombuul,D),
+zombuul_first_exec(P,D) :- exec_death(P,D), char_d(P,zombuul,D),
                            not zombuul_spent(P,D).
 dies_day(P,D) :- exec_death(P,D), not zombuul_first_exec(P,D).
 dies_day(P,D) :- day_kill(P,D), alive(P,D).   % slayer/witch/klutz via mech
 
 executed_yesterday(P,T) :- exec_death(P,D), T = D+1, night(T).
 
-functioning_day(P,C,D) :- char(P,C,D), alive(P,D), not dies_night(P,D),
+functioning_day(P,C,D) :- char_d(P,C,D), alive(P,D), not dies_night(P,D),
                           not impaired_day(P,D).
 
 % ---------- revives ----------

@@ -1,0 +1,25 @@
+# Washerwoman almanac ex3 — "Marianna is the Spy, and Sarah is the Scarlet
+# Woman. The Washerwoman learns that one of them is the Ravenkeeper. Here, the
+# Spy is registering as a Townsfolk—in this case, the Ravenkeeper."
+# https://wiki.bloodontheclocktower.com/Washerwoman
+# 10p for the two-minion cast (7/0/2/1).
+id: washerwoman-ex3-spy-ravenkeeper
+tier: T0
+source: Washerwoman almanac example 3 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+given:
+  - initial(p1,washerwoman)
+  - initial(p2,spy)             # Marianna
+  - initial(p3,scarletwoman)    # Sarah
+  - initial(p4,imp)
+  - initial(p5,chef)
+  - initial(p6,soldier)
+  - initial(p7,mayor)
+  - initial(p8,virgin)
+  - initial(p9,slayer)
+  - initial(p10,empath)
+  - shown_among2(p1,washerwoman,1,ravenkeeper,p2,p3)
+assert:
+  exists: true

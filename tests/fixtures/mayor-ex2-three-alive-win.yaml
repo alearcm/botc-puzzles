@@ -1,0 +1,24 @@
+# Mayor almanac ex2 — "There are three players alive. There are no nominations
+# for execution today. Good wins."
+# https://wiki.bloodontheclocktower.com/Mayor
+# (Same claim as tests/fixtures/mayor-day-win.yaml; cast kept identical.)
+id: mayor-ex2-three-alive-win
+tier: T0
+source: Mayor almanac example 2 (wiki)
+script: tb
+horizon: 3
+players: [p1, p2, p3, p4, p5]
+given:
+  - initial(p1,imp)
+  - initial(p2,poisoner)
+  - initial(p3,mayor)
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - picked(p2,poisoner,1,p2)
+  - picked(p2,poisoner,2,p2)
+  - picked(p2,poisoner,3,p2)
+  - executed(p5,1)
+  - picked(p1,imp,2,p4)
+assert:
+  certain:
+    - ended(4,good)

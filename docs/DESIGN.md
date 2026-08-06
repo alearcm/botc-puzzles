@@ -11,13 +11,23 @@ every public action. An **observation** `o` is the fragment visible from one
 seat (or from "the audience" for spectator puzzles): public events, the
 observer's own tokens, and the claims made by others.
 
-`Worlds(o)` = the set of worlds consistent with `o` under a declared script and
-ruleset. All queries are projections/aggregations of `Worlds(o)`; the engine
-never answers "who is the Demon" natively.
+`Worlds(o)` = the set of worlds consistent with `o` under a declared
+character pool and ruleset. All queries are projections/aggregations of
+`Worlds(o)`; the engine never answers "who is the Demon" natively.
+
+**Scripts are just character sets.** All rules live on characters; an
+instance declares a pool of character ids, and edition names (`tb`, `bmr`,
+`snv`) are shorthand for "every character of that edition". Characters mix
+freely across editions. The one legitimately edition-scoped datum is TPI's
+printed night sheets, which deviate from the script-tool global order: they
+apply only when the pool is exactly that edition; any other pool is a
+custom script and uses the global order. Any future edition-scoped rule
+needs the same bar — TPI said so, for that edition specifically.
 
 Claims semantics (puzzle convention, not game rule — lives in the puzzle
 format, not the engine): good players truthfully report their `believed`
-character and received tokens; evil players' claims are unconstrained.
+character and received tokens; claim freedom belongs to players who are
+evil at the end of the observed window.
 
 ## 2. Time and trace
 
@@ -77,6 +87,12 @@ read, each evil-check of a Cannibal meal is its own occurrence.
   demon-check, Cannibal's evil-check, and — critically — **deadness itself**
   (`reg(P, dead, Occ)`, for Zombuul). Alive-counts in ability text (Scarlet
   Woman's "5 or more") go through deadness registration.
+- **The site clock**: every occurrence evaluates at its observer's night-order
+  position and sees the character/alignment state as of that position — all
+  changes (`becomes_at`, `align_change_at`) that resolved earlier that night
+  are visible. A Fortune Teller checking after a star pass sees the new Imp
+  because the Imp acts earlier in the order, not via any coded pairing. The
+  same positional principle already governs status expiry and death triggers.
 
 ## 5. Information: claims and truth patterns
 
@@ -226,6 +242,50 @@ candidate" is a computed object. Induction distance lives in the tiers: how
 far a citation generalizes is measured by which tier its extensions sit in,
 and contested seams are visible as T0-viable candidates that disagree.
 
+### 10a. Scoring rulesets: the interpreter/data split and maximum laziness
+
+What separates a good ruleset from a bad one when BOTH pass every fixture:
+
+- **Data vs theory.** Printed ability text (structured onto cards) is
+  observation — TPI supplied it, it costs nothing. A ruleset is the
+  INTERPRETER that gives card data meaning: "each night, choose a player"
+  means one thing, uniformly, for every card that prints it. The degenerate
+  ruleset — a lookup table spelling out every character x character
+  interaction — is the theory that smuggles all content out of the
+  interpreter into per-pair data. It can pass every current fixture and is
+  still wrong.
+- **Maximum laziness = minimum description length.** Among T0-admissible
+  candidates, prefer the shortest, in a vocabulary that charges generic
+  quantified rules cheaply and per-character/per-pair enumerations heavily.
+  The lookup table is O(n^2) in characters and predicts nothing about the
+  next character added; "state reads happen at the reader's night-order
+  position" is one sentence that decided Fortune-Teller-after-star-pass,
+  double-Snake-Charmer, and Empath-after-Imp before any of them was seen.
+  Laziness is not aesthetics; it IS the generalization pressure.
+- **Defaults with exceptions tacked on (defeasible layering).** Rules
+  stratify: general default < cited exception < explicit TPI ruling (jinx).
+  ASP expresses this natively — the default guarded by `not blocked`, the
+  exception asserting `blocked` and carrying its citation. An exception is
+  LICENSED only by a citation that forces divergence from the general rule;
+  an uncited exception is tech debt by definition. Between axiomatizations
+  with the same extension, rank by: fewer per-character atoms, then reuse of
+  an existing mechanism (one site clock, four instantiations: characters,
+  alignments, deaths, action targets), then citation coverage of exceptions.
+- **Open questions are switches, not rules.** Where nothing cited decides,
+  the ruleset takes a FREE PARAMETER with named settings, each
+  T0-admissible. A complete candidate is a point in the product space of
+  switch settings; the family is the space. Queries then have two honest
+  modes: answer under a declared setting, or under ALL viable settings —
+  reporting which conclusions are robust ("the demon is X under every
+  setting") and which are setting-dependent. For a publisher that is
+  sometimes inconsistent, answer intervals are the truthful output type.
+- **Tie-break order between candidates**: T0 admissibility (hard) >
+  T1/T2 agreement > description length > exceptions-carry-citations >
+  prediction record on newly arriving fixtures. Every new puzzle is an
+  out-of-sample test; the reproduction scoreboard is the ruleset's track
+  record, and a rule adopted to force one puzzle unique (rather than
+  derived general and cited) shows up later as a failed prediction.
+
 Well-posedness: a puzzle either declares its candidate ruleset, or claims
 robustness — its answer is invariant across the viable set (or a declared
 subset). A puzzle whose answer varies across viable candidates it did not
@@ -233,6 +293,15 @@ declare between is flagged ill-posed.
 
 `RULINGS.md` is the human-readable catalog of this: each entry compiles to
 fixtures (with tiers) and, where contested, to named deltas.
+
+**Text-first discipline.** Card data defaults come from the printed ability
+text: "choose a player" permits self and the dead unless the text says
+otherwise; "(not yourself)" and "alive" restrictions exist exactly where
+printed. A puzzle's unique solution is *weak evidence* — it may motivate a
+RULINGS entry marked inferred and an engine change stated as a general rule,
+never a character-specific patch. Edge cases get named entries and fixtures;
+the default path behaves as written. Known shortcuts live in `DEBT.md` — an
+undocumented hack is the failure mode, not the shortcut itself.
 
 ## 11. Non-goals
 

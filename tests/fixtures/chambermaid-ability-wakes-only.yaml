@@ -1,0 +1,21 @@
+# Chambermaid counts wakes "due to their ability" only: minion-info and
+# demon-info wakes do NOT count (printed text; NQT #28 solver thread).
+id: chambermaid-ability-wakes-only
+tier: T0
+source: Chambermaid ability text; NQT #28
+script: bmr
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,zombuul)
+  - initial(p2,assassin)
+  - initial(p3,chambermaid)
+  - initial(p4,tealady)
+  - initial(p5,fool)
+  - initial(p6,pacifist)
+  - initial(p7,minstrel)
+  - ":- uses_once(p2,assassin,T), night(T)"
+  - picked2(p3,chambermaid,1,p1,p2)
+assert:
+  certain:
+    - shown_num(p3,chambermaid,1,0)

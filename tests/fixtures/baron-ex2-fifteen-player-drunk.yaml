@@ -1,0 +1,36 @@
+# Baron almanac ex2 — "The game is being set up for fifteen players, with nine
+# Townsfolk, two Outsiders, three Minions, and one Demon. Because the Baron is
+# in play, the Storyteller must add a Drunk and a Recluse. So, they remove the
+# Monk token and add a Recluse token. Then, instead of adding the Drunk
+# character token, they add the Drunk's 'Is the Drunk' reminder token to the
+# Grimoire... because this game, one player isn't a Townsfolk—they are an
+# Outsider: the Drunk."
+# https://wiki.bloodontheclocktower.com/Baron
+# 15p (9/2/3/1; Baron shifts to 7/4/3/1). The Drunk believes they are the Monk
+# (the removed token).
+id: baron-ex2-fifteen-player-drunk
+tier: T0
+source: Baron almanac example 2 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15]
+given:
+  - initial(p1,imp)
+  - initial(p2,baron)
+  - initial(p3,poisoner)
+  - initial(p4,scarletwoman)
+  - initial(p5,saint)
+  - initial(p6,butler)
+  - initial(p7,recluse)
+  - initial(p8,drunk)
+  - believed_init(p8,monk)
+  - initial(p9,chef)
+  - initial(p10,soldier)
+  - initial(p11,mayor)
+  - initial(p12,virgin)
+  - initial(p13,slayer)
+  - initial(p14,empath)
+  - initial(p15,washerwoman)
+  - picked(p3,poisoner,1,p3)
+assert:
+  exists: true

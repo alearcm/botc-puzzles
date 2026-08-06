@@ -1,0 +1,90 @@
+# Weekly Puzzle #55 — "The Life of a Flowergirl" (Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1nxahl5/
+# 8 players, S&V. One Demon (Fang Gu, Vigormortis, No Dashii or Vortox) +
+# one Minion (Witch). Base one Outsider; setup Outsiders: Mutant, Klutz only.
+# A living Mutant fully complies with madness (claims a Townsfolk, arbitrary
+# info). A jumped Outsider (Fang Gu) may lie about their former role.
+# You are not evil and not the Mutant.
+# Day 1: Sarah executed. Night 2: Aoife dies. Day 2: You nominate and die
+# (Witch curse); Matt executed. Night 3: Fraser dies.
+# Question: who is the Demon and who is the Minion?
+# CONFIRMED ANSWER (author-endorsed): Anna = Vortox, Jasmine = Witch.
+# REPRODUCED sound-unique (single world; everyone else genuine). Forced two
+# claim-model fixes: evil claim freedom keyed to end-of-window alignment
+# (not initial role), and the Mutant fabricated-claim branch requires the
+# Mutant to still be alive (author comment: a dead Mutant "would no longer
+# need to comply with Mutant madness ... and would claim Mutant").
+# Also the first puzzle with a "Potential hidden roles" box, encoded as a
+# per-player roster constraint (claimed role or one of the six hidden).
+id: nqt-055
+script: snv
+horizon: 3
+players: [aoife, anna, sarah, jasmine, you, matt, fraser, steph]
+statements:
+  s_art: initial(aoife,artist)
+claims:
+  - {player: aoife, character: artist,
+     info: ["shown_bool(aoife,artist,1,no)"]}
+  - {player: anna, character: juggler,
+     info: ["shown_num(anna,juggler,2,5)"]}
+  - {player: sarah, character: mathematician,
+     info: ["shown_num(sarah,mathematician,1,0)"]}
+  - {player: jasmine, character: oracle,
+     info: ["shown_num(jasmine,oracle,2,1)",
+            "shown_num(jasmine,oracle,3,1)"]}
+  - {player: you, character: flowergirl,
+     info: ["shown_bool(you,flowergirl,2,yes)"]}
+  - {player: matt, character: seamstress,
+     info: ["uses_once(matt,seamstress,2)",
+            "picked2(matt,seamstress,2,jasmine,sarah)",
+            "shown_bool(matt,seamstress,2,yes)"]}
+  - {player: fraser, character: clockmaker,
+     info: ["shown_num(fraser,clockmaker,1,4)"]}
+  - {player: steph, character: klutz, info: []}
+given:
+  # day-1 public inputs
+  - "juggle(anna,you,flowergirl,1)"
+  - "juggle(anna,fraser,fanggu,1)"
+  - "juggle(anna,aoife,fanggu,1)"
+  - "juggle(anna,sarah,mathematician,1)"
+  - "juggle(anna,jasmine,oracle,1)"
+  - "artist_q(s_art,aoife,1)"
+  - "stmt(s_art,aoife,artist,1)"
+  # day-1 votes (flowergirl's night-2 read is about these)
+  - "voted(you,1)"
+  - "voted(fraser,1)"
+  - "voted(steph,1)"
+  - "voted(aoife,1)"
+  - "voted(jasmine,1)"
+  - ":- voted(anna,1)"
+  - ":- voted(sarah,1)"
+  - ":- voted(matt,1)"
+  # events
+  - "executed(sarah,1)"
+  - "nominated(you,matt,2)"
+  - "executed(matt,2)"
+  # roster
+  - ":- initial(P,C), role(C,minion,_), C != witch"
+  - ":- initial(P,C), role(C,outsider,_), C != mutant, C != klutz"
+  # "Potential hidden roles" box: a player's true role is either their
+  # claimed role or one of these six
+  - "hidden55(fanggu; vigormortis; nodashii; vortox; witch; mutant)"
+  - ":- initial(aoife,C), C != artist, not hidden55(C)"
+  - ":- initial(anna,C), C != juggler, not hidden55(C)"
+  - ":- initial(sarah,C), C != mathematician, not hidden55(C)"
+  - ":- initial(jasmine,C), C != oracle, not hidden55(C)"
+  - ":- initial(you,C), C != flowergirl, not hidden55(C)"
+  - ":- initial(matt,C), C != seamstress, not hidden55(C)"
+  - ":- initial(fraser,C), C != clockmaker, not hidden55(C)"
+  - ":- initial(steph,C), C != klutz, not hidden55(C)"
+  - ":- align(you,evil,1)"
+  - ":- initial(you,mutant)"
+  # deaths: you die to the witch curse on your day-2 nomination
+  - ":- not day_kill(you,2)"
+  - ":- day_kill(P,2), P != you, player(P)"
+  - ":- day_kill(P,1), player(P)"
+  - ":- announced_dead(P,1), player(P)"
+  - ":- not announced_dead(aoife,2)"
+  - ":- announced_dead(P,2), P != aoife, player(P)"
+  - ":- not announced_dead(fraser,3)"
+  - ":- announced_dead(P,3), P != fraser, player(P)"

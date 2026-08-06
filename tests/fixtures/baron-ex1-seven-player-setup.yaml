@@ -1,0 +1,22 @@
+# Baron almanac ex1 — "The game is being set up for seven players, with five
+# Townsfolk, one Minion, and one Demon. Because the Minion is the Baron, the
+# Storyteller removes two Townsfolk tokens and adds a Saint and a Butler
+# token. In total, three Townsfolk, two Outsider, one Minion, and one Demon
+# tokens go in the bag for the players to draw from."
+# https://wiki.bloodontheclocktower.com/Baron
+id: baron-ex1-seven-player-setup
+tier: T0
+source: Baron almanac example 1 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,baron)
+  - initial(p3,saint)
+  - initial(p4,butler)
+  - initial(p5,chef)
+  - initial(p6,soldier)
+  - initial(p7,mayor)
+assert:
+  exists: true
