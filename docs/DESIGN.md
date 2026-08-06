@@ -242,6 +242,50 @@ candidate" is a computed object. Induction distance lives in the tiers: how
 far a citation generalizes is measured by which tier its extensions sit in,
 and contested seams are visible as T0-viable candidates that disagree.
 
+### 10a. Scoring rulesets: the interpreter/data split and maximum laziness
+
+What separates a good ruleset from a bad one when BOTH pass every fixture:
+
+- **Data vs theory.** Printed ability text (structured onto cards) is
+  observation — TPI supplied it, it costs nothing. A ruleset is the
+  INTERPRETER that gives card data meaning: "each night, choose a player"
+  means one thing, uniformly, for every card that prints it. The degenerate
+  ruleset — a lookup table spelling out every character x character
+  interaction — is the theory that smuggles all content out of the
+  interpreter into per-pair data. It can pass every current fixture and is
+  still wrong.
+- **Maximum laziness = minimum description length.** Among T0-admissible
+  candidates, prefer the shortest, in a vocabulary that charges generic
+  quantified rules cheaply and per-character/per-pair enumerations heavily.
+  The lookup table is O(n^2) in characters and predicts nothing about the
+  next character added; "state reads happen at the reader's night-order
+  position" is one sentence that decided Fortune-Teller-after-star-pass,
+  double-Snake-Charmer, and Empath-after-Imp before any of them was seen.
+  Laziness is not aesthetics; it IS the generalization pressure.
+- **Defaults with exceptions tacked on (defeasible layering).** Rules
+  stratify: general default < cited exception < explicit TPI ruling (jinx).
+  ASP expresses this natively — the default guarded by `not blocked`, the
+  exception asserting `blocked` and carrying its citation. An exception is
+  LICENSED only by a citation that forces divergence from the general rule;
+  an uncited exception is tech debt by definition. Between axiomatizations
+  with the same extension, rank by: fewer per-character atoms, then reuse of
+  an existing mechanism (one site clock, four instantiations: characters,
+  alignments, deaths, action targets), then citation coverage of exceptions.
+- **Open questions are switches, not rules.** Where nothing cited decides,
+  the ruleset takes a FREE PARAMETER with named settings, each
+  T0-admissible. A complete candidate is a point in the product space of
+  switch settings; the family is the space. Queries then have two honest
+  modes: answer under a declared setting, or under ALL viable settings —
+  reporting which conclusions are robust ("the demon is X under every
+  setting") and which are setting-dependent. For a publisher that is
+  sometimes inconsistent, answer intervals are the truthful output type.
+- **Tie-break order between candidates**: T0 admissibility (hard) >
+  T1/T2 agreement > description length > exceptions-carry-citations >
+  prediction record on newly arriving fixtures. Every new puzzle is an
+  out-of-sample test; the reproduction scoreboard is the ruleset's track
+  record, and a rule adopted to force one puzzle unique (rather than
+  derived general and cited) shows up later as a failed prediction.
+
 Well-posedness: a puzzle either declares its candidate ruleset, or claims
 robustness — its answer is invariant across the viable set (or a declared
 subset). A puzzle whose answer varies across viable candidates it did not
