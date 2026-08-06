@@ -117,8 +117,9 @@
   team: minion
   acts:
     phase: each
-    pick: p1_alive
+    pick: p1_alive_not_self
   coverage: full
+  notes: curse target excludes self (NQT-consistent default; RULINGS witch-self-curse)
 - id: cerenovus
   team: minion
   acts:

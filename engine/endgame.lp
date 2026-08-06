@@ -64,5 +64,7 @@ ended(2*D2,good) :- mm_window(D2), exec_death(Q,D2), align(Q,evil,D2).
 ended(2*D2,good) :- mm_window(D2), not any_exec(D2).
 
 % ---------- ongoing-play constraint ----------
-:- assume_ongoing, ended(K,_), horizon(H2), K < 2*H2-1.
+% a puzzle posed about a live game means the game has not ended at ALL —
+% including the final phase (a demon suicide on the last night still ends it)
+:- assume_ongoing, ended(_,_).
 horizon(horizon).

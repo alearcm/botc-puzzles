@@ -213,9 +213,12 @@ drm_true(P,T) :- shown_dreamer(P,T,_,EC), picked(P,dreamer,T,Q),
 :- enforce_false(P,dreamer,T), drm_true(P,T).
 
 % ---- malfunction_count: mathematician ----
+% Vortox-falsified townsfolk count as "working abnormally" (NQT #34), but
+% the mathematician's own falsified token is not self-counted.
+malfunctioned(Q,T) :- info_mode(Q,C,T,all_false).
 1 { shown_num(P,C,T,K) : K = 0..15 } 1 :- token_due(P,C,T,malfunction_count).
 math_actual(P,T,K) :- token_due(P,mathematician,T,malfunction_count),
-    K = #count{ Q : malfunctioned(Q,T) }.
+    K = #count{ Q : malfunctioned(Q,T), Q != P }.
 :- enforce_true(P,mathematician,T), shown_num(P,mathematician,T,K),
    math_actual(P,T,K2), K != K2.
 :- enforce_false(P,mathematician,T), shown_num(P,mathematician,T,K),

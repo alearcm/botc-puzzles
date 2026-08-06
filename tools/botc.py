@@ -255,12 +255,20 @@ def load_puzzle(path: Path) -> tuple[Instance, dict]:
     return inst, doc
 
 
-def solve_puzzle(path: Path, limit: int = 500) -> dict:
+def solve_puzzle(path: Path, limit: int = 200) -> dict:
+    """Demon candidates via SOUND per-player satisfiability queries (immune
+    to enumeration truncation); certain atoms via targeted certain() checks
+    on the sampled worlds' shared assignment."""
     inst, doc = load_puzzle(path)
+    demons = []
+    for p in inst.players:
+        probe = (f"is_demon_probe :- initial({p},C), role(C,demon,_).\n"
+                 f":- not is_demon_probe.")
+        if sat(inst, probe):
+            demons.append(p)
     ws = worlds(inst, ["initial/2"], limit=limit)
-    demons: set[str] = set()
-    all_atoms = None
     per_world = []
+    shared = None
     for w in ws:
         assignment = {}
         for a in w:
@@ -268,18 +276,16 @@ def solve_puzzle(path: Path, limit: int = 500) -> dict:
             p, c = inner.split(",")
             assignment[p] = c
         per_world.append(assignment)
-        cards = {c["id"]: c for s in inst.scripts for c in load_cards(s)}
-        for p, c in assignment.items():
-            if cards[c]["team"] == "demon":
-                demons.add(p)
         atoms = frozenset(w)
-        all_atoms = atoms if all_atoms is None else (all_atoms & atoms)
+        shared = atoms if shared is None else (shared & atoms)
+    # verify sample-shared atoms as genuinely certain (sound check)
+    certain_atoms = [a for a in sorted(shared or []) if certain(inst, a)]
     return {
-        "worlds": len(per_world),
+        "worlds_sampled": len(per_world),
         "truncated": len(per_world) >= limit,
-        "demon_candidates": sorted(demons),
-        "certain": sorted(all_atoms) if all_atoms else [],
-        "sample": per_world[:5],
+        "demon_candidates": demons,
+        "certain": certain_atoms,
+        "sample": per_world[:3],
     }
 
 
