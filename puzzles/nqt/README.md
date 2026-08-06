@@ -8,6 +8,7 @@ solver must reproduce the author-confirmed answer from the thread.
 | # | Puzzle | Scripts | Solver answer | Official | Match |
 |---|---|---|---|---|---|
 | 8 | The Stitch-Up | S&V+TB homebrew (all-Seamstress) | evil team {josh, steph}; demon within pair ambiguous | Josh & Steph evil, You poisoned | YES |
+| 20 | Three Wise Men | TB+Village Idiot | unique world: Balthazar = Imp, Mary = Baron (Caspar drunk VI, Gabriel Drunk-as-Ravenkeeper) | same | YES (first experimental info character: VI duplicates + extras-drunk) |
 | 21 | Eight Jugglers Juggling | homebrew (all-Juggler) + Leviathan/Goblin/Drunk | unique world: Oscar = Leviathan, Tim = Goblin, Aoife = Drunk | same | YES (first experimental characters: cards/exp.yaml) |
 | 10 | Don't Overcook It | TB (restricted roster) | unique: Dan = Imp, Fraser = Poisoner | Dan Imp, Fraser Poisoner | YES |
 | 11 | False Is the New Black | S&V (guest puzzle) | demon unique: Aoife = Vortox; minion {sarah, matthew, tom} | Aoife Vortox, Sarah minion | PARTIAL — demon reproduced; minion ambiguity via an unadjudicated night-1 Snake-Charmer swap line (thread eliminations use soft priors). Drove 6 general claim/engine fixes |
@@ -21,7 +22,7 @@ solver must reproduce the author-confirmed answer from the thread.
 | 55 | The Life of a Flowergirl | S&V | unique world: Anna = Vortox, Jasmine = Witch | same | YES (forced claim-model fixes: evil-at-end claim freedom, living-Mutant madness; first "Potential hidden roles" box) |
 | 59 | Fifty-Fifty | TB | unique: Oscar = Imp, Jasmine = Spy (full grimoire certain) | Jasmine Spy, Oscar Imp | YES |
 
-Running total: **12/13 sound-unique + 1 PARTIAL (#11: demon unique, minion open)** (008 at
+Running total: **13/14 sound-unique + 1 PARTIAL (#11: demon unique, minion open)** (008 at
 team level by
 design). #28 was temporarily PARTIAL after the solver switched to sound
 per-player probes; diagnosis found the discriminator in the Chambermaid's

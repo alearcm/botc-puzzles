@@ -314,6 +314,23 @@ orc_actual(P,T,K) :- token_due(P,oracle,T,count_dead_evil),
 :- enforce_true(P,oracle,T), shown_num(P,oracle,T,K), orc_actual(P,T,K2), K != K2.
 :- enforce_false(P,oracle,T), shown_num(P,oracle,T,K), orc_actual(P,T,K).
 
+% ---- alignment_of_picked: village idiot ----
+1 { shown_align(P,C,T,good) ; shown_align(P,C,T,evil) } 1 :-
+    token_due(P,C,T,alignment_of_picked).
+site_al(vip(P,C,T,Q),Q,T) :- token_due(P,C,T,alignment_of_picked),
+                             picked(P,C,T,Q).
+site_pos(vip(P,C,T,Q),I) :- site_al(vip(P,C,T,Q),Q,T), asched(C,T,I).
+vip_evil(P,C,T) :- token_due(P,C,T,alignment_of_picked), picked(P,C,T,Q),
+                   reg_evil(Q,vip(P,C,T,Q)).
+:- enforce_true(P,C,T), token_due(P,C,T,alignment_of_picked),
+   shown_align(P,C,T,evil), not vip_evil(P,C,T).
+:- enforce_true(P,C,T), token_due(P,C,T,alignment_of_picked),
+   shown_align(P,C,T,good), vip_evil(P,C,T).
+:- enforce_false(P,C,T), token_due(P,C,T,alignment_of_picked),
+   shown_align(P,C,T,evil), vip_evil(P,C,T).
+:- enforce_false(P,C,T), token_due(P,C,T,alignment_of_picked),
+   shown_align(P,C,T,good), not vip_evil(P,C,T).
+
 % ---- same_alignment_yesno: seamstress (once) ----
 1 { shown_bool(P,C,T,yes) ; shown_bool(P,C,T,no) } 1 :-
     token_due(P,C,T,same_alignment_yesno).

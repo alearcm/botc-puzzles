@@ -1,0 +1,65 @@
+# Weekly Puzzle #20 — "The Three Wise Men" (Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1hlgh1w/
+# 7 players, TB + Village Idiot (experimental). One Imp + one minion of
+# {Poisoner, Spy, Baron, Scarlet Woman}. Outsiders possible: Saint, Drunk;
+# default count ZERO (7p base 5/0/1/1), Baron adds two. You are not evil,
+# might be the Drunk. Hidden roles box: Imp, Poisoner, Spy, Baron,
+# Scarlet Woman, Drunk.
+# Day 1: You executed. Night 2: Gabriel dies.
+# VI clarification (author, thread): with 2+ REAL VIs in play, exactly one
+# is lowercase-drunk (bluffing evils and a Drunk-as-VI don't count).
+# Question: who is the Demon and who is the Minion?
+# CONFIRMED ANSWER (author-endorsed): Balthazar = Imp, Mary = Baron
+# (Gabriel = the Drunk believing Ravenkeeper, Joseph = Saint, Melchior =
+# sober VI, Caspar = drunk VI whose night-1 check was coincidentally true).
+id: nqt-020
+script: tb
+roster: [villageidiot]
+horizon: 2
+players: [melchior, mary, balthazar, gabriel, you, caspar, joseph]
+claims:
+  - {player: melchior, character: villageidiot,
+     info: ["picked(melchior,villageidiot,1,balthazar)",
+            "shown_align(melchior,villageidiot,1,evil)",
+            "picked(melchior,villageidiot,2,mary)",
+            "shown_align(melchior,villageidiot,2,evil)"]}
+  - {player: mary, character: virgin, info: []}
+  - {player: balthazar, character: villageidiot,
+     info: ["picked(balthazar,villageidiot,1,joseph)",
+            "shown_align(balthazar,villageidiot,1,evil)",
+            "picked(balthazar,villageidiot,2,caspar)",
+            "shown_align(balthazar,villageidiot,2,evil)"]}
+  - {player: gabriel, character: ravenkeeper,
+     info: ["picked(gabriel,ravenkeeper,2,balthazar)",
+            "shown_char(gabriel,ravenkeeper,2,drunk)"]}
+  - {player: you, character: investigator,
+     info: ["shown_among2(you,investigator,1,baron,gabriel,mary)"]}
+  - {player: caspar, character: villageidiot,
+     info: ["picked(caspar,villageidiot,1,mary)",
+            "shown_align(caspar,villageidiot,1,evil)",
+            "picked(caspar,villageidiot,2,joseph)",
+            "shown_align(caspar,villageidiot,2,evil)"]}
+  - {player: joseph, character: saint, info: []}
+given:
+  # events
+  - "executed(you,1)"
+  - "nominated(balthazar,mary,1)"
+  - "no_proc_virgin(balthazar,1)"
+  - ":- announced_dead(P,1), player(P)"
+  - ":- not announced_dead(gabriel,2)"
+  - ":- announced_dead(P,2), P != gabriel, player(P)"
+  - ":- day_kill(P,D), player(P), day(D)"
+  # roster
+  - ":- initial(P,C), role(C,demon,_), C != imp"
+  - ":- initial(P,C), role(C,minion,_), C != poisoner, C != spy, C != baron, C != scarletwoman"
+  - ":- initial(P,C), role(C,outsider,_), C != saint, C != drunk"
+  # "Potential hidden roles" box: claimed role or one of these six
+  - "hidden20(imp; poisoner; spy; baron; scarletwoman; drunk)"
+  - ":- initial(melchior,C), C != villageidiot, not hidden20(C)"
+  - ":- initial(mary,C), C != virgin, not hidden20(C)"
+  - ":- initial(balthazar,C), C != villageidiot, not hidden20(C)"
+  - ":- initial(gabriel,C), C != ravenkeeper, not hidden20(C)"
+  - ":- initial(you,C), C != investigator, not hidden20(C)"
+  - ":- initial(caspar,C), C != villageidiot, not hidden20(C)"
+  - ":- initial(joseph,C), C != saint, not hidden20(C)"
+  - ":- align(you,evil,1)"

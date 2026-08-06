@@ -105,9 +105,17 @@ def sheet_order_facts(script: str, ids: set[str]) -> list[str]:
     return fs
 
 
+def _all_roles() -> list[dict]:
+    roles = json.loads((ROOT / "data" / "raw" / "townsquare_roles.json").read_text())
+    exp = ROOT / "data" / "raw" / "exp_roles.json"
+    if exp.exists():
+        roles = roles + json.loads(exp.read_text())
+    return roles
+
+
 def global_order_facts(ids: set[str]) -> list[str]:
     """nord facts from the script-tool global order, restricted to the pool."""
-    roles = json.loads((ROOT / "data" / "raw" / "townsquare_roles.json").read_text())
+    roles = _all_roles()
     fs = []
     for kind, key in (("first", "firstNight"), ("other", "otherNight")):
         ordered = sorted((r for r in roles if r["id"] in ids and r.get(key)),

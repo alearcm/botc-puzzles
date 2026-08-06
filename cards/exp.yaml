@@ -9,3 +9,24 @@
   team: minion
   coverage: partial
   notes: "text: 'if you publicly claim to be the Goblin when nominated & are executed that day, your team wins' — social win path not yet encoded (needs a public-claim input); no night mechanics. Fine for puzzles where no Goblin claim is made."
+- id: villageidiot
+  team: townsfolk
+  coverage: full
+  notes: "text: 'Each night, choose a player: you learn their alignment.
+    [+0 to +2 Village Idiots. 1 of the extras is drunk]' — duplicates
+    allowed (dup_ok), at most 3 in the bag; with 2+ REAL VIs exactly one is
+    lowercase-drunk from setup (NQT #20 author clarification: bluffing evils
+    and a Drunk-as-VI don't count). Night slot is a chosen late-info
+    position (exp_roles.json), official number unverified."
+  acts:
+    phase: each
+    pick: p1_any
+  learns:
+    phase: each
+    schema: alignment_of_picked
+  facts:
+    - "dup_ok(villageidiot)"
+    - ":- 4 <= #count{ P : initial(P,villageidiot) }"
+    - "vi_count(K) :- K = #count{ P : initial(P,villageidiot) }"
+    - "1 { vi_drunk(P) : initial(P,villageidiot) } 1 :- vi_count(K), K >= 2"
+    - "applied(P,drunk,src(P,vi_extra),1,0,permanent_sticky) :- vi_drunk(P)"
