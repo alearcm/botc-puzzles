@@ -9,8 +9,9 @@ solver must reproduce the author-confirmed answer from the thread.
 |---|---|---|---|---|---|
 | 8 | The Stitch-Up | S&V+TB homebrew (all-Seamstress) | evil team {josh, steph}; demon within pair ambiguous | Josh & Steph evil, You poisoned | YES |
 | 10 | Don't Overcook It | TB (restricted roster) | unique: Dan = Imp, Fraser = Poisoner | Dan Imp, Fraser Poisoner | YES |
+| 59 | Fifty-Fifty | TB | unique: Oscar = Imp, Jasmine = Spy (full grimoire certain) | Jasmine Spy, Oscar Imp | YES |
 
-Running total: **2/2 reproduced.**
+Running total: **3/3 reproduced.**
 
 Notes per puzzle live in the YAML header comments. Solver invocation:
 `python3 tools/botc.py puzzles/nqt/<file>.yaml`.

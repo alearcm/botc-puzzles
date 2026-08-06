@@ -14,10 +14,15 @@ applied(Q,K,src(P,C),T,I,permanent) :-
     functioning_at(P,C,T,I).
 
 % ---------- TB ----------
-% imp star pass: self-kill passes to a minion
+% imp star pass: self-kill passes to a minion (at the imp's night position)
 imp_suicide(P,T) :- death_event(P,T), char(P,imp,T), picked(P,imp,T,P).
 1 { becomes(Q,imp,T) : alive(Q,T), char(Q,CM,T), team_of(CM,minion) } 1 :-
     imp_suicide(P,T).
+becomes_at(Q,T,I) :- becomes(Q,imp,T), imp_suicide(_,T), sched(imp,T,I).
+becomes_at(P,T,I) :- sc_hit(P,Q,T), sched(snakecharmer,T,I).
+becomes_at(Q,T,I) :- sc_hit(P,Q,T), sched(snakecharmer,T,I).
+becomes_at(Q,T,I) :- fg_jump(P,Q,T), sched(fanggu,T,I).
+becomes_at(Q,T,I) :- ph_change(_,Q,_,T), sched(pithag,T,I).
 
 % scarlet woman: becomes the demon if it dies with >=5 apparently-alive
 demon_died(P,T,night) :- death_event(P,T), char(P,C,T), team_of(C,demon).

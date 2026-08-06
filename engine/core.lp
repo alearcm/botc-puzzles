@@ -220,16 +220,28 @@ shadow_acting(P,B,T) :- shadow(P,B,T), acts(B,each,_), sched(B,T,_),
 
 % night-scoped activation: applied earlier the same night
 status_on(Q,K,T,I) :- applied(Q,K,Src,T,J,_), acts_idx(T,I), J < I,
-                      not voided(Q,K,Src,T).
+                      not voided(Q,K,Src,T), not src_lost_mid(Q,K,Src,T,I).
 % carry-over from previous nights, by expiry
 status_on(Q,K,T,I) :- applied(Q,K,Src,T0,_,permanent), T0 < T, acts_idx(T,I),
-                      not voided(Q,K,Src,T).
+                      not voided(Q,K,Src,T), not src_lost_mid(Q,K,Src,T,I).
+
+% mid-night source loss: a status ends AT the position its source stops
+% holding the granting ability — by transformation (star pass: the new Imp's
+% poison victim is sober for later-in-the-night reads; NQT #59 confirmation)
+% or by death.
+src_lost_mid(Q,K,src(P,C),T,I) :- applied(Q,K,src(P,C),_,_,E),
+    E != permanent_sticky, becomes(P,C2,T), C2 != C, becomes_at(P,T,I2),
+    acts_idx(T,I), I >= I2.
+src_lost_mid(Q,K,src(P,C),T,I) :- applied(Q,K,src(P,C),_,_,E),
+    E != permanent_sticky, death_event(P,T), death_idx(P,T,I2),
+    acts_idx(T,I), I >= I2, not persists_dead(P,C,T).
 % permanent_sticky: outlives the source's ability (sweetheart, snake charmer)
 status_on(Q,K,T,I) :- applied(Q,K,_,T0,_,permanent_sticky), T0 < T, acts_idx(T,I).
 status_on(Q,K,T,I) :- applied(Q,K,_,T,J,permanent_sticky), acts_idx(T,I), J < I.
 status_on_day(Q,K,D) :- applied(Q,K,_,T0,_,permanent_sticky), T0 <= D, day(D).
 status_on(Q,K,T,I) :- applied(Q,K,Src,T0,_,nights(N,T0)), T0 < T, T <= T0+N-1,
-                      acts_idx(T,I), not voided(Q,K,Src,T).
+                      acts_idx(T,I), not voided(Q,K,Src,T),
+                      not src_lost_mid(Q,K,Src,T,I).
 status_on_day(Q,K,D) :- applied(Q,K,Src,D,_,until_dusk(D)), day(D),
                         not voided(Q,K,Src,D), not voided_day(Q,K,Src,D).
 status_on_day(Q,K,D) :- applied(Q,K,Src,T0,_,permanent), T0 <= D, day(D),
