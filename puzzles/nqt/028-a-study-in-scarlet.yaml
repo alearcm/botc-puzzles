@@ -1,0 +1,58 @@
+# Weekly Puzzle #28 — "A Study in Scarlet" (Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1iu1vxo/
+# 8 players, cross-script. One Demon (Pukka or No Dashii) + Scarlet Woman.
+# Exactly one Outsider in play: the Drunk. You are not evil, might be Drunk.
+# Day 1: Adam executed. Night 2: You die. Day 2: Aoife executed.
+# Night 3: Sarah dies. Question: who is the Demon and who is the Minion?
+id: nqt-028
+script: [tb, bmr, snv]
+horizon: 3
+players: [adam, oscar, olivia, sarah, you, matt, fraser, aoife]
+claims:
+  - {player: adam, character: clockmaker,
+     info: ["shown_num(adam,clockmaker,1,4)"]}
+  - {player: oscar, character: empath,
+     info: ["shown_num(oscar,empath,1,1)",
+            "shown_num(oscar,empath,2,2)",
+            "shown_num(oscar,empath,3,1)"]}
+  - {player: olivia, character: fortuneteller,
+     info: ["picked2(olivia,fortuneteller,1,olivia,sarah)",
+            "shown_bool(olivia,fortuneteller,1,no)",
+            "picked2(olivia,fortuneteller,2,aoife,olivia)",
+            "shown_bool(olivia,fortuneteller,2,no)",
+            "picked2(olivia,fortuneteller,3,matt,oscar)",
+            "shown_bool(olivia,fortuneteller,3,no)"]}
+  - {player: sarah, character: oracle,
+     info: ["shown_num(sarah,oracle,2,1)"]}
+  - {player: you, character: chambermaid,
+     info: ["picked2(you,chambermaid,1,adam,sarah)",
+            "shown_num(you,chambermaid,1,1)"]}
+  - {player: matt, character: juggler,
+     info: ["shown_num(matt,juggler,2,2)"]}
+  - {player: fraser, character: undertaker,
+     info: ["shown_char(fraser,undertaker,2,drunk)",
+            "shown_char(fraser,undertaker,3,nodashii)"]}
+  - {player: aoife, character: librarian,
+     info: ["shown_among2(aoife,librarian,1,drunk,adam,matt)"]}
+given:
+  # juggles are day-1 public inputs (matt's guesses)
+  - "juggle(matt,fraser,undertaker,1)"
+  - "juggle(matt,oscar,nodashii,1)"
+  # roster: demon in {pukka, nodashii}; minion scarletwoman; outsider drunk only,
+  # and the drunk IS in play
+  - ":- initial(P,C), role(C,demon,_), C != pukka, C != nodashii"
+  - ":- initial(P,C), role(C,minion,_), C != scarletwoman"
+  - ":- initial(P,C), role(C,outsider,_), C != drunk"
+  - "drunk_in_play :- initial(P,drunk), player(P)"
+  - ":- not drunk_in_play"
+  # events
+  - "executed(adam,1)"
+  - "executed(aoife,2)"
+  - ":- align(you,evil,1)"
+  # deaths
+  - ":- announced_dead(P,1), player(P)"
+  - ":- not announced_dead(you,2)"
+  - ":- announced_dead(P,2), P != you, player(P)"
+  - ":- not announced_dead(sarah,3)"
+  - ":- announced_dead(P,3), P != sarah, player(P)"
+  - ":- day_kill(P,D), player(P), day(D)"

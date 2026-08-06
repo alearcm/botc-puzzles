@@ -1,0 +1,40 @@
+# Weekly Puzzle #26 — "A Major Problem" (Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1ihl8vs/
+# 8 players, TB. One Imp + one minion of {Baron, Spy, Poisoner, Scarlet Woman}.
+# Default one Outsider; Baron adds two. Outsiders possible: Saint, Recluse,
+# Drunk. You are not evil, might be the Drunk.
+# Day 1: You executed. Night 2: Josh dies. Day 2: Dan executed (after
+# shooting Matthew — nothing happened). Night 3: Olivia dies.
+# Question: who is the Demon and who is the Minion?
+id: nqt-026
+script: tb
+horizon: 3
+players: [matthew, josh, sula, fraser, you, olivia, dan, tom]
+claims:
+  - {player: matthew, character: librarian,
+     info: ["shown_among2(matthew,librarian,1,drunk,josh,you)"]}
+  - {player: josh, character: soldier, info: []}
+  - {player: sula, character: undertaker,
+     info: ["shown_char(sula,undertaker,2,empath)",
+            "shown_char(sula,undertaker,3,slayer)"]}
+  - {player: fraser, character: chef, info: ["shown_num(fraser,chef,1,2)"]}
+  - {player: you, character: empath, info: ["shown_num(you,empath,1,0)"]}
+  - {player: olivia, character: saint, info: []}
+  - {player: dan, character: slayer, info: []}
+  - {player: tom, character: recluse, info: []}
+given:
+  # roster restriction: butler not a possible outsider here
+  - ":- initial(P,butler), player(P)"
+  # events
+  - "executed(you,1)"
+  - "slayer_shot(dan,matthew,2)"
+  - "executed(dan,2)"
+  - ":- align(you,evil,1)"
+  # deaths
+  - ":- announced_dead(P,1), player(P)"
+  - ":- not announced_dead(josh,2)"
+  - ":- announced_dead(P,2), P != josh, player(P)"
+  - ":- not announced_dead(olivia,3)"
+  - ":- announced_dead(P,3), P != olivia, player(P)"
+  # no day kills (Dan's shot fizzled; nothing else)
+  - ":- day_kill(P,D), player(P), day(D)"

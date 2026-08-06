@@ -289,20 +289,18 @@ persists_dead(Q,CM,T2) :- vm_kill(P,Q,T), char(Q,CM,T), night(T2), T2 > T,
 applied(R,poisoned,src(P,vigormortis),T,I,permanent) :-
     vm_poison(P,Q,R,T), sched(vigormortis,T,I).
 
-% no dashii: adjacent townsfolk poisoned (nearest alive townsfolk each way)
+% no dashii: adjacent townsfolk poisoned — the nearest TOWNSFOLK each way,
+% dead or alive: the poison does NOT jump over a dead townsfolk to the next
+% living one (author ruling, NQT #28: "Townsfolk neighbours, not living
+% Townsfolk neighbours").
 nd_poisons(P,R,T) :- char(P,nodashii,T), has_ability(P,nodashii,T),
-    alive_neighbor_tf(P,R,T).
-alive_neighbor_tf(P,R,T) :- char(P,nodashii,T), alive(R,T), night(T),
-    char(R,CT,T), team_of(CT,townsfolk), nd_nearest(P,R,T).
-% nearest alive townsfolk clockwise / counter-clockwise
-nd_nearest(P,R,T) :- walk(P,R,N), alive(R,T), char(R,CT,T),
-    team_of(CT,townsfolk),
-    #false : walk(P,R2,N2), N2 < N, alive(R2,T), char(R2,CT2,T),
-             team_of(CT2,townsfolk).
-nd_nearest(P,R,T) :- walkc(P,R,N), alive(R,T), char(R,CT,T),
-    team_of(CT,townsfolk),
-    #false : walkc(P,R2,N2), N2 < N, alive(R2,T), char(R2,CT2,T),
-             team_of(CT2,townsfolk).
+    nd_nearest(P,R,T), night(T).
+nd_nearest(P,R,T) :- walk(P,R,N), char(R,CT,T), team_of(CT,townsfolk),
+    night(T),
+    #false : walk(P,R2,N2), N2 < N, char(R2,CT2,T), team_of(CT2,townsfolk).
+nd_nearest(P,R,T) :- walkc(P,R,N), char(R,CT,T), team_of(CT,townsfolk),
+    night(T),
+    #false : walkc(P,R2,N2), N2 < N, char(R2,CT2,T), team_of(CT2,townsfolk).
 status_on(R,poisoned,T,I) :- nd_poisons(P,R,T), acts_idx(T,I).
 status_on_day(R,poisoned,D) :- nd_poisons(P,R,D), day(D), not dies_night(R,D).
 

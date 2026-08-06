@@ -128,13 +128,32 @@ class Instance:
         return "\n".join(out)
 
 
+def global_order_facts(scripts: list[str]) -> list[str]:
+    """Cross-script sets use the global (townsquare) night order for a
+    consistent interleaving; single scripts use their printed sheet."""
+    ids = {c["id"] for s in scripts for c in load_cards(s) if not c.get("traveller")}
+    roles = json.loads((ROOT / "data" / "raw" / "townsquare_roles.json").read_text())
+    fs = []
+    for kind, key in (("first", "firstNight"), ("other", "otherNight")):
+        ordered = sorted((r for r in roles if r["id"] in ids and r.get(key)),
+                         key=lambda r: r[key])
+        for idx, r in enumerate(ordered, 1):
+            for s in scripts:
+                fs.append(f"order({s},{kind},{idx},{r['id']}).")
+    return fs
+
+
 def build_program(inst: Instance) -> str:
     parts = [(ROOT / "engine" / f).read_text() for f in ENGINE_FILES]
     for s in inst.scripts:
         cards = load_cards(s)
         for c in cards:
             parts.append("\n".join(card_facts(c, s)))
-        parts.append("\n".join(night_order_facts(s, cards)))
+    if len(inst.scripts) == 1:
+        parts.append("\n".join(night_order_facts(inst.scripts[0],
+                                                 load_cards(inst.scripts[0]))))
+    else:
+        parts.append("\n".join(global_order_facts(inst.scripts)))
     parts.append(inst.facts())
     return "\n".join(parts)
 

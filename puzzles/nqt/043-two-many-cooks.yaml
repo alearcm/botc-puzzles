@@ -1,0 +1,41 @@
+# Weekly Puzzle #43 — "Two Many Cooks" (Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1kz0kf2/
+# 8 players, TB. One Imp + one minion of {Baron, Spy, Poisoner, Scarlet Woman}.
+# Default one Outsider; Baron adds two. The Drunk cannot draw the same token
+# as a character already in play. You are not evil, might be the Drunk.
+# Day 1: Aoife executed. Night 2: Steph dies. Day 2: Jasmine executed.
+# Night 3: You die. Question: who is the Demon and who is the Minion?
+id: nqt-043
+script: tb
+horizon: 3
+players: [oscar, anna, dan, steph, you, fraser, aoife, jasmine]
+claims:
+  - {player: oscar, character: investigator,
+     info: ["shown_among2(oscar,investigator,1,poisoner,anna,steph)"]}
+  - {player: anna, character: recluse, info: []}
+  - {player: dan, character: saint, info: []}
+  - {player: steph, character: empath, info: ["shown_num(steph,empath,1,0)"]}
+  - {player: you, character: ravenkeeper,
+     info: ["picked(you,ravenkeeper,3,fraser)",
+            "shown_char(you,ravenkeeper,3,chef)"]}
+  - {player: fraser, character: chef, info: ["shown_num(fraser,chef,1,2)"]}
+  - {player: aoife, character: chef, info: ["shown_num(aoife,chef,1,1)"]}
+  - {player: jasmine, character: fortuneteller,
+     info: ["picked2(jasmine,fortuneteller,1,fraser,you)",
+            "shown_bool(jasmine,fortuneteller,1,no)",
+            "picked2(jasmine,fortuneteller,2,fraser,oscar)",
+            "shown_bool(jasmine,fortuneteller,2,no)"]}
+given:
+  # puzzle rule: the Drunk's believed character is not in play
+  - ":- believed_init(P,B), initial(P,drunk), initial(Q,B), player(Q)"
+  # events
+  - "executed(aoife,1)"
+  - "executed(jasmine,2)"
+  - ":- align(you,evil,1)"
+  # deaths
+  - ":- announced_dead(P,1), player(P)"
+  - ":- not announced_dead(steph,2)"
+  - ":- announced_dead(P,2), P != steph, player(P)"
+  - ":- not announced_dead(you,3)"
+  - ":- announced_dead(P,3), P != you, player(P)"
+  - ":- day_kill(P,D), player(P), day(D)"

@@ -9,9 +9,12 @@ solver must reproduce the author-confirmed answer from the thread.
 |---|---|---|---|---|---|
 | 8 | The Stitch-Up | S&V+TB homebrew (all-Seamstress) | evil team {josh, steph}; demon within pair ambiguous | Josh & Steph evil, You poisoned | YES |
 | 10 | Don't Overcook It | TB (restricted roster) | unique: Dan = Imp, Fraser = Poisoner | Dan Imp, Fraser Poisoner | YES |
+| 26 | A Major Problem | TB | unique: Tom = Imp, Matthew = Poisoner | Tom Imp, Matthew Poisoner | YES |
+| 28 | A Study in Scarlet | TB+BMR+S&V | unique: Olivia = No Dashii, Fraser = SW, Matt = Drunk | same | YES (after No Dashii static-poison fix) |
+| 43 | Two Many Cooks | TB | unique: Dan = Imp, Fraser = Poisoner | Dan Imp, Fraser Poisoner | YES |
 | 59 | Fifty-Fifty | TB | unique: Oscar = Imp, Jasmine = Spy (full grimoire certain) | Jasmine Spy, Oscar Imp | YES |
 
-Running total: **3/3 reproduced.**
+Running total: **6/6 reproduced** (one initial miss on #28 diagnosed to a real engine rule error — No Dashii poison jumping dead townsfolk — fixed via the author's own thread ruling).
 
 Notes per puzzle live in the YAML header comments. Solver invocation:
 `python3 tools/botc.py puzzles/nqt/<file>.yaml`.

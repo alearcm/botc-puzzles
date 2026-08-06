@@ -41,6 +41,8 @@ Memory — the author's, a Storyteller's, or a model's — is never a source.
 | `sw-count-includes-dying-demon` | Scarlet Woman's "5 or more players alive" counts players alive at the moment the demon dies — the dying demon included. | Scarlet Woman almanac ex2 |
 | `source-loss-ends-status-by-dawn` | Ongoing statuses end when their source no longer holds the ability by dawn: the star-passed ex-Poisoner's poison ends. | Poisoner almanac ex5 |
 | `undertaker-no-wake` | The Undertaker does not wake on nights following no execution (observable via Chambermaid). | Undertaker almanac ex4 |
+| `status-ends-at-source-loss-position` | A status ends AT the night-order position its source stops holding the ability (star pass, death) — not at the night boundary. | Poisoner almanac ex5 + NQT #59 author comment |
+| `nodashii-poison-static` | No Dashii poisons its nearest Townsfolk neighbours dead or alive — the poison does not jump past a dead Townsfolk. | Ability text + NQT #28 author ruling |
 | `night-sheet-order` | The base editions' printed night sheets differ from the modern global order (TB: Butler before Undertaker; BMR: Innkeeper before Courtier, Professor before Gossip). Engine uses the printed sheets per script. | Official edition night sheets (see data/raw/night_orders_notes.md) |
 | `death-trigger-timing` | Death-triggered ongoing effects (e.g. Sweetheart's drunking) begin at the death's position in the night order; abilities that already resolved that night were unimpaired. | Night-order semantics; caught by `snakecharmer-same-night` fixture |
 
