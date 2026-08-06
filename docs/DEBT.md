@@ -34,6 +34,7 @@ hack without an entry here is the actual failure mode.
 | Charade scope fixed at S1 | Scope ladder defined in RULINGS but not switchable per-puzzle yet | Wire scope selection into the puzzle format |
 | `assume_ongoing` is all-or-nothing | Puzzles asking "who wins if..." will need phase-scoped ongoing constraints | Parameterize when such a puzzle appears |
 | Evil claimants fully unconstrained | NQT rules say evil players LIE about their role (claim ≠ true role); we model claim freedom only — weaker, admits evil-truthful worlds | Add claim≠char constraint for evil-at-end claimants if a puzzle's uniqueness ever needs it |
+| Registration sites are start-of-night granular | `reg_char`/`reg_demon` read `char(Q,C,T)`, ignoring same-night `becomes` (star pass, snake charmer, fang gu): a Fortune Teller checking after the star-pass position should see the NEW Imp. Blocks nqt-013 (spurious star-pass world). | Give each night info site an evaluation position (`site_pos`) and evaluate `becomes_at`-aware effective characters — the positional principle already settled for statuses (`status-ends-at-source-loss-position`) and death triggers, extended to registration. Re-verify all reproduced puzzles after the refactor. |
 
 ## Recently retired
 
