@@ -23,6 +23,14 @@ becomes_at(P,T,I) :- sc_hit(P,Q,T), sched(snakecharmer,T,I).
 becomes_at(Q,T,I) :- sc_hit(P,Q,T), sched(snakecharmer,T,I).
 becomes_at(Q,T,I) :- fg_jump(P,Q,T), sched(fanggu,T,I).
 becomes_at(Q,T,I) :- ph_change(_,Q,_,T), sched(pithag,T,I).
+becomes_at(Q,T,I) :- sw_takes(Q,_,T), demon_died(P,T,night), death_idx(P,T,I).
+becomes_at(Q1,T,I) :- barber_swap(Q1,_,T), barber_pos(T,I).
+becomes_at(Q2,T,I) :- barber_swap(_,Q2,T), barber_pos(T,I).
+% alignment changes carry the same positions (mirrors becomes_at)
+align_change_at(P,T,I) :- sc_hit(P,_,T), sched(snakecharmer,T,I).
+align_change_at(Q,T,I) :- sc_hit(_,Q,T), sched(snakecharmer,T,I).
+align_change_at(Q,T,I) :- fg_jump(_,Q,T), sched(fanggu,T,I).
+align_change_at(G,T,I) :- goon_first(G,_,_,T,I).
 
 % scarlet woman: becomes the demon if it dies with >=5 apparently-alive
 demon_died(P,T,night) :- death_event(P,T), char(P,C,T), team_of(C,demon).
@@ -326,6 +334,8 @@ applied(Q,drunk,src(P,sweetheart),D,0,permanent_sticky) :-
     dies_day(P,D), char_d(P,barber,D), night(D+1).
 becomes(Q1,C2,T) :- barber_swap(Q1,Q2,T), char(Q2,C2,T).
 becomes(Q2,C1,T) :- barber_swap(Q1,Q2,T), char(Q1,C1,T).
+barber_pos(T,I) :- death_event(P,T), char(P,barber,T), death_idx(P,T,I).
+barber_pos(D+1,99) :- dies_day(P,D), char_d(P,barber,D), night(D+1).
 
 % sage: on demon-death at night, learns 2 (demon among them)
 sage_killer(P,T,QD) :- death_event(P,T), char(P,sage,T),

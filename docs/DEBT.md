@@ -33,10 +33,17 @@ hack without an entry here is the actual failure mode.
 | Charade scope fixed at S1 | Scope ladder defined in RULINGS but not switchable per-puzzle yet | Wire scope selection into the puzzle format |
 | `assume_ongoing` is all-or-nothing | Puzzles asking "who wins if..." will need phase-scoped ongoing constraints | Parameterize when such a puzzle appears |
 | Evil claimants fully unconstrained | NQT rules say evil players LIE about their role (claim ≠ true role); we model claim freedom only — weaker, admits evil-truthful worlds | Add claim≠char constraint for evil-at-end claimants if a puzzle's uniqueness ever needs it |
-| Registration sites are start-of-night granular | `reg_char`/`reg_demon` read `char(Q,C,T)`, ignoring same-night `becomes` (star pass, snake charmer, fang gu): a Fortune Teller checking after the star-pass position should see the NEW Imp. Blocks nqt-013 (spurious star-pass world). | Give each night info site an evaluation position (`site_pos`) and evaluate `becomes_at`-aware effective characters — the positional principle already settled for statuses (`status-ends-at-source-loss-position`) and death triggers, extended to registration. Re-verify all reproduced puzzles after the refactor. |
+| Life/death sets read at phase boundary | Oracle's dead set, Empath/Chef alive-neighbor circles use start-of-night `alive/app_alive` — a player killed earlier the same night at position J is not yet dead to a later reader | Extend the site clock to life state via `death_idx` (app_dead_at/alive_neighbor_at); needs a discriminating instance or citation before switching the default |
+| Day-event yesno reads at phase boundary | Flowergirl/Towncrier evaluate "did a demon vote yesterday" against start-of-following-night state, not the subject's state at vote time (day-time SW takeover corner) | Evaluate against `char_d` of the event day |
+| Multi-position sites take the earliest slot | A philosopher-gained ability whose card also has a sheet slot yields two `site_pos` candidates; `site_epos` picks the min | Thread the acting occurrence's own position into site creation |
 
 ## Recently retired
 
+- Registration at start-of-night granularity → the site clock: every night
+  site evaluates at its observer's night-order position and sees all
+  `becomes_at`/`align_change_at` changes resolved earlier that night
+  (`state-reads-at-site-position`; fixed nqt-013 with zero
+  interaction-specific rules).
 - Script-coupled instances (`script: [tb, bmr]` to import one character) →
   character pools: `roster:` adds individual ids, editions are shorthand,
   `in_pool/1` replaces `on_script/1`, night order is printed-sheet only when

@@ -87,6 +87,12 @@ read, each evil-check of a Cannibal meal is its own occurrence.
   demon-check, Cannibal's evil-check, and — critically — **deadness itself**
   (`reg(P, dead, Occ)`, for Zombuul). Alive-counts in ability text (Scarlet
   Woman's "5 or more") go through deadness registration.
+- **The site clock**: every occurrence evaluates at its observer's night-order
+  position and sees the character/alignment state as of that position — all
+  changes (`becomes_at`, `align_change_at`) that resolved earlier that night
+  are visible. A Fortune Teller checking after a star pass sees the new Imp
+  because the Imp acts earlier in the order, not via any coded pairing. The
+  same positional principle already governs status expiry and death triggers.
 
 ## 5. Information: claims and truth patterns
 

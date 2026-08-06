@@ -5,54 +5,108 @@
 % Misregistration is part of the misregistering character's ability: it
 % requires that character to be functioning at evaluation time.
 
+% --- the site clock ---
+% A site is one evaluation occurrence; site_pos(Site,I) is the night-order
+% position it evaluates at (the observer's own slot). State reads see every
+% change that resolved at an earlier position — the grimoire updates as the
+% night proceeds. No per-interaction rules: a Fortune Teller checking after
+% a star pass sees the new Imp BECAUSE the Imp acts earlier, not because we
+% coded that pairing. Sites without a position (day sites, reads about
+% yesterday's events) use the phase-boundary state.
+scq(S,Q,T) :- site_al(S,Q,T).   scq(S,Q,T) :- site_ch(S,Q,T).
+scq(S,Q,T) :- site_dm(S,Q,T).   scq(S,Q,T) :- site_tm(S,Q,T).
+% effective position: earliest if a site somehow accrues several (e.g. a
+% philosopher-gained ability whose card also has a sheet slot)
+site_epos(S,I) :- site_pos(S,I), not site_pos_lt(S,I).
+site_pos_lt(S,I) :- site_pos(S,I), site_pos(S,J), J < I.
+has_pos(S) :- site_pos(S,_).
+
+eval_at(Q,T,I) :- scq(S,Q,T), site_epos(S,I).
+chg_seen(Q,T,I) :- eval_at(Q,T,I), becomes_at(Q,T,J), J < I.
+eff_char_n(Q,C,T,I) :- eval_at(Q,T,I), char(Q,C,T), not chg_seen(Q,T,I).
+eff_char_n(Q,C,T,I) :- chg_seen(Q,T,I), becomes(Q,C,T).
+al_chg_seen(Q,T,I) :- eval_at(Q,T,I), align_change_at(Q,T,J), J < I.
+eff_align_n(Q,A,T,I) :- eval_at(Q,T,I), align(Q,A,T), not al_chg_seen(Q,T,I).
+eff_align_n(Q,A,T,I) :- al_chg_seen(Q,T,I), align_change(Q,A,T).
+
+% state as seen by each site
+site_char(Q,C,S) :- scq(S,Q,T), site_epos(S,I), eff_char_n(Q,C,T,I).
+site_char(Q,C,S) :- scq(S,Q,T), not has_pos(S), not site_day(S), char(Q,C,T).
+site_char(Q,C,S) :- scq(S,Q,D), site_day(S), char_d(Q,C,D).
+site_align(Q,A,S) :- site_al(S,Q,T), site_epos(S,I), eff_align_n(Q,A,T,I).
+site_align(Q,A,S) :- site_al(S,Q,T), not has_pos(S), align(Q,A,T).
+
 % --- alignment registration ---
 % subjects that MAY register evil (recluse) / good (spy)
 % NOTE: deliberately no aliveness requirement — the executed Recluse may
 % register as the Imp to the Undertaker (Recluse almanac, T0). Whether
-% droison strips misregistration is itself a seam; current default: it does.
-may_misreg_evil(Q,T) :- char(Q,recluse,T), not impaired_at(Q,T,99).
-may_misreg_good(Q,T) :- char(Q,spy,T), not impaired_at(Q,T,99).
+% droison strips misregistration is itself a seam; current default: it does
+% (checked at the site's own position when it has one).
+may_misreg_evil(Q,S) :- site_char(Q,recluse,S), scq(S,Q,T),
+                        site_epos(S,I), not impaired_at(Q,T,I).
+may_misreg_evil(Q,S) :- site_char(Q,recluse,S), scq(S,Q,T),
+                        not has_pos(S), not impaired_at(Q,T,99).
+may_misreg_good(Q,S) :- site_char(Q,spy,S), scq(S,Q,T),
+                        site_epos(S,I), not impaired_at(Q,T,I).
+may_misreg_good(Q,S) :- site_char(Q,spy,S), scq(S,Q,T),
+                        not has_pos(S), not impaired_at(Q,T,99).
 
-0 { mr_evil(Q,Site) } 1 :- site_al(Site,Q,T), align(Q,good,T), may_misreg_evil(Q,T).
-0 { mr_good(Q,Site) } 1 :- site_al(Site,Q,T), align(Q,evil,T), may_misreg_good(Q,T).
+0 { mr_evil(Q,Site) } 1 :- site_al(Site,Q,T), site_align(Q,good,Site),
+                           may_misreg_evil(Q,Site).
+0 { mr_good(Q,Site) } 1 :- site_al(Site,Q,T), site_align(Q,evil,Site),
+                           may_misreg_good(Q,Site).
 
-reg_evil(Q,Site) :- site_al(Site,Q,T), align(Q,evil,T), not mr_good(Q,Site).
+reg_evil(Q,Site) :- site_align(Q,evil,Site), not mr_good(Q,Site).
 reg_evil(Q,Site) :- mr_evil(Q,Site).
 reg_good(Q,Site) :- site_al(Site,Q,T), not reg_evil(Q,Site).
 
 % --- character registration ---
-% default: actual character; recluse may register as any script minion/demon;
-% spy as any script townsfolk/outsider.
+% default: character as seen at the site's position; recluse may register
+% as any pool minion/demon; spy as any pool townsfolk/outsider.
 0 { mr_char(Q,Site,CC) : role(CC,TM,_), in_pool(CC), evil_team(TM) } 1 :-
-    site_ch(Site,Q,T), may_misreg_evil(Q,T).
+    site_ch(Site,Q,T), may_misreg_evil(Q,Site).
 0 { mr_char(Q,Site,CC) : role(CC,TM,_), in_pool(CC), good_team(TM) } 1 :-
-    site_ch(Site,Q,T), may_misreg_good(Q,T).
+    site_ch(Site,Q,T), may_misreg_good(Q,Site).
 reg_char(Q,CC,Site) :- mr_char(Q,Site,CC).
-reg_char(Q,CC,Site) :- site_ch(Site,Q,T), char(Q,CC,T), not mr_char(Q,Site,_),
-                       not site_day(Site).
-reg_char(Q,CC,Site) :- site_ch(Site,Q,D), char_d(Q,CC,D), not mr_char(Q,Site,_),
-                       site_day(Site).
+reg_char(Q,CC,Site) :- site_ch(Site,Q,T), site_char(Q,CC,Site),
+                       not mr_char(Q,Site,_).
 
 % --- demon registration (fortune teller / slayer style checks) ---
-reg_demon(Q,Site) :- site_dm(Site,Q,T), char(Q,C,T), team_of(C,demon),
-                     not site_day(Site).
-reg_demon(Q,Site) :- site_dm(Site,Q,D), char_d(Q,C,D), team_of(C,demon),
-                     site_day(Site).
+reg_demon(Q,Site) :- site_dm(Site,Q,T), site_char(Q,C,Site), team_of(C,demon).
 % red herring: one good player registers as demon to the fortune teller
 1 { red_herring(Q) : player(Q) } 1 :- in_play(fortuneteller).
 :- red_herring(Q), initial(Q,C), team_of(C,TM), evil_team(TM).
 reg_demon(Q,Site) :- site_dm(Site,Q,T), red_herring(Q), ft_site(Site).
-0 { mr_demon(Q,Site) } 1 :- site_dm(Site,Q,T), may_misreg_evil(Q,T).
+0 { mr_demon(Q,Site) } 1 :- site_dm(Site,Q,T), may_misreg_evil(Q,Site).
 reg_demon(Q,Site) :- mr_demon(Q,Site).
 
 % --- team registration (virgin's townsfolk check, towncrier's minion check) ---
-reg_team(Q,TM,Site) :- site_tm(Site,Q,T), char(Q,C,T), team_of(C,TM),
-                       not mr_team(Q,Site,_), not site_day(Site).
-reg_team(Q,TM,Site) :- site_tm(Site,Q,D), char_d(Q,C,D), team_of(C,TM),
-                       not mr_team(Q,Site,_), site_day(Site).
-0 { mr_team(Q,Site,TM) : good_team(TM) } 1 :- site_tm(Site,Q,T), may_misreg_good(Q,T).
-0 { mr_team(Q,Site,TM) : evil_team(TM) } 1 :- site_tm(Site,Q,T), may_misreg_evil(Q,T).
+reg_team(Q,TM,Site) :- site_tm(Site,Q,T), site_char(Q,C,Site), team_of(C,TM),
+                       not mr_team(Q,Site,_).
+0 { mr_team(Q,Site,TM) : good_team(TM) } 1 :- site_tm(Site,Q,T),
+                                              may_misreg_good(Q,Site).
+0 { mr_team(Q,Site,TM) : evil_team(TM) } 1 :- site_tm(Site,Q,T),
+                                              may_misreg_evil(Q,Site).
 reg_team(Q,TM,Site) :- mr_team(Q,Site,TM).
+
+% --- site positions ---
+% Each night site evaluates at its observer's own slot. Deliberately
+% positionless: flg/tcr (they ask about YESTERDAY's votes/nominations, so
+% the subject's day-time state is what matters, approximated by the
+% phase-boundary read — see DEBT), jug (day site), sly (day site).
+site_pos(am2(P,C,T,Q),I)  :- site_ch(am2(P,C,T,Q),Q,T),  asched(C,T,I).
+site_pos(am2n(P,C,T,Q),I) :- site_ch(am2n(P,C,T,Q),Q,T), asched(C,T,I).
+site_pos(chefp(P,T,Q1,Q2,Q),I) :- site_al(chefp(P,T,Q1,Q2,Q),Q,T),
+                                  asched(chef,T,I).
+site_pos(emp(P,T,Q),I) :- site_al(emp(P,T,Q),Q,T), asched(empath,T,I).
+site_pos(ftq(P,T,Q),I) :- site_dm(ftq(P,T,Q),Q,T), asched(fortuneteller,T,I).
+site_pos(und(P,T,Q),I) :- site_ch(und(P,T,Q),Q,T), asched(undertaker,T,I).
+site_pos(rvk(P,T,Q),I) :- site_ch(rvk(P,T,Q),Q,T), asched(ravenkeeper,T,I).
+site_pos(gm(P,T,Q),I)  :- site_ch(gm(P,T,Q),Q,T),  asched(grandmother,T,I).
+site_pos(drm(P,T,Q),I) :- site_ch(drm(P,T,Q),Q,T), asched(dreamer,T,I).
+site_pos(orc(P,T,Q),I) :- site_al(orc(P,T,Q),Q,T), asched(oracle,T,I).
+site_pos(sea(P,T,Q),I) :- site_al(sea(P,T,Q),Q,T), asched(seamstress,T,I).
+site_pos(gf(P,T,Q),I)  :- site_ch(gf(P,T,Q),Q,T),  asched(godfather,T,I).
 
 % ================= tokens & modes =================
 % learns(C, first|other|each, Schema) from cards.

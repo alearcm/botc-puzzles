@@ -50,6 +50,7 @@ Memory — the author's, a Storyteller's, or a model's — is never a source.
 | `death-trigger-timing` | Death-triggered ongoing effects (e.g. Sweetheart's drunking) begin at the death's position in the night order; abilities that already resolved that night were unimpaired. | Night-order semantics; caught by `snakecharmer-same-night` fixture |
 | `mutant-madness-ends-at-death` | Madness binds living players only: a dead Mutant no longer complies and reveals truthfully (claim convention: dead Mutants claim Mutant). | Madness = "under pressure to convince"; NQT #55 author comment |
 | `claim-freedom-is-current-evil` | Puzzle-convention claim freedom ("evil players lie") keys on alignment at the observed end-state, not initial role: turned-evil players (Fang Gu jump) lie freely; an ex-evil swapped good claims truthfully. | NQT #55 rules text ("An Outsider who became the Fang Gu may lie...") |
+| `state-reads-at-site-position` | An ability evaluating at night-order position I sees every character/alignment change that resolved at an earlier position — the grimoire updates as the night proceeds (a Fortune Teller checking after a star pass sees the new Imp because the Imp acts earlier, not via any coded pairing). Extends the settled positional principles for statuses and death triggers to registration. | Night-order semantics; NQT #13 confirming instance |
 
 ## Switches
 
