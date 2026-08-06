@@ -5,8 +5,11 @@
 # Day 1: Steph dies when nominating (Witch curse); Aoife is executed.
 # Night 2: Fraser dies. Question: who is the Demon and who is the Minion?
 # CONFIRMED ANSWER (author-endorsed): Sula = Vortox, Sarah = Witch. REPRODUCED
-# (sound-unique; forced strict ongoing-play, vortox-malfunction counting,
-# and witch-no-self-curse).
+# sound-unique WITH witch self-curse legal. Forced engine fixes: strict
+# ongoing-play; Mathematician counts Vortox-falsified townsfolk AND impaired
+# token-receivers (a poisoned Sage counts), own token excluded. The
+# witch-self-curse world dies on the Mathematician's night-2 count, not on
+# any witch restriction.
 id: nqt-034
 script: snv
 horizon: 2

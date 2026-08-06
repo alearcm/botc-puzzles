@@ -43,7 +43,8 @@ Memory — the author's, a Storyteller's, or a model's — is never a source.
 | `undertaker-no-wake` | The Undertaker does not wake on nights following no execution (observable via Chambermaid). | Undertaker almanac ex4 |
 | `status-ends-at-source-loss-position` | A status ends AT the night-order position its source stops holding the ability (star pass, death) — not at the night boundary. | Poisoner almanac ex5 + NQT #59 author comment |
 | `nodashii-poison-static` | No Dashii poisons its nearest Townsfolk neighbours dead or alive — the poison does not jump past a dead Townsfolk. | Ability text + NQT #28 author ruling |
-| `vortox-counts-as-malfunction` | Vortox-falsified Townsfolk count as "working abnormally" for the Mathematician (own token not self-counted). | Inferred from NQT #34 unique solution; needs primary citation |
+| `mathematician-abnormal-scope` | "Working abnormally" covers Vortox-falsified Townsfolk AND any token received impaired (incl. death-triggered: a poisoned Sage counts); the Mathematician's own token is not self-counted. | Almanac reading + NQT #34 unique solution |
+| `witch-self-curse-allowed` | The Witch may curse herself (and die to her own nomination). | User-confirmed ruling |
 | `night-sheet-order` | The base editions' printed night sheets differ from the modern global order (TB: Butler before Undertaker; BMR: Innkeeper before Courtier, Professor before Gossip). Engine uses the printed sheets per script. | Official edition night sheets (see data/raw/night_orders_notes.md) |
 | `death-trigger-timing` | Death-triggered ongoing effects (e.g. Sweetheart's drunking) begin at the death's position in the night order; abilities that already resolved that night were unimpaired. | Night-order semantics; caught by `snakecharmer-same-night` fixture |
 
@@ -95,7 +96,6 @@ Mathematician (below), madness-enforcement scope.
 | `cannibal-registration` | Cannibal's evil-check goes through registration (Spy meal may register good → healthy Cannibal with the real Spy ability; Recluse meal may register evil)? Believed almanac-consistent; needs the citation. |
 | `pithag-created-first-night` | Which first-night-only abilities fire on the night of creation vs the next night, for Pit-Hag-created characters? (Relative-schedule default: the night the ability is gained counts as "first night".) |
 | `charade-mathematician` | Does a shadow-ability (charade) wake or its FREE info count as an ability "working abnormally" for the Mathematician? (Engine v1 default: yes, a charade always malfunctions.) |
-| `witch-self-curse` | May the Witch curse herself? (Engine default: no — required for NQT #34 uniqueness; needs primary citation.) |
 | `droison-strips-misreg` | Does a poisoned/drunk Recluse or Spy lose misregistration? (Engine v1 default: yes.) |
 
 ## Planned entries (raised, not yet worked)
