@@ -1,0 +1,69 @@
+# Weekly Puzzle #32 — "Prepare for Juggle, and Make it Double"
+# (Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1je8z17/
+# 8 players, TB + Juggler x2 + Dreamer (S&V imports). One Imp + one minion
+# of {Baron, Poisoner}. Outsiders: Saint, Recluse, Drunk; default one;
+# Baron +2. You are not evil, might be the Drunk.
+# Hidden roles box: Imp, Poisoner, Baron, Drunk.
+# Day 1: You executed. Night 2: Tim dies. Day 2: Dan executed.
+# Night 3: Fraser dies. Question: who is the Demon and who is the Minion?
+# CONFIRMED ANSWER (author-endorsed): Olivia = Imp, Matthew = Poisoner
+# (You poisoned n1, Dan n2, Sula n3; Jasmine's Undertaker reads are true).
+id: nqt-032
+script: tb
+roster: [juggler, dreamer]
+horizon: 3
+players: [dan, fraser, jasmine, tim, you, matthew, olivia, sula]
+claims:
+  - {player: dan, character: juggler,
+     info: ["shown_num(dan,juggler,2,0)"]}
+  - {player: fraser, character: saint, info: []}
+  - {player: jasmine, character: undertaker,
+     info: ["shown_char(jasmine,undertaker,2,dreamer)",
+            "shown_char(jasmine,undertaker,3,juggler)"]}
+  - {player: tim, character: fortuneteller,
+     info: ["picked2(tim,fortuneteller,1,fraser,matthew)",
+            "shown_bool(tim,fortuneteller,1,no)"]}
+  - {player: you, character: dreamer,
+     info: ["picked(you,dreamer,1,sula)",
+            "shown_dreamer(you,1,drunk,imp)"]}
+  - {player: matthew, character: juggler,
+     info: ["shown_num(matthew,juggler,2,0)"]}
+  - {player: olivia, character: recluse, info: []}
+  - {player: sula, character: empath,
+     info: ["shown_num(sula,empath,1,1)",
+            "shown_num(sula,empath,2,1)",
+            "shown_num(sula,empath,3,0)"]}
+given:
+  # public day-1 juggles
+  - "juggle(dan,you,dreamer,1)"
+  - "juggle(dan,fraser,poisoner,1)"
+  - "juggle(dan,tim,baron,1)"
+  - "juggle(matthew,you,imp,1)"
+  - "juggle(matthew,dan,drunk,1)"
+  - "juggle(matthew,jasmine,baron,1)"
+  - "juggle(matthew,tim,fortuneteller,1)"
+  # events
+  - "executed(you,1)"
+  - "executed(dan,2)"
+  - ":- announced_dead(P,1), player(P)"
+  - ":- not announced_dead(tim,2)"
+  - ":- announced_dead(P,2), P != tim, player(P)"
+  - ":- not announced_dead(fraser,3)"
+  - ":- announced_dead(P,3), P != fraser, player(P)"
+  - ":- day_kill(P,D), player(P), day(D)"
+  # roster
+  - ":- initial(P,C), role(C,demon,_), C != imp"
+  - ":- initial(P,C), role(C,minion,_), C != baron, C != poisoner"
+  - ":- initial(P,C), role(C,outsider,_), C != saint, C != recluse, C != drunk"
+  # "Potential hidden roles" box: claimed role or one of these four
+  - "hidden32(imp; poisoner; baron; drunk)"
+  - ":- initial(dan,C), C != juggler, not hidden32(C)"
+  - ":- initial(fraser,C), C != saint, not hidden32(C)"
+  - ":- initial(jasmine,C), C != undertaker, not hidden32(C)"
+  - ":- initial(tim,C), C != fortuneteller, not hidden32(C)"
+  - ":- initial(you,C), C != dreamer, not hidden32(C)"
+  - ":- initial(matthew,C), C != juggler, not hidden32(C)"
+  - ":- initial(olivia,C), C != recluse, not hidden32(C)"
+  - ":- initial(sula,C), C != empath, not hidden32(C)"
+  - ":- align(you,evil,1)"
