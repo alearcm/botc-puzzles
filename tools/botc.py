@@ -105,14 +105,18 @@ def night_order_facts(script: str, cards: list[dict]) -> list[str]:
 
 @dataclass
 class Instance:
-    script: str
+    script: str | list[str]
     players: list[str]
     horizon: int = 2
     given: list[str] = field(default_factory=list)
     statements: dict[str, str] = field(default_factory=dict)  # stmt id -> ASP body
 
+    @property
+    def scripts(self) -> list[str]:
+        return [self.script] if isinstance(self.script, str) else list(self.script)
+
     def facts(self) -> str:
-        out = [f"script({self.script})."]
+        out = [f"script({s})." for s in self.scripts]
         for i, p in enumerate(self.players):
             out.append(f"player({p}).")
             out.append(f"seat({p},{i}).")
@@ -125,11 +129,12 @@ class Instance:
 
 
 def build_program(inst: Instance) -> str:
-    cards = load_cards(inst.script)
     parts = [(ROOT / "engine" / f).read_text() for f in ENGINE_FILES]
-    for c in cards:
-        parts.append("\n".join(card_facts(c, inst.script)))
-    parts.append("\n".join(night_order_facts(inst.script, cards)))
+    for s in inst.scripts:
+        cards = load_cards(s)
+        for c in cards:
+            parts.append("\n".join(card_facts(c, s)))
+        parts.append("\n".join(night_order_facts(s, cards)))
     parts.append(inst.facts())
     return "\n".join(parts)
 
@@ -244,7 +249,7 @@ def solve_puzzle(path: Path, limit: int = 500) -> dict:
             p, c = inner.split(",")
             assignment[p] = c
         per_world.append(assignment)
-        cards = {c["id"]: c for c in load_cards(inst.script)}
+        cards = {c["id"]: c for s in inst.scripts for c in load_cards(s)}
         for p, c in assignment.items():
             if cards[c]["team"] == "demon":
                 demons.add(p)

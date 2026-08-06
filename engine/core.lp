@@ -51,7 +51,8 @@ base_counts(14,9,1,3). base_counts(15,9,2,3).
 
 % ---------- bag ----------
 1 { initial(P,C) : on_script(C) } 1 :- player(P).
-:- initial(P,C), initial(Q,C), P < Q.          % no duplicate characters
+% no duplicate characters (homebrew puzzles may lift this via dup_ok/1)
+:- initial(P,C), initial(Q,C), P < Q, not dup_ok(C).
 
 in_play(C) :- initial(_,C).
 
