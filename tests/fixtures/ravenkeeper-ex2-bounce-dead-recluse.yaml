@@ -1,0 +1,29 @@
+# Ravenkeeper almanac ex2 — "The Imp attacks the Mayor. The Mayor doesn't die,
+# but the Ravenkeeper dies instead, due to the Mayor's ability. The
+# Ravenkeeper is woken and chooses Douglas, who is a dead Recluse. The
+# Ravenkeeper learns that Douglas is the Scarlet Woman, since the Recluse
+# registered as a Minion."
+# https://wiki.bloodontheclocktower.com/Ravenkeeper
+# Recluse executed day 1 so they are dead when chosen; registration survives
+# death.
+id: ravenkeeper-ex2-bounce-dead-recluse
+tier: T0
+source: Ravenkeeper almanac example 2 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6]
+given:
+  - initial(p1,ravenkeeper)
+  - initial(p2,mayor)
+  - initial(p3,soldier)
+  - initial(p4,recluse)   # Douglas
+  - initial(p5,scarletwoman)
+  - initial(p6,imp)
+  - executed(p4,1)
+  - picked(p6,imp,2,p2)
+  - "bounced :- redirect(p2,src(p6,imp),2,I,p1)"
+  - ":- not bounced"
+  - picked(p1,ravenkeeper,2,p4)
+  - shown_char(p1,ravenkeeper,2,scarletwoman)
+assert:
+  exists: true

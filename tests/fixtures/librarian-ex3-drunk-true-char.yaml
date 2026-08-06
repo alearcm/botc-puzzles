@@ -1,0 +1,23 @@
+# Librarian almanac ex3 — "Abdallah is the Drunk, who thinks they are the Monk,
+# and Douglas is the Undertaker. The Librarian learns that either Abdallah or
+# Douglas is the Drunk. (This happens because the Librarian learns the true
+# character. The Drunk is Abdallah's true character, not the Monk.)"
+# https://wiki.bloodontheclocktower.com/Librarian
+# 6p (3/1/1/1) so the Drunk is the lone outsider.
+id: librarian-ex3-drunk-true-char
+tier: T0
+source: Librarian almanac example 3 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6]
+given:
+  - initial(p1,librarian)
+  - initial(p2,drunk)        # Abdallah
+  - believed_init(p2,monk)
+  - initial(p3,undertaker)   # Douglas
+  - initial(p4,chef)
+  - initial(p5,scarletwoman)
+  - initial(p6,imp)
+  - shown_among2(p1,librarian,1,drunk,p2,p3)
+assert:
+  exists: true

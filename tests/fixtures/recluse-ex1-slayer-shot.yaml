@@ -1,0 +1,23 @@
+# Recluse almanac ex1 — "The Slayer uses their ability on the Recluse. The
+# Storyteller decides that the Recluse registers as the Imp, so the Recluse
+# dies. The Slayer believes that they just killed the Imp."
+# https://wiki.bloodontheclocktower.com/Recluse
+# (Same event as Slayer ex2 / tests/fixtures/recluse-slayer-dies.yaml.)
+id: recluse-ex1-slayer-shot
+tier: T0
+source: Recluse almanac example 1 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,baron)
+  - initial(p3,recluse)
+  - initial(p4,saint)
+  - initial(p5,slayer)
+  - initial(p6,chef)
+  - initial(p7,soldier)
+  - slayer_shot(p5,p3,1)
+  - ":- not day_kill(p3,1)"
+assert:
+  exists: true

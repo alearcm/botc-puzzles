@@ -1,0 +1,26 @@
+# Spy almanac ex3 — "The Spy nominates the Virgin and is executed by the
+# Virgin's ability, because the Storyteller chooses that the Spy registers as
+# a Townsfolk. That night, the Undertaker learns that the Drunk died today,
+# because the Spy is now registering as the Drunk."
+# https://wiki.bloodontheclocktower.com/Spy
+id: spy-ex3-virgin-undertaker
+tier: T0
+source: Spy almanac example 3 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,spy)
+  - initial(p3,virgin)
+  - initial(p4,undertaker)
+  - initial(p5,chef)
+  - initial(p6,soldier)
+  - initial(p7,mayor)
+  - nominated(p2,p3,1)
+  - proc_virgin(p2,1)
+  - executed(p2,1)
+  - picked(p1,imp,2,p5)
+  - shown_char(p4,undertaker,2,drunk)
+assert:
+  exists: true

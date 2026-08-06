@@ -1,0 +1,26 @@
+# Chef almanac ex4 — "The Recluse is sitting between the Imp and the Poisoner.
+# The Chef learns a '1'. Here, the Recluse is registering as evil for the
+# Imp-Recluse pair, but as good for the Poisoner-Recluse pair."
+# https://wiki.bloodontheclocktower.com/Chef
+# (Duplicates tests/fixtures/chef-1-recluse.yaml; cast kept identical.)
+id: chef-ex4-recluse-one
+tier: T0
+source: Chef almanac example 4 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+given:
+  - initial(p1,imp)
+  - initial(p2,recluse)
+  - initial(p3,poisoner)
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,baron)
+  - initial(p7,mayor)
+  - initial(p8,virgin)
+  - initial(p9,saint)
+  - initial(p10,monk)
+  - picked(p3,poisoner,1,p3)
+  - shown_num(p4,chef,1,1)
+assert:
+  exists: true

@@ -1,0 +1,23 @@
+# Soldier almanac ex1 — "The Imp attacks the Soldier. The Soldier does not
+# die, so nobody dies that night."
+# https://wiki.bloodontheclocktower.com/Soldier
+id: soldier-ex1-imp-attack-safe
+tier: T0
+source: Soldier almanac example 1 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,soldier)
+  - initial(p4,chef)
+  - initial(p5,mayor)
+  - initial(p6,empath)
+  - initial(p7,virgin)
+  - picked(p1,imp,2,p3)
+  - "somebody_died :- announced_dead(P,2), player(P)"
+  - "nobody_died :- not somebody_died"
+assert:
+  certain:
+    - nobody_died

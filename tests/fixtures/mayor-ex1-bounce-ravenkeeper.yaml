@@ -1,0 +1,25 @@
+# Mayor almanac ex1 — "The Imp attacks the Mayor. The Storyteller chooses
+# that the Ravenkeeper dies instead."
+# https://wiki.bloodontheclocktower.com/Mayor
+id: mayor-ex1-bounce-ravenkeeper
+tier: T0
+source: Mayor almanac example 1 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,mayor)
+  - initial(p4,ravenkeeper)
+  - initial(p5,chef)
+  - initial(p6,soldier)
+  - initial(p7,empath)
+  - picked(p1,imp,2,p3)
+  - "bounced :- redirect(p3,src(p1,imp),2,I,p4)"
+  - ":- not bounced"
+  - ":- not announced_dead(p4,2)"
+  - picked(p4,ravenkeeper,2,p1)
+  - shown_char(p4,ravenkeeper,2,imp)
+assert:
+  exists: true

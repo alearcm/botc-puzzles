@@ -1,0 +1,30 @@
+# Recluse almanac ex4 — "The Recluse is executed. The Undertaker learns that
+# the Imp was executed."
+# https://wiki.bloodontheclocktower.com/Recluse
+# (Duplicates tests/fixtures/undertaker-recluse-imp.yaml; cast kept identical.
+# Registration survives death.)
+id: recluse-ex4-undertaker-imp
+tier: T0
+source: Recluse almanac example 4 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+given:
+  - initial(p1,imp)
+  - initial(p2,baron)
+  - initial(p3,recluse)
+  - initial(p4,saint)
+  - initial(p5,undertaker)
+  - initial(p6,chef)
+  - initial(p7,soldier)
+  - initial(p8,mayor)
+  - initial(p9,monk)
+  - initial(p10,poisoner)
+  - picked(p10,poisoner,1,p10)
+  - picked(p10,poisoner,2,p10)
+  - executed(p3,1)
+  - picked(p9,monk,2,p5)
+  - picked(p1,imp,2,p7)
+  - shown_char(p5,undertaker,2,imp)
+assert:
+  exists: true

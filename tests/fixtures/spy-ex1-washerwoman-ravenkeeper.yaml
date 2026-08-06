@@ -1,0 +1,21 @@
+# Spy almanac ex1 — "The Washerwoman learns that either Abdallah or Douglas is
+# the Ravenkeeper. Abdallah is the Monk, and Douglas is the Spy registering as
+# the Ravenkeeper."
+# https://wiki.bloodontheclocktower.com/Spy
+id: spy-ex1-washerwoman-ravenkeeper
+tier: T0
+source: Spy almanac example 1 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,washerwoman)
+  - initial(p2,monk)   # Abdallah
+  - initial(p3,spy)    # Douglas
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,mayor)
+  - initial(p7,imp)
+  - shown_among2(p1,washerwoman,1,ravenkeeper,p2,p3)
+assert:
+  exists: true

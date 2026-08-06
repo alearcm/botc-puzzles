@@ -1,0 +1,29 @@
+# Imp almanac ex2 — "During the night, the Imp wakes and chooses a player, who
+# dies. The next night, the Imp chooses themselves to die. The Imp dies, and
+# the Poisoner becomes the Imp."
+# https://wiki.bloodontheclocktower.com/Imp
+# The Poisoner is the only minion, so the star pass is forced onto them.
+id: imp-ex2-star-pass-poisoner
+tier: T0
+source: Imp almanac example 2 (wiki)
+script: tb
+horizon: 4
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,poisoner)
+  - initial(p3,chef)
+  - initial(p4,soldier)
+  - initial(p5,mayor)
+  - initial(p6,virgin)
+  - initial(p7,slayer)
+  - picked(p2,poisoner,1,p2)
+  - picked(p1,imp,2,p3)
+  - picked(p2,poisoner,2,p2)
+  - picked(p1,imp,3,p1)
+  - picked(p2,poisoner,3,p2)
+  - picked(p2,imp,4,p4)
+assert:
+  certain:
+    - announced_dead(p1,3)
+    - char(p2,imp,4)

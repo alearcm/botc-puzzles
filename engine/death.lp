@@ -29,8 +29,12 @@ kill_prop(Q, src(P,assassin), T, I, pierce) :-
     functioning_at(P,assassin,T,I).
 
 % ---------- mayor bounce ----------
+% a protected mayor's ability does not trigger (Monk almanac): no bounce
 bounceable(Q,Src,T,I) :- kill_prop(Q,Src,T,I,demon), char(Q,mayor,T),
-                         functioning_at(Q,mayor,T,I), alive(Q,T).
+                         functioning_at(Q,mayor,T,I), alive(Q,T),
+                         not status_or_innate(Q,safe_from_demon,T,I),
+                         not status_or_innate(Q,cant_die,T,I),
+                         not status_or_innate(Q,safe_night,T,I).
 1 { redirect(Q,Src,T,I,R) : alive(R,T) } 1 :- bounceable(Q,Src,T,I).
 final_kill(R,Src,T,I,demon) :- redirect(_,Src,T,I,R).
 final_kill(Q,Src,T,I,K) :- kill_prop(Q,Src,T,I,K), not bounceable(Q,Src,T,I).

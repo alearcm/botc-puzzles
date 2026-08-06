@@ -230,9 +230,16 @@ status_on_day(Q,K,D) :- applied(Q,K,_,T0,_,permanent_sticky), T0 <= D, day(D).
 status_on(Q,K,T,I) :- applied(Q,K,Src,T0,_,nights(N,T0)), T0 < T, T <= T0+N-1,
                       acts_idx(T,I), not voided(Q,K,Src,T).
 status_on_day(Q,K,D) :- applied(Q,K,Src,D,_,until_dusk(D)), day(D),
-                        not voided(Q,K,Src,D).
+                        not voided(Q,K,Src,D), not voided_day(Q,K,Src,D).
 status_on_day(Q,K,D) :- applied(Q,K,Src,T0,_,permanent), T0 <= D, day(D),
-                        not voided(Q,K,Src,D).
+                        not voided(Q,K,Src,D), not voided_day(Q,K,Src,D).
+% a status also ends when its source no longer holds the ability by dawn —
+% e.g. the star-passed ex-Poisoner's poison ends (Poisoner almanac ex5)
+voided_day(Q,K,src(P,C),D) :- applied(Q,K,src(P,C),_,_,E),
+    E != permanent_sticky, day(D), not source_abled_day(P,C,D).
+source_abled_day(P,C,D) :- char_d(P,C,D), alive(P,D), not dies_night(P,D),
+                           day(D).
+source_abled_day(P,C,D) :- char_d(P,C,D), persists_dead(P,C,D), day(D).
 acts_idx(T,I) :- asched(_,T,I).
 acts_idx(T,99) :- night(T).   % end-of-night evaluation point
 

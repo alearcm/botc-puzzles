@@ -36,6 +36,11 @@ Memory — the author's, a Storyteller's, or a model's — is never a source.
 | `pithag-ogre` | Jinx: an evil player turned into the Ogre can't turn good via their own ability. | Official jinx |
 | `vortox-savant` | Vortoxed Savant receives two false statements — Vortox is claim-wise falsification (`ALL_FALSE`), not pattern negation. | Almanac |
 | `reg-survives-death` | Registration flavour survives death: the executed Recluse may show as the Imp to the Undertaker. | Recluse almanac example |
+| `mayor-protected-no-bounce` | A Monk-protected Mayor's bounce does not trigger: the attack simply fails, nobody else may die instead. | Monk almanac ex2 |
+| `butler-dead-votes-free` | A dead Butler has no ability and votes freely (master constraint gone). | Butler almanac ex3 |
+| `sw-count-includes-dying-demon` | Scarlet Woman's "5 or more players alive" counts players alive at the moment the demon dies — the dying demon included. | Scarlet Woman almanac ex2 |
+| `source-loss-ends-status-by-dawn` | Ongoing statuses end when their source no longer holds the ability by dawn: the star-passed ex-Poisoner's poison ends. | Poisoner almanac ex5 |
+| `undertaker-no-wake` | The Undertaker does not wake on nights following no execution (observable via Chambermaid). | Undertaker almanac ex4 |
 | `night-sheet-order` | The base editions' printed night sheets differ from the modern global order (TB: Butler before Undertaker; BMR: Innkeeper before Courtier, Professor before Gossip). Engine uses the printed sheets per script. | Official edition night sheets (see data/raw/night_orders_notes.md) |
 | `death-trigger-timing` | Death-triggered ongoing effects (e.g. Sweetheart's drunking) begin at the death's position in the night order; abilities that already resolved that night were unimpaired. | Night-order semantics; caught by `snakecharmer-same-night` fixture |
 

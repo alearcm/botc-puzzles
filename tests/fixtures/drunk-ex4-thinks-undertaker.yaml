@@ -1,0 +1,25 @@
+# Drunk almanac ex4 — "The Fortune Teller is executed. That night, the Drunk,
+# who thinks they are Undertaker, learns that the Drunk died today."
+# https://wiki.bloodontheclocktower.com/Drunk
+# The charade token is free: the shown character (drunk) need not match the
+# executee's registration.
+id: drunk-ex4-thinks-undertaker
+tier: T0
+source: Drunk almanac example 4 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,drunk)
+  - believed_init(p3,undertaker)
+  - initial(p4,fortuneteller)
+  - initial(p5,chef)
+  - initial(p6,mayor)
+  - red_herring(p5)
+  - executed(p4,1)
+  - picked(p1,imp,2,p5)
+  - shown_char(p3,undertaker,2,drunk)
+assert:
+  exists: true

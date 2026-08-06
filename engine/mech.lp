@@ -25,9 +25,14 @@ demon_died(P,D,exec) :- exec_death(P,D), char_d(P,C,D), team_of(C,demon).
 sw_takes(Q,CD,T) :- demon_died(P,T,night), not imp_suicide(P,T),
     char(P,CD,T), char(Q,scarletwoman,T), functioning_at(Q,scarletwoman,T,99),
     alive(Q,T), Kc = #count{ R : app_alive(R,T) }, Kc >= 5.
+% "5 or more players alive" counts players alive when the demon dies — the
+% dying demon included (Scarlet Woman almanac ex2)
 sw_takes_day(Q,CD,D) :- demon_died(P,D,exec), char_d(P,CD,D),
     char_d(Q,scarletwoman,D), functioning_day(Q,scarletwoman,D), alive(Q,D),
-    Kc = #count{ R : app_alive(R,D), not dies_day(R,D) }, Kc >= 5.
+    Kc = #count{ R : app_alive(R,D), not dies_night(R,D) }, Kc >= 5.
+% the demon dying to a day kill (Slayer) also passes to the Scarlet Woman
+demon_died(P,D,exec) :- day_kill(P,D), alive(P,D), char_d(P,C,D),
+                        team_of(C,demon).
 becomes(Q,CD,T) :- sw_takes(Q,CD,T).
 becomes_day(Q,CD,D) :- sw_takes_day(Q,CD,D).
 
@@ -39,13 +44,21 @@ day_kill(Q,D) :- slayer_shot(P,Q,D), char_d(P,slayer,D),
     reg_demon(Q,sly(P,D,Q)).
 slayer_spent(P,D2) :- slayer_shot(P,_,D), day(D2), D2 > D.
 
+% undertaker only wakes on nights after an execution
+blocked_act(P,T) :- char(P,undertaker,T), night(T), T > 1,
+                    not executed_yesterday(_,T).
+
 % virgin: nomination proc (inputs nominated/3, proc_virgin/2 observed)
+% an ST-voided nomination (e.g. by a dead player) is input as
+% nomination_voided/3 and neither procs nor spends the ability
+nomination_voided_any(N,V,D) :- nomination_voided(N,V,D).
 site_tm(vrg(V,D,N),N,D) :- nominated(N,V,D), char_d(V,virgin,D).
 site_day(vrg(V,D,N)) :- site_tm(vrg(V,D,N),N,D).
 virgin_would(N,V,D) :- nominated(N,V,D), char_d(V,virgin,D),
     functioning_day(V,virgin,D), not virgin_spent(V,D),
-    reg_team(N,townsfolk,vrg(V,D,N)).
-virgin_spent(V,D2) :- nominated(_,V,D), char_d(V,virgin,D), day(D2), D2 > D.
+    not nomination_voided(N,V,D), reg_team(N,townsfolk,vrg(V,D,N)).
+virgin_spent(V,D2) :- nominated(N,V,D), char_d(V,virgin,D), day(D2), D2 > D,
+                      not nomination_voided(N,V,D).
 :- proc_virgin(N,D), nominated(N,V,D), not virgin_would(N,V,D).
 :- no_proc_virgin(N,D), nominated(N,V,D), virgin_would(N,V,D).
 
@@ -135,8 +148,10 @@ st_kill(P,T) :- tinker_dies(P,T).
                                 not dies_night(P,D).
 day_kill(P,D) :- tinker_dies_day(P,D).
 
-% butler: may only vote if the chosen master votes (votes are day inputs)
+% butler: may only vote if the chosen master votes (votes are day inputs);
+% a dead butler has no ability and votes freely (Butler almanac ex3)
 :- voted(P,D), char(P,butler,D), not impaired_day(P,D),
+   alive(P,D), not dies_night(P,D),
    picked(P,butler,D,M), not voted(M,D).
 
 % philosopher: once per game, gain a good character's ability; if that

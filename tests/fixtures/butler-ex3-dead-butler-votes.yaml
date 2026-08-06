@@ -1,0 +1,26 @@
+# Butler almanac ex3 — "The Butler is dead. Because dead players have no
+# ability, the Butler may vote with their vote token at any time."
+# https://wiki.bloodontheclocktower.com/Butler
+# EXPECTED FAIL (engine seam): mech.lp's Butler vote constraint checks
+# char/impairment but NOT whether the Butler is alive (or has their ability),
+# so a dead Butler voting without their master is rejected by the engine while
+# the almanac allows it. Butler dies night 2, votes alone on day 2.
+id: butler-ex3-dead-butler-votes
+tier: T0
+source: Butler almanac example 3 (wiki)
+script: tb
+horizon: 3
+players: [p1, p2, p3, p4, p5, p6]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,butler)
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,mayor)
+  - picked(p3,butler,1,p4)
+  - picked(p1,imp,2,p3)
+  - picked(p3,butler,2,p4)
+  - voted(p3,2)
+assert:
+  exists: true

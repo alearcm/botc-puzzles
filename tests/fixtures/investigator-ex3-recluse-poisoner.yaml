@@ -1,0 +1,21 @@
+# Investigator almanac ex3 — "Brianna is the Recluse, and Marianna is the Imp.
+# The Investigator learns that either Brianna or Marianna is the Poisoner.
+# (This happens because the Recluse is registering as a Minion—in this case,
+# the Poisoner.)"
+# https://wiki.bloodontheclocktower.com/Investigator
+id: investigator-ex3-recluse-poisoner
+tier: T0
+source: Investigator almanac example 3 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6]
+given:
+  - initial(p1,investigator)
+  - initial(p2,recluse)   # Brianna
+  - initial(p3,imp)       # Marianna
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,scarletwoman)
+  - shown_among2(p1,investigator,1,poisoner,p2,p3)
+assert:
+  exists: true

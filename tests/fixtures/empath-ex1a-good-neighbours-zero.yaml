@@ -1,0 +1,21 @@
+# Empath almanac ex1 (part a) — "The Empath neighbours two good players—a
+# Soldier and a Monk. The Empath learns a '0'."
+# https://wiki.bloodontheclocktower.com/Empath
+# (Part b of this example involves an evil Gunslinger traveller: SKIPPED.)
+id: empath-ex1a-good-neighbours-zero
+tier: T0
+source: Empath almanac example 1, first paragraph (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,empath)
+  - initial(p2,soldier)
+  - initial(p3,imp)
+  - initial(p4,scarletwoman)
+  - initial(p5,chef)
+  - initial(p6,mayor)
+  - initial(p7,monk)
+  - shown_num(p1,empath,1,0)
+assert:
+  exists: true

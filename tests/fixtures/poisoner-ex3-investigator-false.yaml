@@ -1,0 +1,23 @@
+# Poisoner almanac ex3 — "The Investigator is poisoned. They learn that one of
+# two players is the Baron, even though neither is a Minion. (Or even the
+# right players, but the wrong Minion type.)"
+# https://wiki.bloodontheclocktower.com/Poisoner
+# p4/p5 are townsfolk; the poisoned token is arbitrary.
+id: poisoner-ex3-investigator-false
+tier: T0
+source: Poisoner almanac example 3 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,poisoner)
+  - initial(p3,investigator)
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,mayor)
+  - initial(p7,virgin)
+  - picked(p2,poisoner,1,p3)
+  - shown_among2(p3,investigator,1,baron,p4,p5)
+assert:
+  exists: true

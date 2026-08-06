@@ -1,0 +1,27 @@
+# Fortune Teller almanac ex3 — "The Fortune Teller chooses an alive Butler and
+# a dead Imp, and learns a 'yes'."
+# https://wiki.bloodontheclocktower.com/Fortune_Teller
+# Imp executed day 1 with 6 players so the Scarlet Woman takes over and the
+# game continues; the dead Imp still registers as the Demon on night 2.
+id: fortuneteller-ex3-dead-imp-yes
+tier: T0
+source: Fortune Teller almanac example 3 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6]
+given:
+  - initial(p1,fortuneteller)
+  - initial(p2,butler)
+  - initial(p3,imp)
+  - initial(p4,soldier)
+  - initial(p5,mayor)
+  - initial(p6,scarletwoman)
+  - red_herring(p1)
+  - picked2(p1,fortuneteller,1,p4,p5)
+  - shown_bool(p1,fortuneteller,1,no)
+  - executed(p3,1)
+  - picked(p6,imp,2,p4)
+  - picked2(p1,fortuneteller,2,p2,p3)
+  - shown_bool(p1,fortuneteller,2,yes)
+assert:
+  exists: true

@@ -1,0 +1,24 @@
+# Recluse almanac ex2 — "The Empath, who neighbours the Recluse and the Monk,
+# learns she is neighbouring one evil player. The next night, the Empath
+# learns they are neighbouring no evil players."
+# https://wiki.bloodontheclocktower.com/Recluse
+# Misregistration is per occurrence: evil on night 1, good on night 2.
+id: recluse-ex2-empath-flicker
+tier: T0
+source: Recluse almanac example 2 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6]
+given:
+  - initial(p1,empath)
+  - initial(p2,recluse)
+  - initial(p3,imp)
+  - initial(p4,scarletwoman)
+  - initial(p5,chef)
+  - initial(p6,monk)
+  - shown_num(p1,empath,1,1)
+  - picked(p6,monk,2,p1)
+  - picked(p3,imp,2,p5)
+  - shown_num(p1,empath,2,0)
+assert:
+  exists: true

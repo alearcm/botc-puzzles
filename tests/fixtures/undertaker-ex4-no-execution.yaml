@@ -1,0 +1,27 @@
+# Undertaker almanac ex4 — "Nobody was executed today. That night, the
+# Undertaker does not wake."
+# https://wiki.bloodontheclocktower.com/Undertaker
+# NOTE: "does not wake" is not directly expressible — the engine emits
+# woke/2 for the Undertaker from acting() every night regardless of an
+# execution (only the token is gated on executed_yesterday). Transcribed as:
+# in every world the Undertaker receives NO character token on night 2.
+id: undertaker-ex4-no-execution
+tier: T0
+source: Undertaker almanac example 4 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,undertaker)
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,mayor)
+  - initial(p7,virgin)
+  - picked(p1,imp,2,p4)
+  - "u_learned :- shown_char(p3,undertaker,2,CC), on_script(CC)"
+  - "no_token :- not u_learned"
+assert:
+  certain:
+    - no_token

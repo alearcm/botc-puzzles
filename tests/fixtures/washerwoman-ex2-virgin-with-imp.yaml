@@ -1,0 +1,20 @@
+# Washerwoman almanac ex2 — "Julian is the Imp, and Alex is the Virgin. The
+# Washerwoman learns that either Julian or Alex is the Virgin."
+# https://wiki.bloodontheclocktower.com/Washerwoman
+id: washerwoman-ex2-virgin-with-imp
+tier: T0
+source: Washerwoman almanac example 2 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,washerwoman)
+  - initial(p2,imp)       # Julian
+  - initial(p3,virgin)    # Alex
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,mayor)
+  - initial(p7,scarletwoman)
+  - shown_among2(p1,washerwoman,1,virgin,p2,p3)
+assert:
+  exists: true

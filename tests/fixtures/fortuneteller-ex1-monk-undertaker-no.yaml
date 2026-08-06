@@ -1,0 +1,23 @@
+# Fortune Teller almanac ex1 — "The Fortune Teller chooses the Monk and the
+# Undertaker and learns a 'no'."
+# https://wiki.bloodontheclocktower.com/Fortune_Teller
+# Red herring pinned away from the chosen pair.
+id: fortuneteller-ex1-monk-undertaker-no
+tier: T0
+source: Fortune Teller almanac example 1 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,fortuneteller)
+  - initial(p2,monk)
+  - initial(p3,undertaker)
+  - initial(p4,chef)
+  - initial(p5,soldier)
+  - initial(p6,scarletwoman)
+  - initial(p7,imp)
+  - red_herring(p4)
+  - picked2(p1,fortuneteller,1,p2,p3)
+  - shown_bool(p1,fortuneteller,1,no)
+assert:
+  exists: true

@@ -1,0 +1,25 @@
+# Slayer almanac ex3 — "The Imp is bluffing as the Slayer. They declare that
+# they use their Slayer ability on the Scarlet Woman. Nothing happens."
+# https://wiki.bloodontheclocktower.com/Slayer
+# slayer_shot from a non-Slayer can never produce a day_kill.
+id: slayer-ex3-imp-bluff
+tier: T0
+source: Slayer almanac example 3 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,chef)
+  - initial(p4,soldier)
+  - initial(p5,mayor)
+  - initial(p6,virgin)
+  - initial(p7,empath)
+  - slayer_shot(p1,p2,1)
+  - picked(p1,imp,2,p3)
+  - "sw_shot_dead :- day_kill(p2,1)"
+  - "nothing_happened :- not sw_shot_dead"
+assert:
+  certain:
+    - nothing_happened

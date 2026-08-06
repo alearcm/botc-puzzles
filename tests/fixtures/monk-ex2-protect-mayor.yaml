@@ -1,0 +1,27 @@
+# Monk almanac ex2 — "The Monk protects the Mayor, and the Imp attacks the
+# Mayor. The Mayor's 'another player dies' ability does not trigger, because
+# the Mayor is safe from the Imp. Nobody dies tonight."
+# https://wiki.bloodontheclocktower.com/Monk
+# NOTE (seam): the engine's bounce choice (bounceable/redirect) is not
+# suppressed by safe_from_demon — a world where the kill bounces onto another
+# player also exists. The almanac's "does not trigger" (nobody can die) is
+# therefore only transcribable as exists, not certain; flagged for review.
+id: monk-ex2-protect-mayor
+tier: T0
+source: Monk almanac example 2 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,monk)
+  - initial(p4,mayor)
+  - initial(p5,chef)
+  - initial(p6,soldier)
+  - initial(p7,empath)
+  - picked(p3,monk,2,p4)
+  - picked(p1,imp,2,p4)
+  - ":- announced_dead(P,2), player(P)"
+assert:
+  exists: true

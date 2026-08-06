@@ -1,0 +1,23 @@
+# Ravenkeeper almanac ex1 — "The Ravenkeeper is killed by the Imp, and then
+# wakes to choose a player. After some deliberation, they choose Benjamin.
+# Benjamin is the Empath, and the Ravenkeeper learns this."
+# https://wiki.bloodontheclocktower.com/Ravenkeeper
+id: ravenkeeper-ex1-learns-empath
+tier: T0
+source: Ravenkeeper almanac example 1 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,ravenkeeper)
+  - initial(p4,empath)   # Benjamin
+  - initial(p5,chef)
+  - initial(p6,soldier)
+  - initial(p7,mayor)
+  - picked(p1,imp,2,p3)
+  - picked(p3,ravenkeeper,2,p4)
+  - shown_char(p3,ravenkeeper,2,empath)
+assert:
+  exists: true

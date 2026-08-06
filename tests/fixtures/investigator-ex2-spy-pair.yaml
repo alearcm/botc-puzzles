@@ -1,0 +1,25 @@
+# Investigator almanac ex2 — "Angelus is the Spy, and Lewis is the Poisoner.
+# The Investigator learns that either Angelus or Lewis is the Spy."
+# https://wiki.bloodontheclocktower.com/Investigator
+# 10p for the two-minion cast; Poisoner pinned to self-poison.
+id: investigator-ex2-spy-pair
+tier: T0
+source: Investigator almanac example 2 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10]
+given:
+  - initial(p1,investigator)
+  - initial(p2,spy)        # Angelus
+  - initial(p3,poisoner)   # Lewis
+  - initial(p4,imp)
+  - initial(p5,chef)
+  - initial(p6,soldier)
+  - initial(p7,mayor)
+  - initial(p8,virgin)
+  - initial(p9,slayer)
+  - initial(p10,empath)
+  - picked(p3,poisoner,1,p3)
+  - shown_among2(p1,investigator,1,spy,p2,p3)
+assert:
+  exists: true

@@ -1,0 +1,21 @@
+# Librarian almanac ex1 — "Benjamin is the Saint, and Filip is the Baron. The
+# Librarian learns that either Benjamin or Filip is the Saint."
+# https://wiki.bloodontheclocktower.com/Librarian
+# 7p with Baron: 3 townsfolk + 2 outsiders.
+id: librarian-ex1-saint-pair
+tier: T0
+source: Librarian almanac example 1 (wiki)
+script: tb
+horizon: 1
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,librarian)
+  - initial(p2,saint)     # Benjamin
+  - initial(p3,baron)     # Filip
+  - initial(p4,butler)
+  - initial(p5,chef)
+  - initial(p6,soldier)
+  - initial(p7,imp)
+  - shown_among2(p1,librarian,1,saint,p2,p3)
+assert:
+  exists: true

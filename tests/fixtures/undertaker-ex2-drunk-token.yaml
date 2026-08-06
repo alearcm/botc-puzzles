@@ -1,0 +1,24 @@
+# Undertaker almanac ex2 — "The Drunk, who thinks they are the Virgin, is
+# executed today. At night, the Undertaker is shown the Drunk token, because
+# the Undertaker learns a player's true character, as opposed to the one they
+# believe they are."
+# https://wiki.bloodontheclocktower.com/Undertaker
+id: undertaker-ex2-drunk-token
+tier: T0
+source: Undertaker almanac example 2 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,undertaker)
+  - initial(p4,drunk)
+  - believed_init(p4,virgin)
+  - initial(p5,chef)
+  - initial(p6,mayor)
+  - executed(p4,1)
+  - picked(p1,imp,2,p5)
+  - shown_char(p3,undertaker,2,drunk)
+assert:
+  exists: true

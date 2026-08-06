@@ -1,0 +1,25 @@
+# Drunk almanac ex2 — "The Drunk, who thinks they are the Empath, wakes and
+# learns a '0', even though they are sitting next to one evil player. The next
+# night, they learn a '1'."
+# https://wiki.bloodontheclocktower.com/Drunk
+# The Drunk (p2) neighbours the Imp (p1): true count is 1 both nights, but the
+# charade token is free.
+id: drunk-ex2-thinks-empath
+tier: T0
+source: Drunk almanac example 2 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6]
+given:
+  - initial(p1,imp)
+  - initial(p2,drunk)
+  - believed_init(p2,empath)
+  - initial(p3,soldier)
+  - initial(p4,chef)
+  - initial(p5,mayor)
+  - initial(p6,scarletwoman)
+  - shown_num(p2,empath,1,0)
+  - picked(p1,imp,2,p4)
+  - shown_num(p2,empath,2,1)
+assert:
+  exists: true

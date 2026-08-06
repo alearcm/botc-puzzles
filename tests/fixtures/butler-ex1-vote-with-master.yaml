@@ -1,0 +1,24 @@
+# Butler almanac ex1 — "The Butler chooses Filip to be their Master. Tomorrow,
+# if Filip raises his hand to vote on an execution, then the Butler may too.
+# If not, then the Butler may not raise their hand."
+# https://wiki.bloodontheclocktower.com/Butler
+# Legal branch: master votes, Butler votes.
+id: butler-ex1-vote-with-master
+tier: T0
+source: Butler almanac example 1 (wiki)
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)
+  - initial(p3,butler)
+  - initial(p4,chef)     # Filip (master)
+  - initial(p5,soldier)
+  - initial(p6,mayor)
+  - picked(p3,butler,1,p4)
+  - voted(p4,1)
+  - voted(p3,1)
+  - picked(p1,imp,2,p5)
+assert:
+  exists: true

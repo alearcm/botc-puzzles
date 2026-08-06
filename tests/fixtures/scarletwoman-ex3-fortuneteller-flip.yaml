@@ -1,0 +1,32 @@
+# Scarlet Woman almanac ex3 — "Brianna is the Scarlet Woman. The Fortune
+# Teller chooses Brianna and Alex, and learns a 'no'. Later, the Imp dies, so
+# Brianna becomes the Imp. The Fortune Teller chooses Brianna and Alex again,
+# and learns a 'yes'."
+# https://wiki.bloodontheclocktower.com/Scarlet_Woman
+# Imp executed day 2 with 5 alive remaining (excluding him) -> takeover.
+id: scarletwoman-ex3-fortuneteller-flip
+tier: T0
+source: Scarlet Woman almanac example 3 (wiki)
+script: tb
+horizon: 3
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - initial(p1,imp)
+  - initial(p2,scarletwoman)   # Brianna
+  - initial(p3,fortuneteller)
+  - initial(p4,chef)           # Alex
+  - initial(p5,soldier)
+  - initial(p6,mayor)
+  - initial(p7,virgin)
+  - red_herring(p3)
+  - picked2(p3,fortuneteller,1,p2,p4)
+  - shown_bool(p3,fortuneteller,1,no)
+  - picked(p1,imp,2,p5)
+  - picked2(p3,fortuneteller,2,p2,p4)
+  - shown_bool(p3,fortuneteller,2,no)
+  - executed(p1,2)
+  - picked2(p3,fortuneteller,3,p2,p4)
+  - shown_bool(p3,fortuneteller,3,yes)
+  - picked(p2,imp,3,p6)
+assert:
+  exists: true
