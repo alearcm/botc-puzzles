@@ -1,0 +1,62 @@
+# Weekly Puzzle #36 — "What is Your Weapon of Choice?"
+# (Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1k1exb7/
+# 8 players, TB, dueling Slayer claims. One Imp + one minion of {Baron,
+# Spy, Poisoner, Scarlet Woman}. Outsiders possible: Saint, Recluse, Drunk;
+# default one; Baron +2. You are not evil, might be the Drunk.
+# Hidden roles box: Imp, Poisoner, Spy, Baron, Scarlet Woman, Drunk.
+# Day 1: You executed. Night 2: Josh dies. Day 2: Oscar shoots Steph
+# (nothing), Oscar executed. Night 3: Olivia dies. Day 3: Adam shoots Sula
+# (nothing). Question: who is the Demon and who is the Minion?
+# CONFIRMED ANSWER (author-endorsed): Fraser = Imp (bluffing Recluse),
+# Oscar = Poisoner (poisoned Sula night 1, Josh night 2).
+id: nqt-036
+script: tb
+horizon: 4
+players: [sula, olivia, fraser, oscar, you, steph, adam, josh]
+claims:
+  - {player: sula, character: investigator,
+     info: ["shown_among2(sula,investigator,1,spy,josh,steph)"]}
+  - {player: olivia, character: fortuneteller,
+     info: ["picked2(olivia,fortuneteller,1,josh,oscar)",
+            "shown_bool(olivia,fortuneteller,1,no)",
+            "picked2(olivia,fortuneteller,2,adam,oscar)",
+            "shown_bool(olivia,fortuneteller,2,no)"]}
+  - {player: fraser, character: recluse, info: []}
+  - {player: oscar, character: slayer, info: []}
+  - {player: you, character: empath,
+     info: ["shown_num(you,empath,1,1)"]}
+  - {player: steph, character: saint, info: []}
+  - {player: adam, character: slayer, info: []}
+  - {player: josh, character: ravenkeeper,
+     info: ["picked(josh,ravenkeeper,2,adam)",
+            "shown_char(josh,ravenkeeper,2,scarletwoman)"]}
+given:
+  # events
+  - "executed(you,1)"
+  - "executed(oscar,2)"
+  - "slayer_shot(oscar,steph,2)"
+  - "slayer_shot(adam,sula,3)"
+  - ":- announced_dead(P,1), player(P)"
+  - ":- not announced_dead(josh,2)"
+  - ":- announced_dead(P,2), P != josh, player(P)"
+  - ":- not announced_dead(olivia,3)"
+  - ":- announced_dead(P,3), P != olivia, player(P)"
+  - ":- day_kill(P,1), player(P)"
+  - ":- day_kill(P,2), player(P)"
+  - ":- day_kill(P,3), player(P)"
+  # roster
+  - ":- initial(P,C), role(C,demon,_), C != imp"
+  - ":- initial(P,C), role(C,minion,_), C != baron, C != spy, C != poisoner, C != scarletwoman"
+  - ":- initial(P,C), role(C,outsider,_), C != saint, C != recluse, C != drunk"
+  # "Potential hidden roles" box: claimed role or one of these six
+  - "hidden36(imp; poisoner; spy; baron; scarletwoman; drunk)"
+  - ":- initial(sula,C), C != investigator, not hidden36(C)"
+  - ":- initial(olivia,C), C != fortuneteller, not hidden36(C)"
+  - ":- initial(fraser,C), C != recluse, not hidden36(C)"
+  - ":- initial(oscar,C), C != slayer, not hidden36(C)"
+  - ":- initial(you,C), C != empath, not hidden36(C)"
+  - ":- initial(steph,C), C != saint, not hidden36(C)"
+  - ":- initial(adam,C), C != slayer, not hidden36(C)"
+  - ":- initial(josh,C), C != ravenkeeper, not hidden36(C)"
+  - ":- align(you,evil,1)"

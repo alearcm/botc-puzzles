@@ -126,6 +126,13 @@ night_changed(P,D) :- becomes(P,_,D), day(D).
 1 { believed_init(P,B) : role(B,BT,_), in_pool(B), B != C } 1 :-
     initial(P,C), self_misinformed(C,BT), role(B2,BT,_).
 believed_init(P,C) :- initial(P,C), not self_misinformed(C,_).
+% the Drunk's token is drawn from the NOT-IN-PLAY townsfolk (NQT #36 author
+% ruling: "these puzzles are built on the assumption that the Drunk (or
+% Marionette) can't draw an in-play token" — a stated grey area in the
+% official rules, adopted as default). Characters with legitimate duplicate
+% tokens (dup_ok: Village Idiot) are exempt — a Drunk-as-VI may coexist
+% with real VIs (NQT #20 author comment).
+:- initial(P,drunk), believed_init(P,B), initial(Q,B), not dup_ok(B).
 % (believed char is static in base scripts; philosopher et al. handled in mech)
 
 % shadow ability: the believed character's schedule runs as theater

@@ -1,0 +1,18 @@
+# NQT corpus assumption (author-stated, #36 thread): the Drunk's believed
+# character token is drawn from the not-in-play townsfolk — a Drunk cannot
+# believe they are a character someone else actually is. dup_ok characters
+# (Village Idiot) are exempt (#20: Drunk-as-VI beside real VIs).
+script: tb
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7]
+given:
+  - "initial(p1,imp)"
+  - "initial(p2,poisoner)"
+  - "initial(p3,drunk)"
+  - "believed_init(p3,slayer)"
+  - "initial(p4,slayer)"
+  - "initial(p5,empath)"
+  - "initial(p6,monk)"
+  - "initial(p7,soldier)"
+assert:
+  exists: false
