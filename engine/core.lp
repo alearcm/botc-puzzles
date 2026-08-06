@@ -214,11 +214,36 @@ shadow_acting(P,B,T) :- shadow(P,B,T), acts(B,each,_), sched(B,T,_),
 1 { pickedc(P,C,T,CC) : on_script(CC) } 1 :-
     acting(P,C,T), acts_pick(C,p1_and_char).
 
-% shadow picks (theater choices still happen; no world effects)
+% shadow picks (theater choices still happen; no world effects). Every pick
+% spec is mirrored — a drunk-"Chambermaid" still chooses two alive players
+% (caught by NQT #22: the charade branch was structurally unsatisfiable for
+% specs without a shadow rule).
 1 { picked(P,B,T,Q) : player(Q) } 1 :-
     shadow_acting(P,B,T), acts_pick(B,p1_any).
+0 { picked(P,B,T,Q) : player(Q) } 1 :-
+    shadow_acting(P,B,T), acts_pick(B,p1_any_opt).
+1 { picked(P,B,T,Q) : app_alive(Q,T) } 1 :-
+    shadow_acting(P,B,T), acts_pick(B,p1_alive).
+1 { picked(P,B,T,Q) : app_alive(Q,T), Q != P } 1 :-
+    shadow_acting(P,B,T), acts_pick(B,p1_alive_not_self).
+1 { picked(P,B,T,Q) : player(Q), Q != P } 1 :-
+    shadow_acting(P,B,T), acts_pick(B,p1_not_self).
 1 { picked2(P,B,T,Q1,Q2) : player(Q1), player(Q2), Q1 < Q2 } 1 :-
     shadow_acting(P,B,T), acts_pick(B,p2_players).
+1 { picked2(P,B,T,Q1,Q2) : app_alive(Q1,T), app_alive(Q2,T), Q1 < Q2 } 1 :-
+    shadow_acting(P,B,T), acts_pick(B,p2_alive).
+1 { picked2(P,B,T,Q1,Q2) : app_alive(Q1,T), app_alive(Q2,T), Q1 < Q2,
+                           Q1 != P, Q2 != P } 1 :-
+    shadow_acting(P,B,T), acts_pick(B,p2_alive_not_self).
+1 { picked2(P,B,T,Q1,Q2) : player(Q1), player(Q2), Q1 < Q2,
+                           Q1 != P, Q2 != P } 1 :-
+    shadow_acting(P,B,T), acts_pick(B,p2_not_self).
+1 { picked(P,B,T,Q) : app_alive(Q,T) } 1 :-
+    shadow_acting(P,B,T), acts_pick(B,p1_and_char).
+1 { pickedc(P,B,T,CC) : on_script(CC) } 1 :-
+    shadow_acting(P,B,T), acts_pick(B,p1_and_char).
+1 { pickedc(P,B,T,CC) : on_script(CC) } 1 :-
+    shadow_acting(P,B,T), acts_pick(B,char_only).
 
 % ---------- statuses ----------
 % applied(Target, Kind, src(P,C), T, I, Expiry)

@@ -52,6 +52,14 @@ Baron deltas are already engine-side.
 
 "You are not evil" → `":- align(you,evil,1)"`.
 
+## Cross-script imports
+
+NQT puzzles freely import single characters across editions (a Chambermaid
+in a TB game). Every claimed character must be on a loaded script
+(`script: [tb, bmr]`) — the compiler now errors otherwise, because a claim
+for an off-roster character makes the good/drunk branches silently
+unsatisfiable and corrupts the solve (caught on nqt-022).
+
 ## Ordering conventions
 
 `picked2(P,C,T,Q1,Q2)` requires `Q1 < Q2` in clingo term order (alphabetical

@@ -249,6 +249,13 @@ def load_puzzle(path: Path) -> tuple[Instance, dict]:
         given=doc.get("given", []),
         statements=doc.get("statements", {}),
     )
+    roster = {c["id"] for s in inst.scripts for c in load_cards(s)}
+    for cl in doc.get("claims", []):
+        if cl["character"] not in roster:
+            raise ValueError(
+                f"claimed character '{cl['character']}' is not on any loaded "
+                f"script {inst.scripts} — add the script it comes from "
+                f"(silent UNSAT otherwise; see nqt-022)")
     inst.given.extend(claim_rules(doc.get("claims", [])))
     if doc.get("assume_ongoing", True):
         inst.given.append("assume_ongoing")
