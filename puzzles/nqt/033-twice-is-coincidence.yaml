@@ -1,0 +1,61 @@
+# Weekly Puzzle #33 — "Twice is Coincidence, Thrice is Proof"
+# (Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1jl7cuv/
+# 8 players, TB. One Imp + one minion of {Baron, Spy, Poisoner, Scarlet
+# Woman}. Outsiders possible: Saint, Recluse, Drunk; default one; Baron +2.
+# You are not evil, might be the Drunk. Hidden roles box: Imp, Poisoner,
+# Spy, Baron, Scarlet Woman, Drunk.
+# Day 1: You executed. Night 2: Olivia dies. Day 2: Fraser executed.
+# Night 3: Jasmine dies. Question: who is the Demon and who is the Minion?
+# CONFIRMED ANSWER (author-endorsed): Tom = Imp, Sula = Poisoner (hit the
+# Investigator night 1, the Fortune Teller nights 2 and 3).
+id: nqt-033
+script: tb
+horizon: 3
+players: [tom, oscar, sula, fraser, you, olivia, jasmine, hannah]
+claims:
+  - {player: tom, character: librarian,
+     info: ["shown_among2(tom,librarian,1,saint,olivia,sula)"]}
+  - {player: oscar, character: fortuneteller,
+     info: ["picked2(oscar,fortuneteller,1,fraser,sula)",
+            "shown_bool(oscar,fortuneteller,1,no)",
+            "picked2(oscar,fortuneteller,2,sula,tom)",
+            "shown_bool(oscar,fortuneteller,2,no)",
+            "picked2(oscar,fortuneteller,3,hannah,tom)",
+            "shown_bool(oscar,fortuneteller,3,no)"]}
+  - {player: sula, character: saint, info: []}
+  - {player: fraser, character: investigator,
+     info: ["shown_among2(fraser,investigator,1,poisoner,jasmine,you)"]}
+  - {player: you, character: empath,
+     info: ["shown_num(you,empath,1,0)"]}
+  - {player: olivia, character: recluse, info: []}
+  - {player: jasmine, character: ravenkeeper,
+     info: ["picked(jasmine,ravenkeeper,3,hannah)",
+            "shown_char(jasmine,ravenkeeper,3,washerwoman)"]}
+  - {player: hannah, character: washerwoman,
+     info: ["shown_among2(hannah,washerwoman,1,investigator,fraser,sula)"]}
+given:
+  # events
+  - "executed(you,1)"
+  - "executed(fraser,2)"
+  - ":- announced_dead(P,1), player(P)"
+  - ":- not announced_dead(olivia,2)"
+  - ":- announced_dead(P,2), P != olivia, player(P)"
+  - ":- not announced_dead(jasmine,3)"
+  - ":- announced_dead(P,3), P != jasmine, player(P)"
+  - ":- day_kill(P,D), player(P), day(D)"
+  # roster
+  - ":- initial(P,C), role(C,demon,_), C != imp"
+  - ":- initial(P,C), role(C,minion,_), C != baron, C != spy, C != poisoner, C != scarletwoman"
+  - ":- initial(P,C), role(C,outsider,_), C != saint, C != recluse, C != drunk"
+  # "Potential hidden roles" box: claimed role or one of these six
+  - "hidden33(imp; poisoner; spy; baron; scarletwoman; drunk)"
+  - ":- initial(tom,C), C != librarian, not hidden33(C)"
+  - ":- initial(oscar,C), C != fortuneteller, not hidden33(C)"
+  - ":- initial(sula,C), C != saint, not hidden33(C)"
+  - ":- initial(fraser,C), C != investigator, not hidden33(C)"
+  - ":- initial(you,C), C != empath, not hidden33(C)"
+  - ":- initial(olivia,C), C != recluse, not hidden33(C)"
+  - ":- initial(jasmine,C), C != ravenkeeper, not hidden33(C)"
+  - ":- initial(hannah,C), C != washerwoman, not hidden33(C)"
+  - ":- align(you,evil,1)"

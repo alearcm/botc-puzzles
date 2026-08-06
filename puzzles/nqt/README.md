@@ -17,12 +17,13 @@ solver must reproduce the author-confirmed answer from the thread.
 | 26 | A Major Problem | TB | unique: Tom = Imp, Matthew = Poisoner | Tom Imp, Matthew Poisoner | YES |
 | 29 | A Dreamer? I'm Not the Only One | homebrew (all-Dreamer) TB+S&V | unique world: Adam = Imp, Jasmine = Poisoner, Hannah = Drunk | same | YES (first solve, no engine changes) |
 | 28 | A Study in Scarlet | TB+BMR+S&V | sound-unique: Olivia = No Dashii, Fraser = SW, Matt = Drunk | same | YES (after chambermaid ability-wakes-only fix) |
+| 33 | Twice is Coincidence, Thrice is Proof | TB | unique: Tom = Imp, Sula = Poisoner | same | YES (first solve, no engine changes) |
 | 34 | The Vortox Conjecture | S&V | unique: Sula = Vortox, Sarah = Witch | same | YES (forced engine fixes: strict ongoing-play, Vortox-counts-as-malfunction, Mathematician impaired-token scope; witch self-curse stays legal) |
 | 43 | Two Many Cooks | TB | unique: Dan = Imp, Fraser = Poisoner | Dan Imp, Fraser Poisoner | YES |
 | 55 | The Life of a Flowergirl | S&V | unique world: Anna = Vortox, Jasmine = Witch | same | YES (forced claim-model fixes: evil-at-end claim freedom, living-Mutant madness; first "Potential hidden roles" box) |
 | 59 | Fifty-Fifty | TB | unique: Oscar = Imp, Jasmine = Spy (full grimoire certain) | Jasmine Spy, Oscar Imp | YES |
 
-Running total: **13/14 sound-unique + 1 PARTIAL (#11: demon unique, minion open)** (008 at
+Running total: **14/15 sound-unique + 1 PARTIAL (#11: demon unique, minion open)** (008 at
 team level by
 design). #28 was temporarily PARTIAL after the solver switched to sound
 per-player probes; diagnosis found the discriminator in the Chambermaid's
