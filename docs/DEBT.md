@@ -33,6 +33,7 @@ hack without an entry here is the actual failure mode.
 | arctic-shift dependence for puzzle harvest | Reddit + Wayback egress-blocked | Cache everything fetched into the repo (done for images/metadata) |
 | Charade scope fixed at S1 | Scope ladder defined in RULINGS but not switchable per-puzzle yet | Wire scope selection into the puzzle format |
 | `assume_ongoing` is all-or-nothing | Puzzles asking "who wins if..." will need phase-scoped ongoing constraints | Parameterize when such a puzzle appears |
+| Evil claimants fully unconstrained | NQT rules say evil players LIE about their role (claim ≠ true role); we model claim freedom only — weaker, admits evil-truthful worlds | Add claim≠char constraint for evil-at-end claimants if a puzzle's uniqueness ever needs it |
 
 ## Recently retired
 

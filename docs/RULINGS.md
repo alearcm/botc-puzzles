@@ -48,6 +48,8 @@ Memory — the author's, a Storyteller's, or a model's — is never a source.
 | `chambermaid-ability-wakes-only` | The Chambermaid counts wakes due to a player's ABILITY: minion-info/demon-info wakes do not count. | Printed text ("due to their ability"); NQT #28 solver thread |
 | `night-sheet-order` | The base editions' printed night sheets differ from the modern global order (TB: Butler before Undertaker; BMR: Innkeeper before Courtier, Professor before Gossip). Engine uses the printed sheets per script. | Official edition night sheets (see data/raw/night_orders_notes.md) |
 | `death-trigger-timing` | Death-triggered ongoing effects (e.g. Sweetheart's drunking) begin at the death's position in the night order; abilities that already resolved that night were unimpaired. | Night-order semantics; caught by `snakecharmer-same-night` fixture |
+| `mutant-madness-ends-at-death` | Madness binds living players only: a dead Mutant no longer complies and reveals truthfully (claim convention: dead Mutants claim Mutant). | Madness = "under pressure to convince"; NQT #55 author comment |
+| `claim-freedom-is-current-evil` | Puzzle-convention claim freedom ("evil players lie") keys on alignment at the observed end-state, not initial role: turned-evil players (Fang Gu jump) lie freely; an ex-evil swapped good claims truthfully. | NQT #55 rules text ("An Outsider who became the Fang Gu may lie...") |
 
 ## Switches
 

@@ -219,9 +219,16 @@ def check_fixture(path: Path) -> tuple[bool, str]:
 
 def claim_rules(claims: list[dict]) -> list[str]:
     """Puzzle-convention claim semantics: a good claimant truthfully reports
-    their believed character and tokens (the drunk's charade included); evil
-    claimants are unconstrained."""
+    their believed character and tokens (the drunk's charade included);
+    players who are evil at the end of the observed window claim freely
+    ("evil players lie"); an ex-evil player swapped good must claim
+    truthfully like any good player."""
     out = []
+    if claims:
+        out.append("evil_at_end(P) :- player(P), align(P,evil,horizon).")
+        out.append("evil_at_end(P) :- player(P), align_change(P,evil,horizon).")
+        out.append("alive_at_end(P) :- alive(P,horizon), "
+                   "not dies_night(P,horizon).")
     for cl in claims:
         p, char = cl["player"], cl["character"]
         shown = [s.strip().rstrip(".") for s in cl.get("info", [])]
@@ -230,11 +237,12 @@ def claim_rules(claims: list[dict]) -> list[str]:
         drunk_body = ", ".join(
             [f"initial({p},drunk)", f"believed_init({p},{char})"] + shown)
         out.append(f"claim_ok({p}) :- {drunk_body}.")
-        out.append(f"claim_ok({p}) :- initial({p},C), role(C,minion,_).")
-        out.append(f"claim_ok({p}) :- initial({p},C), role(C,demon,_).")
-        # madness: a mutant claims a townsfolk (fabricated info); a
-        # cerenovus-mad player claims their mad character
-        out.append(f"claim_ok({p}) :- initial({p},mutant), role({char},townsfolk,_).")
+        out.append(f"claim_ok({p}) :- evil_at_end({p}).")
+        # madness: a LIVING mutant claims a townsfolk (fabricated info); a
+        # dead mutant no longer complies and claims truthfully (NQT #55
+        # comments); a cerenovus-mad player claims their mad character
+        out.append(f"claim_ok({p}) :- initial({p},mutant), "
+                   f"role({char},townsfolk,_), alive_at_end({p}).")
         out.append(f"claim_ok({p}) :- mad({p},{char},_).")
         out.append(f":- not claim_ok({p}).")
     return out

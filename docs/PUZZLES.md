@@ -11,9 +11,13 @@ constraint (on by default).
 One entry per public claim: `{player, character, info: [shown/picked atoms]}`.
 Semantics (compiled by `tools/botc.py claim_rules`): a good claimant truthfully
 is their believed character and received exactly the listed tokens (Drunk
-charade included); Mutants may claim any Townsfolk with fabricated info;
-Cerenovus-mad players claim their mad character; evil claimants are
-unconstrained.
+charade included); a LIVING Mutant may claim any Townsfolk with fabricated
+info (a dead Mutant no longer complies with madness and claims truthfully —
+NQT #55 author comment); Cerenovus-mad players claim their mad character.
+Claim freedom belongs to players who are evil at the END of the observed
+window (`align/align_change` at `horizon`) — this covers initial evils and
+turned-evil players (Fang Gu jump, Goon flip), while an ex-evil player
+swapped good (Snake Charmer) must claim truthfully like any good player.
 
 ## The fact-vs-constraint rule (IMPORTANT)
 
@@ -49,6 +53,19 @@ could be in play are...", "one minion of {...}"). Encode as roster
 constraints in `given`: `":- initial(P,butler), player(P)"`. The stated
 "default Outsider count" matches base setup arithmetic and needs no encoding;
 Baron deltas are already engine-side.
+
+Later puzzles carry a **"Potential hidden roles"** box: each player's true
+role is either their visible claimed role or one of the listed hidden roles.
+Encode as a pooled fact plus one constraint per player (see nqt-055):
+
+```yaml
+- "hidden55(fanggu; vigormortis; nodashii; vortox; witch; mutant)"
+- ":- initial(aoife,C), C != artist, not hidden55(C)"
+```
+
+Omitting this leaves the whole script in scope and admits exotic lines the
+puzzle never intended (Philosopher-gains-Snake-Charmer demon swaps made 7 of
+8 players viable demons in #55 before the box was encoded).
 
 "You are not evil" → `":- align(you,evil,1)"`.
 
