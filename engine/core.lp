@@ -86,8 +86,17 @@ align_changed(P,T) :- align_change(P,_,T).
 char(P,C,1) :- initial(P,C).
 char(P,C,T+1) :- char(P,C,T), night(T+1), not char_changed(P,T).
 char(P,C,T+1) :- becomes(P,C,T), night(T+1).
+char(P,C,T+1) :- becomes_day(P,C,T), night(T+1).
 char_changed(P,T) :- becomes(P,_,T).
+char_changed(P,T) :- becomes_day(P,_,T).
 :- char(P,C1,T), char(P,C2,T), C1 < C2.   % one character per player per night
+
+% character DURING day D: night-D changes (star pass, snake charmer...) have
+% materialised by dawn; day-triggered changes (SW takeover on execution) are
+% becomes_day and do not retro-apply to their own day.
+char_d(P,C,D) :- char(P,C,D), day(D), not night_changed(P,D).
+char_d(P,C,D) :- becomes(P,C,D), day(D).
+night_changed(P,D) :- becomes(P,_,D), day(D).
 
 % ---------- believed character (self-misinformation) ----------
 % self_misinformed(C, BelievedTeam): drunk thinks townsfolk, lunatic thinks demon

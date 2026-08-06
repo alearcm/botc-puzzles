@@ -1,0 +1,41 @@
+# Weekly Puzzle #10 — "Don't Overcook It" (Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1g49r8j/
+# 7 players, TB. One Imp + one minion of {Poisoner, Spy, Baron, Scarlet Woman}.
+# Outsiders possible: Recluse, Drunk only. "You" are the Slayer claim, not evil,
+# possibly the Drunk. Day 1: Josh executed. Night 2: Matthew dies.
+# Day 2: You shot Fraser; nothing happened. Question: who is Demon, who is Minion?
+id: nqt-010
+script: tb
+horizon: 3
+players: [tom, sula, fraser, josh, you, matthew, dan]
+claims:
+  - {player: tom, character: fortuneteller,
+     info: ["picked2(tom,fortuneteller,1,sula,tom)",
+            "shown_bool(tom,fortuneteller,1,no)",
+            "picked2(tom,fortuneteller,2,josh,tom)",
+            "shown_bool(tom,fortuneteller,2,yes)"]}
+  - {player: sula, character: chef, info: ["shown_num(sula,chef,1,0)"]}
+  - {player: fraser, character: recluse, info: []}
+  - {player: josh, character: washerwoman,
+     info: ["shown_among2(josh,washerwoman,1,undertaker,dan,sula)"]}
+  - {player: you, character: slayer, info: []}
+  - {player: matthew, character: ravenkeeper,
+     info: ["picked(matthew,ravenkeeper,2,josh)",
+            "shown_char(matthew,ravenkeeper,2,imp)"]}
+  - {player: dan, character: undertaker,
+     info: ["shown_char(dan,undertaker,2,poisoner)"]}
+given:
+  # puzzle-specific roster restriction (rules text)
+  - ":- initial(P,butler), player(P)"
+  - ":- initial(P,saint), player(P)"
+  # events
+  - "executed(josh,1)"
+  - "slayer_shot(you,fraser,2)"
+  - ":- day_kill(fraser,2)"
+  # you are not evil
+  - ":- align(you,evil,1)"
+  # deaths: night 2 exactly matthew; night 1 nobody (constraints, not facts —
+  # the world must PRODUCE the death, not have it asserted)
+  - ":- not announced_dead(matthew,2)"
+  - ":- announced_dead(P,2), P != matthew, player(P)"
+  - ":- announced_dead(P,1), player(P)"

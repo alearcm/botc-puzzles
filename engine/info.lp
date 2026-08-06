@@ -28,10 +28,16 @@ reg_good(Q,Site) :- site_al(Site,Q,T), not reg_evil(Q,Site).
 0 { mr_char(Q,Site,CC) : role(CC,TM,_), on_script(CC), good_team(TM) } 1 :-
     site_ch(Site,Q,T), may_misreg_good(Q,T).
 reg_char(Q,CC,Site) :- mr_char(Q,Site,CC).
-reg_char(Q,CC,Site) :- site_ch(Site,Q,T), char(Q,CC,T), not mr_char(Q,Site,_).
+reg_char(Q,CC,Site) :- site_ch(Site,Q,T), char(Q,CC,T), not mr_char(Q,Site,_),
+                       not site_day(Site).
+reg_char(Q,CC,Site) :- site_ch(Site,Q,D), char_d(Q,CC,D), not mr_char(Q,Site,_),
+                       site_day(Site).
 
 % --- demon registration (fortune teller / slayer style checks) ---
-reg_demon(Q,Site) :- site_dm(Site,Q,T), char(Q,C,T), team_of(C,demon).
+reg_demon(Q,Site) :- site_dm(Site,Q,T), char(Q,C,T), team_of(C,demon),
+                     not site_day(Site).
+reg_demon(Q,Site) :- site_dm(Site,Q,D), char_d(Q,C,D), team_of(C,demon),
+                     site_day(Site).
 % red herring: one good player registers as demon to the fortune teller
 1 { red_herring(Q) : player(Q) } 1 :- in_play(fortuneteller).
 :- red_herring(Q), initial(Q,C), team_of(C,TM), evil_team(TM).
@@ -41,7 +47,9 @@ reg_demon(Q,Site) :- mr_demon(Q,Site).
 
 % --- team registration (virgin's townsfolk check, towncrier's minion check) ---
 reg_team(Q,TM,Site) :- site_tm(Site,Q,T), char(Q,C,T), team_of(C,TM),
-                       not mr_team(Q,Site,_).
+                       not mr_team(Q,Site,_), not site_day(Site).
+reg_team(Q,TM,Site) :- site_tm(Site,Q,D), char_d(Q,C,D), team_of(C,TM),
+                       not mr_team(Q,Site,_), site_day(Site).
 0 { mr_team(Q,Site,TM) : good_team(TM) } 1 :- site_tm(Site,Q,T), may_misreg_good(Q,T).
 0 { mr_team(Q,Site,TM) : evil_team(TM) } 1 :- site_tm(Site,Q,T), may_misreg_evil(Q,T).
 reg_team(Q,TM,Site) :- mr_team(Q,Site,TM).
@@ -263,6 +271,7 @@ sea_same(P,T) :- picked2(P,seamstress,T,Q1,Q2),
 % juggles are day inputs: juggle(P, Target, GuessChar, D)
 1 { shown_num(P,C,T,K) : K = 0..5 } 1 :- token_due(P,C,T,juggle_count).
 site_ch(jug(P,D,Q),Q,D) :- juggle(P,Q,_,D).
+site_day(jug(P,D,Q)) :- site_ch(jug(P,D,Q),Q,D).
 jug_correct(P,Q,D) :- juggle(P,Q,GC,D), reg_char(Q,GC,jug(P,D,Q)).
 jug_actual(P,T,K) :- token_due(P,juggler,T,juggle_count), T = D+1, day(D),
     K = #count{ Q : jug_correct(P,Q,D) }.

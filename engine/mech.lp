@@ -21,28 +21,31 @@ imp_suicide(P,T) :- death_event(P,T), char(P,imp,T), picked(P,imp,T,P).
 
 % scarlet woman: becomes the demon if it dies with >=5 apparently-alive
 demon_died(P,T,night) :- death_event(P,T), char(P,C,T), team_of(C,demon).
-demon_died(P,D,exec) :- exec_death(P,D), char(P,C,D), team_of(C,demon).
+demon_died(P,D,exec) :- exec_death(P,D), char_d(P,C,D), team_of(C,demon).
 sw_takes(Q,CD,T) :- demon_died(P,T,night), not imp_suicide(P,T),
     char(P,CD,T), char(Q,scarletwoman,T), functioning_at(Q,scarletwoman,T,99),
     alive(Q,T), Kc = #count{ R : app_alive(R,T) }, Kc >= 5.
-sw_takes(Q,CD,D) :- demon_died(P,D,exec), char(P,CD,D),
-    char(Q,scarletwoman,D), functioning_day(Q,scarletwoman,D), alive(Q,D),
+sw_takes_day(Q,CD,D) :- demon_died(P,D,exec), char_d(P,CD,D),
+    char_d(Q,scarletwoman,D), functioning_day(Q,scarletwoman,D), alive(Q,D),
     Kc = #count{ R : app_alive(R,D), not dies_day(R,D) }, Kc >= 5.
 becomes(Q,CD,T) :- sw_takes(Q,CD,T).
+becomes_day(Q,CD,D) :- sw_takes_day(Q,CD,D).
 
 % slayer: public day shot (input slayer_shot(P,Q,D))
 site_dm(sly(P,D,Q),Q,D) :- slayer_shot(P,Q,D).
-day_kill(Q,D) :- slayer_shot(P,Q,D), char(P,slayer,D),
+site_day(sly(P,D,Q)) :- site_dm(sly(P,D,Q),Q,D).
+day_kill(Q,D) :- slayer_shot(P,Q,D), char_d(P,slayer,D),
     functioning_day(P,slayer,D), not slayer_spent(P,D),
     reg_demon(Q,sly(P,D,Q)).
 slayer_spent(P,D2) :- slayer_shot(P,_,D), day(D2), D2 > D.
 
 % virgin: nomination proc (inputs nominated/3, proc_virgin/2 observed)
-site_tm(vrg(V,D,N),N,D) :- nominated(N,V,D), char(V,virgin,D).
-virgin_would(N,V,D) :- nominated(N,V,D), char(V,virgin,D),
+site_tm(vrg(V,D,N),N,D) :- nominated(N,V,D), char_d(V,virgin,D).
+site_day(vrg(V,D,N)) :- site_tm(vrg(V,D,N),N,D).
+virgin_would(N,V,D) :- nominated(N,V,D), char_d(V,virgin,D),
     functioning_day(V,virgin,D), not virgin_spent(V,D),
     reg_team(N,townsfolk,vrg(V,D,N)).
-virgin_spent(V,D2) :- nominated(_,V,D), char(V,virgin,D), day(D2), D2 > D.
+virgin_spent(V,D2) :- nominated(_,V,D), char_d(V,virgin,D), day(D2), D2 > D.
 :- proc_virgin(N,D), nominated(N,V,D), not virgin_would(N,V,D).
 :- no_proc_virgin(N,D), nominated(N,V,D), virgin_would(N,V,D).
 
@@ -104,12 +107,12 @@ gambler_wrong(P,T) :- picked(P,gambler,T,Q), pickedc(P,gambler,T,CC),
 st_kill(P,T) :- gambler_wrong(P,T).
 
 % gossip: true public statement -> a player dies that night (ST choice)
-gossip_fires(P,D) :- gossip_stmt(Id,P,D), stmt_true(Id), char(P,gossip,D),
+gossip_fires(P,D) :- gossip_stmt(Id,P,D), stmt_true(Id), char_d(P,gossip,D),
                      functioning_day(P,gossip,D).
 1 { st_kill(Q,T) : alive(Q,T) } 1 :- gossip_fires(P,D), T = D+1, night(T).
 
 % godfather: outsider executed/died today -> kills tonight
-outsider_died(D) :- dies_day(Q,D), char(Q,C,D), team_of(C,outsider).
+outsider_died(D) :- dies_day(Q,D), char_d(Q,C,D), team_of(C,outsider).
 1 { picked(P,godfather,T,Q) : alive(Q,T) } 1 :-
     char(P,godfather,T), has_ability(P,godfather,T), outsider_died(D), T = D+1,
     night(T).
@@ -122,7 +125,7 @@ applied(Q,exec_safe,src(P,devilsadvocate),T,I,until_dusk(T)) :-
     sched(devilsadvocate,T,I), functioning_at(P,devilsadvocate,T,I).
 
 % moonchild: on death chooses (input moonchild_choice/3); good choice dies tonight
-st_kill(Q,T) :- moonchild_choice(P,Q,D), T = D+1, night(T), char(P,moonchild,D),
+st_kill(Q,T) :- moonchild_choice(P,Q,D), T = D+1, night(T), char_d(P,moonchild,D),
     align(Q,good,T).
 
 % tinker: may die at any time (night or day)
@@ -154,10 +157,10 @@ revive_event(Q,T) :- picked(P,professor,T,Q), uses_once(P,professor,T),
     char(Q,CC,T), team_of(CC,townsfolk).
 
 % minstrel: minion executed -> everyone drunk until dusk tomorrow
-minstrel_on(D) :- exec_death(Q,D), char(Q,C,D), team_of(C,minion),
-    char(P,minstrel,D), functioning_day(P,minstrel,D).
+minstrel_on(D) :- exec_death(Q,D), char_d(Q,C,D), team_of(C,minion),
+    char_d(P,minstrel,D), functioning_day(P,minstrel,D).
 applied(Q,drunk,src(P,minstrel),T,0,until_dusk(T)) :-
-    minstrel_on(D), T = D+1, night(T), player(Q), char(P,minstrel,D).
+    minstrel_on(D), T = D+1, night(T), player(Q), char_d(P,minstrel,D).
 
 % goon: first targeter becomes drunk; goon turns their alignment
 targeted(Q,P,C,T,I) :- picked(P,C,T,Q), acting(P,C,T), sched(C,T,I).
@@ -285,7 +288,7 @@ status_on_day(R,poisoned,D) :- nd_poisons(P,R,D), day(D), not dies_night(R,D).
 
 % sweetheart: on death, ST picks someone drunk permanently
 1 { sw_drunk(P,Q,T) : player(Q) } 1 :- death_event(P,T), char(P,sweetheart,T).
-1 { sw_drunk(P,Q,D) : player(Q) } 1 :- dies_day(P,D), char(P,sweetheart,D).
+1 { sw_drunk(P,Q,D) : player(Q) } 1 :- dies_day(P,D), char_d(P,sweetheart,D).
 % the drunking starts AT the moment of death, not retroactively: abilities
 % earlier in the same night already resolved sober
 death_idx(Q,T,I) :- final_kill(Q,_,T,I,_), death_event(Q,T).
@@ -300,7 +303,7 @@ applied(Q,drunk,src(P,sweetheart),D,0,permanent_sticky) :-
     death_event(P,T), char(P,barber,T).
 % day-death: the swap happens the following night (chars change at its end)
 0 { barber_swap(Q1,Q2,D) : player(Q1), player(Q2), Q1 < Q2 } 1 :-
-    dies_day(P,D), char(P,barber,D), night(D+1).
+    dies_day(P,D), char_d(P,barber,D), night(D+1).
 becomes(Q1,C2,T) :- barber_swap(Q1,Q2,T), char(Q2,C2,T).
 becomes(Q2,C1,T) :- barber_swap(Q1,Q2,T), char(Q1,C1,T).
 
