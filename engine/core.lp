@@ -282,11 +282,11 @@ functioning_at(P,C,T,I) :- has_ability(P,C,T), acts_idx(T,I), sober_healthy(P,T)
 % sober_healthy: barista-style override (unused in base scripts; kept for shape)
 
 % trace: woke / acted / malfunctioned
+% woke/2 means woke DUE TO THEIR ABILITY (Chambermaid's printed wording):
+% minion-info/demon-info wakes deliberately do NOT count (NQT #28
+% solver-thread confirmation; the demon isn't "woken to choose" night 1).
 woke(P,T) :- acting(P,C,T), asched(C,T,_).
 woke(P,T) :- shadow_acting(P,B,T), sched(B,T,_).
-% evil first-night info (minion info / demon info sheet entries)
-woke(P,1) :- char(P,C,1), team_of(C,minion), nplayers(N), N >= 7.
-woke(P,1) :- char(P,C,1), team_of(C,demon), nplayers(N), N >= 7.
 acted(P,C,T) :- acting(P,C,T).
 malfunctioned(P,T) :- acting(P,C,T), asched(C,T,I), impaired_at(P,T,I).
 malfunctioned(P,T) :- shadow_acting(P,_,T).   % a charade never truly functions

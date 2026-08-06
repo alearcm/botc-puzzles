@@ -44,7 +44,8 @@ Memory — the author's, a Storyteller's, or a model's — is never a source.
 | `status-ends-at-source-loss-position` | A status ends AT the night-order position its source stops holding the ability (star pass, death) — not at the night boundary. | Poisoner almanac ex5 + NQT #59 author comment |
 | `nodashii-poison-static` | No Dashii poisons its nearest Townsfolk neighbours dead or alive — the poison does not jump past a dead Townsfolk. | Ability text + NQT #28 author ruling |
 | `mathematician-abnormal-scope` | "Working abnormally" covers Vortox-falsified Townsfolk AND any token received impaired (incl. death-triggered: a poisoned Sage counts); the Mathematician's own token is not self-counted. | Almanac reading + NQT #34 unique solution |
-| `witch-self-curse-allowed` | The Witch may curse herself (and die to her own nomination). | User-confirmed ruling |
+| `witch-self-curse-allowed` | The Witch may curse herself (and die to her own nomination). | User-confirmed ruling; printed text has no restriction |
+| `chambermaid-ability-wakes-only` | The Chambermaid counts wakes due to a player's ABILITY: minion-info/demon-info wakes do not count. | Printed text ("due to their ability"); NQT #28 solver thread |
 | `night-sheet-order` | The base editions' printed night sheets differ from the modern global order (TB: Butler before Undertaker; BMR: Innkeeper before Courtier, Professor before Gossip). Engine uses the printed sheets per script. | Official edition night sheets (see data/raw/night_orders_notes.md) |
 | `death-trigger-timing` | Death-triggered ongoing effects (e.g. Sweetheart's drunking) begin at the death's position in the night order; abilities that already resolved that night were unimpaired. | Night-order semantics; caught by `snakecharmer-same-night` fixture |
 
