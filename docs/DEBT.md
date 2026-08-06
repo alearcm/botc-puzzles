@@ -29,7 +29,6 @@ hack without an entry here is the actual failure mode.
 | Madness is claim-layer only | Cerenovus/Mutant enforcement is social | Fine for puzzles; revisit for AI ST |
 | Witch 3-players-live ability loss approximated | Encoded as >=4 check at nomination, not ability loss | Encode as has_ability condition at the 3-alive boundary |
 | Solver performance | Sound per-player probes + certain checks are minutes on 9p/4-night puzzles | Projection tuning, symmetry breaking; needed before M4 counting loops |
-| Cross-script night order uses townsquare global numbers | Printed sheets don't cover cross-script sets | Acceptable; document as the standard for customs |
 | arctic-shift dependence for puzzle harvest | Reddit + Wayback egress-blocked | Cache everything fetched into the repo (done for images/metadata) |
 | Charade scope fixed at S1 | Scope ladder defined in RULINGS but not switchable per-puzzle yet | Wire scope selection into the puzzle format |
 | `assume_ongoing` is all-or-nothing | Puzzles asking "who wins if..." will need phase-scoped ongoing constraints | Parameterize when such a puzzle appears |
@@ -38,6 +37,10 @@ hack without an entry here is the actual failure mode.
 
 ## Recently retired
 
+- Script-coupled instances (`script: [tb, bmr]` to import one character) →
+  character pools: `roster:` adds individual ids, editions are shorthand,
+  `in_pool/1` replaces `on_script/1`, night order is printed-sheet only when
+  the pool IS exactly a base edition (the sole TPI-documented edition rule).
 - Po self-pick-as-charge convention → real optional pick (`p1_any_opt`).
 - Witch no-self-curse restriction → reverted; discriminator was Mathematician
   scope.

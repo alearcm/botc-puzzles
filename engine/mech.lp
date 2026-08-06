@@ -107,7 +107,7 @@ prevented(Q,Src,T,I2) :- final_kill(Q,Src,T,I2,_), status_on(Q,safe_night,T,I2).
 st_kill_protected(Q,T) :- st_kill(Q,T), status_on(Q,safe_night,T,99).
 
 % courtier: once, pick a character: its holder is drunk for 3 days
-1 { pickedc(P,courtier,T,CC) : on_script(CC) } 1 :- uses_once(P,courtier,T).
+1 { pickedc(P,courtier,T,CC) : in_pool(CC) } 1 :- uses_once(P,courtier,T).
 applied(Q,drunk,src(P,courtier),T,I,nights(3,T)) :-
     pickedc(P,courtier,T,CC), char(Q,CC,T), sched(courtier,T,I),
     functioning_at(P,courtier,T,I).
@@ -161,7 +161,7 @@ day_kill(P,D) :- tinker_dies_day(P,D).
 
 % philosopher: once per game, gain a good character's ability; if that
 % character is in play, its holder is drunk (while the philosopher has it)
-1 { phil_pick(P,T,CC) : role(CC,TM,_), good_team(TM), on_script(CC),
+1 { phil_pick(P,T,CC) : role(CC,TM,_), good_team(TM), in_pool(CC),
                         CC != philosopher } 1 :- uses_once(P,philosopher,T).
 phil_gains(P,CC,T) :- phil_pick(P,T,CC), asched(philosopher,T,I),
                       functioning_at(P,philosopher,T,I).

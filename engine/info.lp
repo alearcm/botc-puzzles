@@ -23,9 +23,9 @@ reg_good(Q,Site) :- site_al(Site,Q,T), not reg_evil(Q,Site).
 % --- character registration ---
 % default: actual character; recluse may register as any script minion/demon;
 % spy as any script townsfolk/outsider.
-0 { mr_char(Q,Site,CC) : role(CC,TM,_), on_script(CC), evil_team(TM) } 1 :-
+0 { mr_char(Q,Site,CC) : role(CC,TM,_), in_pool(CC), evil_team(TM) } 1 :-
     site_ch(Site,Q,T), may_misreg_evil(Q,T).
-0 { mr_char(Q,Site,CC) : role(CC,TM,_), on_script(CC), good_team(TM) } 1 :-
+0 { mr_char(Q,Site,CC) : role(CC,TM,_), in_pool(CC), good_team(TM) } 1 :-
     site_ch(Site,Q,T), may_misreg_good(Q,T).
 reg_char(Q,CC,Site) :- mr_char(Q,Site,CC).
 reg_char(Q,CC,Site) :- site_ch(Site,Q,T), char(Q,CC,T), not mr_char(Q,Site,_),
@@ -91,7 +91,7 @@ enforce_false(P,C,T) :- info_mode(P,C,T,all_false).
 
 % ---- among2(Team): washerwoman/librarian/investigator ----
 0 { shown_none(P,C,T) } 1 :- token_due(P,C,T,among2(TM)).
-1 { shown_among2(P,C,T,CC,Q1,Q2) : role(CC,TM,_), on_script(CC),
+1 { shown_among2(P,C,T,CC,Q1,Q2) : role(CC,TM,_), in_pool(CC),
       player(Q1), player(Q2), Q1 < Q2, Q1 != P, Q2 != P } 1 :-
     token_due(P,C,T,among2(TM)), not shown_none(P,C,T).
 % "none" is only offered by the librarian (no outsiders)
@@ -103,7 +103,7 @@ am2_true(P,C,T) :- shown_among2(P,C,T,CC,Q1,Q2), reg_char(Q1,CC,am2(P,C,T,Q1)).
 am2_true(P,C,T) :- shown_among2(P,C,T,CC,Q1,Q2), reg_char(Q2,CC,am2(P,C,T,Q2)).
 % none-claim truth: no player registers as any outsider
 site_ch(am2n(P,C,T,Q),Q,T) :- shown_none(P,C,T), player(Q).
-none_false(P,C,T) :- shown_none(P,C,T), player(Q), on_script(CC),
+none_false(P,C,T) :- shown_none(P,C,T), player(Q), in_pool(CC),
                      role(CC,outsider,_), reg_char(Q,CC,am2n(P,C,T,Q)).
 :- enforce_true(P,C,T),  shown_among2(P,C,T,_,_,_), not am2_true(P,C,T).
 :- enforce_false(P,C,T), am2_true(P,C,T).
@@ -150,7 +150,7 @@ ft_yes(P,T) :- picked2(P,fortuneteller,T,Q1,Q2), reg_demon(Q2,ftq(P,T,Q2)).
 :- enforce_false(P,fortuneteller,T), shown_bool(P,fortuneteller,T,no), not ft_yes(P,T).
 
 % ---- char_of_executee: undertaker ----
-1 { shown_char(P,C,T,CC) : on_script(CC) } 1 :-
+1 { shown_char(P,C,T,CC) : in_pool(CC) } 1 :-
     token_due(P,C,T,char_of_executee), executed_yesterday(_,T).
 site_ch(und(P,T,Q),Q,T) :- token_due(P,undertaker,T,char_of_executee),
                            executed_yesterday(Q,T).
@@ -160,7 +160,7 @@ und_true(P,T) :- shown_char(P,undertaker,T,CC), executed_yesterday(Q,T),
 :- enforce_false(P,undertaker,T), und_true(P,T).
 
 % ---- char_of_picked: ravenkeeper (wired via on-death trigger in mech) ----
-1 { shown_char(P,C,T,CC) : on_script(CC) } 1 :- token_due(P,C,T,char_of_picked).
+1 { shown_char(P,C,T,CC) : in_pool(CC) } 1 :- token_due(P,C,T,char_of_picked).
 site_ch(rvk(P,T,Q),Q,T) :- token_due(P,ravenkeeper,T,char_of_picked),
                            picked(P,ravenkeeper,T,Q).
 rvk_true(P,T) :- shown_char(P,ravenkeeper,T,CC), picked(P,ravenkeeper,T,Q),
@@ -171,7 +171,7 @@ rvk_true(P,T) :- shown_char(P,ravenkeeper,T,CC), picked(P,ravenkeeper,T,Q),
 % ---- grandchild: grandmother ----
 1 { grandchild(P,Q) : player(Q), Q != P } 1 :- initial(P,grandmother).
 :- grandchild(P,Q), align(Q,evil,1).
-1 { shown_gm(P,T,Q,CC) : on_script(CC), player(Q) } 1 :-
+1 { shown_gm(P,T,Q,CC) : in_pool(CC), player(Q) } 1 :-
     token_due(P,grandmother,T,grandchild).
 site_ch(gm(P,T,Q),Q,T) :- token_due(P,grandmother,T,grandchild), grandchild(P,Q).
 gm_true(P,T) :- shown_gm(P,T,Q,CC), grandchild(P,Q), reg_char(Q,CC,gm(P,T,Q)).
@@ -200,8 +200,8 @@ clk_actual(P,T,K) :- token_due(P,clockmaker,T,steps_demon_minion),
 :- enforce_false(P,clockmaker,T), shown_num(P,clockmaker,T,K), clk_actual(P,T,K).
 
 % ---- dreamer_pair ----
-1 { shown_dreamer(P,T,GC,EC) : role(GC,GT,_), good_team(GT), on_script(GC),
-      role(EC,ET,_), evil_team(ET), on_script(EC) } 1 :-
+1 { shown_dreamer(P,T,GC,EC) : role(GC,GT,_), good_team(GT), in_pool(GC),
+      role(EC,ET,_), evil_team(ET), in_pool(EC) } 1 :-
     token_due(P,dreamer,T,dreamer_pair).
 site_ch(drm(P,T,Q),Q,T) :- token_due(P,dreamer,T,dreamer_pair),
                            picked(P,dreamer,T,Q).
@@ -314,11 +314,11 @@ token_due(P,savant,T,savant_visit) :- stmt(_,P,savant,T), has_ability(P,savant,T
 % as (per-player sites: the Spy may appear as an outsider, the Recluse's
 % outsider identity may be hidden... no — recluse registers evil-side only;
 % the direction that matters: spy adds, and a dead outsider still counts).
-{ shown_gf(P,T,CC) : role(CC,outsider,_), on_script(CC) } :-
+{ shown_gf(P,T,CC) : role(CC,outsider,_), in_pool(CC) } :-
     token_due(P,godfather,T,outsiders_in_play).
 site_ch(gf(P,T,Q),Q,T) :- token_due(P,godfather,T,outsiders_in_play), player(Q).
 gf_reg(P,T,CC) :- token_due(P,godfather,T,outsiders_in_play),
-    role(CC,outsider,_), on_script(CC), player(Q), reg_char(Q,CC,gf(P,T,Q)).
+    role(CC,outsider,_), in_pool(CC), player(Q), reg_char(Q,CC,gf(P,T,Q)).
 :- enforce_true(P,godfather,T), shown_gf(P,T,CC), not gf_reg(P,T,CC).
 :- enforce_true(P,godfather,T), gf_reg(P,T,CC), not shown_gf(P,T,CC).
 gf_mismatch(P,T) :- shown_gf(P,T,CC), not gf_reg(P,T,CC).

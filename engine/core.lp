@@ -37,8 +37,10 @@ walkc(P,Q,1) :- succ_seat(Q,P).
 walkc(P,R,N+1) :- walkc(P,Q,N), succ_seat(R,Q), N < 15, R != P.
 
 % ---------- roster ----------
-% role(Char, Team, Script) from cards; traveller/1 marks travellers.
-on_script(C) :- role(C,_,S), script(S), not traveller(C).
+% pool(Char): the character pool of this game, emitted by the compiler.
+% Scripts are just character sets — rules never key on an edition. role/3
+% carries the character's home edition purely as provenance.
+in_pool(C) :- pool(C), not traveller(C).
 team_of(C,Team) :- role(C,Team,_).
 good_team(townsfolk). good_team(outsider).
 evil_team(minion). evil_team(demon).
@@ -50,7 +52,7 @@ base_counts(11,7,1,2). base_counts(12,7,2,2). base_counts(13,9,0,3).
 base_counts(14,9,1,3). base_counts(15,9,2,3).
 
 % ---------- bag ----------
-1 { initial(P,C) : on_script(C) } 1 :- player(P).
+1 { initial(P,C) : in_pool(C) } 1 :- player(P).
 % no duplicate characters (homebrew puzzles may lift this via dup_ok/1)
 :- initial(P,C), initial(Q,C), P < Q, not dup_ok(C).
 
@@ -101,7 +103,7 @@ night_changed(P,D) :- becomes(P,_,D), day(D).
 
 % ---------- believed character (self-misinformation) ----------
 % self_misinformed(C, BelievedTeam): drunk thinks townsfolk, lunatic thinks demon
-1 { believed_init(P,B) : role(B,BT,_), on_script(B), B != C } 1 :-
+1 { believed_init(P,B) : role(B,BT,_), in_pool(B), B != C } 1 :-
     initial(P,C), self_misinformed(C,BT), role(B2,BT,_).
 believed_init(P,C) :- initial(P,C), not self_misinformed(C,_).
 % (believed char is static in base scripts; philosopher et al. handled in mech)
@@ -111,9 +113,11 @@ shadow(P,B,T) :- believed_init(P,B), initial(P,C), self_misinformed(C,_),
                  night(T).
 
 % ---------- night schedule ----------
-% order(Script, first|other, Idx, Char) from data.
-sched(C,1,I) :- order(S,first,I,C), script(S).
-sched(C,T,I) :- order(S,other,I,C), script(S), night(T), T > 1.
+% nord(first|other, Idx, Char) from the compiler: the printed edition sheet
+% when the pool IS exactly a base edition (TPI's documented deviation),
+% otherwise the script-tool global order restricted to the pool.
+sched(C,1,I) :- nord(first,I,C).
+sched(C,T,I) :- nord(other,I,C), night(T), T > 1.
 
 % ---------- ability acquisition time (relative schedules) ----------
 ability_start(P,C,1) :- initial(P,C).
@@ -207,11 +211,11 @@ shadow_acting(P,B,T) :- shadow(P,B,T), acts(B,each,_), sched(B,T,_),
 % optional single pick ("you may choose a player")
 0 { picked(P,C,T,Q) : player(Q) } 1 :-
     acting(P,C,T), acts_pick(C,p1_any_opt), not pick_suppressed(P,C,T).
-1 { pickedc(P,C,T,CC) : on_script(CC) } 1 :-
+1 { pickedc(P,C,T,CC) : in_pool(CC) } 1 :-
     acting(P,C,T), acts_pick(C,char_only).
 1 { picked(P,C,T,Q) : alive(Q,T) } 1 :-
     acting(P,C,T), acts_pick(C,p1_and_char).
-1 { pickedc(P,C,T,CC) : on_script(CC) } 1 :-
+1 { pickedc(P,C,T,CC) : in_pool(CC) } 1 :-
     acting(P,C,T), acts_pick(C,p1_and_char).
 
 % shadow picks (theater choices still happen; no world effects). Every pick
@@ -240,9 +244,9 @@ shadow_acting(P,B,T) :- shadow(P,B,T), acts(B,each,_), sched(B,T,_),
     shadow_acting(P,B,T), acts_pick(B,p2_not_self).
 1 { picked(P,B,T,Q) : app_alive(Q,T) } 1 :-
     shadow_acting(P,B,T), acts_pick(B,p1_and_char).
-1 { pickedc(P,B,T,CC) : on_script(CC) } 1 :-
+1 { pickedc(P,B,T,CC) : in_pool(CC) } 1 :-
     shadow_acting(P,B,T), acts_pick(B,p1_and_char).
-1 { pickedc(P,B,T,CC) : on_script(CC) } 1 :-
+1 { pickedc(P,B,T,CC) : in_pool(CC) } 1 :-
     shadow_acting(P,B,T), acts_pick(B,char_only).
 
 % ---------- statuses ----------

@@ -20,7 +20,7 @@ given:
   - initial(p6,mayor)
   - initial(p7,virgin)
   - picked(p1,imp,2,p4)
-  - "u_learned :- shown_char(p3,undertaker,2,CC), on_script(CC)"
+  - "u_learned :- shown_char(p3,undertaker,2,CC), in_pool(CC)"
   - "no_token :- not u_learned"
 assert:
   certain:

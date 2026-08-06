@@ -11,13 +11,23 @@ every public action. An **observation** `o` is the fragment visible from one
 seat (or from "the audience" for spectator puzzles): public events, the
 observer's own tokens, and the claims made by others.
 
-`Worlds(o)` = the set of worlds consistent with `o` under a declared script and
-ruleset. All queries are projections/aggregations of `Worlds(o)`; the engine
-never answers "who is the Demon" natively.
+`Worlds(o)` = the set of worlds consistent with `o` under a declared
+character pool and ruleset. All queries are projections/aggregations of
+`Worlds(o)`; the engine never answers "who is the Demon" natively.
+
+**Scripts are just character sets.** All rules live on characters; an
+instance declares a pool of character ids, and edition names (`tb`, `bmr`,
+`snv`) are shorthand for "every character of that edition". Characters mix
+freely across editions. The one legitimately edition-scoped datum is TPI's
+printed night sheets, which deviate from the script-tool global order: they
+apply only when the pool is exactly that edition; any other pool is a
+custom script and uses the global order. Any future edition-scoped rule
+needs the same bar — TPI said so, for that edition specifically.
 
 Claims semantics (puzzle convention, not game rule — lives in the puzzle
 format, not the engine): good players truthfully report their `believed`
-character and received tokens; evil players' claims are unconstrained.
+character and received tokens; claim freedom belongs to players who are
+evil at the end of the observed window.
 
 ## 2. Time and trace
 

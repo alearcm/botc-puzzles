@@ -9,10 +9,11 @@
 # CONFIRMED ANSWER (author-endorsed): Sarah = starting Imp (self-kill N2,
 # star pass), Steph = Baron who becomes the Imp, You = the Drunk. REPRODUCED
 # sound-unique. Forced two engine/format fixes: shadow picks generalized to
-# all pick specs; compiler validation that claimed characters are on a
-# loaded script.
+# all pick specs; compiler validation that claimed characters are in the
+# character pool.
 id: nqt-022
-script: [tb, bmr]   # Chambermaid is imported from BMR
+script: tb
+roster: [chambermaid]   # single imported character; custom pool -> global order
 horizon: 4
 players: [tim, fraser, oscar, steph, you, anna, aoife, sarah]
 claims:

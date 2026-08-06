@@ -21,11 +21,23 @@ ENGINE_FILES = ["core.lp", "death.lp", "info.lp", "mech.lp", "endgame.lp"]
 
 
 # ---------------- cards ----------------
+# Scripts are just character sets. Cards live in per-edition files for
+# organisation only; an Instance's character pool is any set of ids, with
+# edition names as shorthand for "every character in that edition".
 
 def load_cards(script: str) -> list[dict]:
     cards = yaml.safe_load((ROOT / "cards" / f"{script}.yaml").read_text())
     assert isinstance(cards, list)
     return cards
+
+
+def card_index() -> dict[str, tuple[dict, str]]:
+    """id -> (card, home edition) across every cards/*.yaml."""
+    idx: dict[str, tuple[dict, str]] = {}
+    for path in sorted((ROOT / "cards").glob("*.yaml")):
+        for c in load_cards(path.stem):
+            idx[c["id"]] = (c, path.stem)
+    return idx
 
 
 def card_facts(card: dict, script: str) -> list[str]:
@@ -67,37 +79,41 @@ def card_facts(card: dict, script: str) -> list[str]:
 
 
 # ---------------- night order ----------------
+# TPI publishes deviating printed night sheets for the base editions; that
+# deviation applies only when the game IS that edition. Any other pool is a
+# custom script and uses the script tool's global order.
 
-def night_order_facts(script: str, cards: list[dict]) -> list[str]:
-    """Per-script printed sheet order if gathered; else townsquare fallback."""
-    ids = {c["id"] for c in cards if not c.get("traveller")}
+def sheet_order_facts(script: str, ids: set[str]) -> list[str]:
+    """nord facts from an edition's printed sheet, or [] if not gathered."""
     no_path = ROOT / "data" / "raw" / "night_orders.json"
-    fs = []
-    if no_path.exists():
-        data = json.loads(no_path.read_text())
-        if script in data:
-            for kind in ("first", "other"):
-                idx = 0
-                seen: set[str] = set()
-                for entry in data[script][kind]:
-                    if entry.isupper():
-                        continue  # DUSK/DAWN/MINION_INFO/DEMON_INFO markers
-                    if entry in ids and entry not in seen:
-                        seen.add(entry)  # snv sheet prints sweetheart/sage twice
-                        idx += 1
-                        fs.append(f"order({script},{kind},{idx},{entry}).")
-            if fs:
-                return fs
-    # fallback: townsquare global numbers restricted to this script
+    fs: list[str] = []
+    if not no_path.exists():
+        return fs
+    data = json.loads(no_path.read_text())
+    if script not in data:
+        return fs
+    for kind in ("first", "other"):
+        idx = 0
+        seen: set[str] = set()
+        for entry in data[script][kind]:
+            if entry.isupper():
+                continue  # DUSK/DAWN/MINION_INFO/DEMON_INFO markers
+            if entry in ids and entry not in seen:
+                seen.add(entry)  # snv sheet prints sweetheart/sage twice
+                idx += 1
+                fs.append(f"nord({kind},{idx},{entry}).")
+    return fs
+
+
+def global_order_facts(ids: set[str]) -> list[str]:
+    """nord facts from the script-tool global order, restricted to the pool."""
     roles = json.loads((ROOT / "data" / "raw" / "townsquare_roles.json").read_text())
-    by_id = {r["id"]: r for r in roles}
+    fs = []
     for kind, key in (("first", "firstNight"), ("other", "otherNight")):
-        ordered = sorted(
-            (r for r in roles if r["id"] in ids and r.get(key)),
-            key=lambda r: r[key],
-        )
+        ordered = sorted((r for r in roles if r["id"] in ids and r.get(key)),
+                         key=lambda r: r[key])
         for idx, r in enumerate(ordered, 1):
-            fs.append(f"order({script},{kind},{idx},{r['id']}).")
+            fs.append(f"nord({kind},{idx},{r['id']}).")
     return fs
 
 
@@ -105,18 +121,36 @@ def night_order_facts(script: str, cards: list[dict]) -> list[str]:
 
 @dataclass
 class Instance:
-    script: str | list[str]
-    players: list[str]
+    script: str | list[str] | None = None  # edition shorthand(s) for the pool
+    players: list[str] = field(default_factory=list)
     horizon: int = 2
     given: list[str] = field(default_factory=list)
     statements: dict[str, str] = field(default_factory=dict)  # stmt id -> ASP body
+    roster: list[str] = field(default_factory=list)  # extra character ids
 
     @property
     def scripts(self) -> list[str]:
+        if self.script is None:
+            return []
         return [self.script] if isinstance(self.script, str) else list(self.script)
 
+    def pool(self) -> dict[str, tuple[dict, str]]:
+        """id -> (card, home edition) for this game's character pool."""
+        idx = card_index()
+        out: dict[str, tuple[dict, str]] = {}
+        for s in self.scripts:
+            for c in load_cards(s):
+                out[c["id"]] = (c, s)
+        for cid in self.roster:
+            if cid not in idx:
+                raise ValueError(f"unknown character '{cid}' in roster")
+            out.setdefault(cid, idx[cid])
+        if not out:
+            raise ValueError("empty character pool: set script and/or roster")
+        return out
+
     def facts(self) -> str:
-        out = [f"script({s})." for s in self.scripts]
+        out = []
         for i, p in enumerate(self.players):
             out.append(f"player({p}).")
             out.append(f"seat({p},{i}).")
@@ -128,32 +162,20 @@ class Instance:
         return "\n".join(out)
 
 
-def global_order_facts(scripts: list[str]) -> list[str]:
-    """Cross-script sets use the global (townsquare) night order for a
-    consistent interleaving; single scripts use their printed sheet."""
-    ids = {c["id"] for s in scripts for c in load_cards(s) if not c.get("traveller")}
-    roles = json.loads((ROOT / "data" / "raw" / "townsquare_roles.json").read_text())
-    fs = []
-    for kind, key in (("first", "firstNight"), ("other", "otherNight")):
-        ordered = sorted((r for r in roles if r["id"] in ids and r.get(key)),
-                         key=lambda r: r[key])
-        for idx, r in enumerate(ordered, 1):
-            for s in scripts:
-                fs.append(f"order({s},{kind},{idx},{r['id']}).")
-    return fs
-
-
 def build_program(inst: Instance) -> str:
     parts = [(ROOT / "engine" / f).read_text() for f in ENGINE_FILES]
-    for s in inst.scripts:
-        cards = load_cards(s)
-        for c in cards:
-            parts.append("\n".join(card_facts(c, s)))
-    if len(inst.scripts) == 1:
-        parts.append("\n".join(night_order_facts(inst.scripts[0],
-                                                 load_cards(inst.scripts[0]))))
-    else:
-        parts.append("\n".join(global_order_facts(inst.scripts)))
+    pool = inst.pool()
+    for cid, (card, home) in pool.items():
+        parts.append("\n".join(card_facts(card, home)))
+        parts.append(f"pool({cid}).")
+    ids = {cid for cid, (c, _) in pool.items() if not c.get("traveller")}
+    # printed-sheet order only when the pool IS exactly one base edition
+    nord: list[str] = []
+    if not inst.roster and len(inst.scripts) == 1:
+        nord = sheet_order_facts(inst.scripts[0], ids)
+    if not nord:
+        nord = global_order_facts(ids)
+    parts.append("\n".join(nord))
     parts.append(inst.facts())
     return "\n".join(parts)
 
@@ -190,11 +212,12 @@ def worlds(inst: Instance, show: list[str], limit: int = 200) -> list[frozenset[
 def load_fixture(path: Path) -> tuple[Instance, dict]:
     doc = yaml.safe_load(path.read_text())
     inst = Instance(
-        script=doc["script"],
+        script=doc.get("script"),
         players=doc["players"],
         horizon=doc.get("horizon", 2),
         given=doc.get("given", []),
         statements=doc.get("statements", {}),
+        roster=doc.get("roster", []),
     )
     return inst, doc
 
@@ -254,19 +277,20 @@ def claim_rules(claims: list[dict]) -> list[str]:
 def load_puzzle(path: Path) -> tuple[Instance, dict]:
     doc = yaml.safe_load(Path(path).read_text())
     inst = Instance(
-        script=doc["script"],
+        script=doc.get("script"),
         players=doc["players"],
         horizon=doc.get("horizon", 2),
         given=doc.get("given", []),
         statements=doc.get("statements", {}),
+        roster=doc.get("roster", []),
     )
-    roster = {c["id"] for s in inst.scripts for c in load_cards(s)}
+    pool = inst.pool()
     for cl in doc.get("claims", []):
-        if cl["character"] not in roster:
+        if cl["character"] not in pool:
             raise ValueError(
-                f"claimed character '{cl['character']}' is not on any loaded "
-                f"script {inst.scripts} — add the script it comes from "
-                f"(silent UNSAT otherwise; see nqt-022)")
+                f"claimed character '{cl['character']}' is not in the pool "
+                f"(scripts {inst.scripts} + roster {inst.roster}) — add it "
+                f"to `roster:` (silent UNSAT otherwise; see nqt-022)")
     inst.given.extend(claim_rules(doc.get("claims", [])))
     if doc.get("assume_ongoing", True):
         inst.given.append("assume_ongoing")

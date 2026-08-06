@@ -69,13 +69,20 @@ puzzle never intended (Philosopher-gains-Snake-Charmer demon swaps made 7 of
 
 "You are not evil" → `":- align(you,evil,1)"`.
 
-## Cross-script imports
+## Character pools (scripts are just character sets)
 
-NQT puzzles freely import single characters across editions (a Chambermaid
-in a TB game). Every claimed character must be on a loaded script
-(`script: [tb, bmr]`) — the compiler now errors otherwise, because a claim
-for an off-roster character makes the good/drunk branches silently
-unsatisfiable and corrupts the solve (caught on nqt-022).
+An instance's character pool is any set of ids: `script:` names editions as
+shorthand for "all their characters", `roster:` adds individual ids, and the
+pool is the union. NQT puzzles freely import single characters across
+editions — encode a Chambermaid in a TB game as `script: tb` +
+`roster: [chambermaid]`, not by loading all of BMR. Every claimed character
+must be in the pool — the compiler errors otherwise, because a claim for an
+out-of-pool character makes the good/drunk branches silently unsatisfiable
+and corrupts the solve (caught on nqt-022).
+
+No rule keys on an edition. The single edition-scoped datum is TPI's printed
+night sheets: they apply only when the pool IS exactly that base edition;
+any other pool is a custom script and uses the script tool's global order.
 
 ## Ordering conventions
 
