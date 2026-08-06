@@ -28,6 +28,26 @@ walk(P,Q,1) :- succ_seat(P,Q).
 walk(P,R,N+1) :- walk(P,Q,N), succ_seat(Q,R), N < 15, R != P.
 alive_neighbor(P,Q,T) :- alive_neigh_cw(P,Q,T).
 alive_neighbor(P,Q,T) :- alive_neigh_ccw(P,Q,T).
+
+% ---------- positional life state (site clock for deaths) ----------
+% A reader at night-order position I sees deaths that resolved at earlier
+% positions: an Empath acting after the Imp reads the circle with tonight's
+% victim already dead (NQT #31). life_pos/2 declares the positions where a
+% neighbour circle is actually read (emitted by the info layer).
+app_alive_at(Q,T,I) :- app_alive(Q,T), life_pos(T,I), not died_by(Q,T,I).
+died_by(Q,T,I) :- death_event(Q,T), death_idx(Q,T,J), life_pos(T,I), J < I.
+reach_cw_at(P,Q,T,I) :- succ_seat(P,Q), life_pos(T,I).
+reach_cw_at(P,R,T,I) :- reach_cw_at(P,Q,T,I), not app_alive_at(Q,T,I),
+                        succ_seat(Q,R), R != P.
+alive_neigh_cw_at(P,Q,T,I) :- reach_cw_at(P,Q,T,I), app_alive_at(Q,T,I),
+    #false : reach_cw_at(P,R,T,I), app_alive_at(R,T,I), before_cw(P,R,Q).
+reach_ccw_at(P,Q,T,I) :- succ_seat(Q,P), life_pos(T,I).
+reach_ccw_at(P,R,T,I) :- reach_ccw_at(P,Q,T,I), not app_alive_at(Q,T,I),
+                         succ_seat(R,Q), R != P.
+alive_neigh_ccw_at(P,Q,T,I) :- reach_ccw_at(P,Q,T,I), app_alive_at(Q,T,I),
+    #false : reach_ccw_at(P,R,T,I), app_alive_at(R,T,I), before_ccw(P,R,Q).
+alive_neighbor_at(P,Q,T,I) :- alive_neigh_cw_at(P,Q,T,I).
+alive_neighbor_at(P,Q,T,I) :- alive_neigh_ccw_at(P,Q,T,I).
 reach_ccw(P,Q,T) :- succ_seat(Q,P), night(T).
 reach_ccw(P,R,T) :- reach_ccw(P,Q,T), not app_alive(Q,T), succ_seat(R,Q), R != P.
 alive_neigh_ccw(P,Q,T) :- reach_ccw(P,Q,T), app_alive(Q,T),

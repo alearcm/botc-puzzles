@@ -183,11 +183,15 @@ chef_actual(P,T,K) :- token_due(P,chef,T,count_pairs_evil),
 :- enforce_false(P,chef,T), shown_num(P,chef,T,K), chef_actual(P,T,K).
 
 % ---- count_evil_neighbors: empath ----
+% The neighbour circle is read at the empath's own position: tonight's
+% earlier deaths are already skipped (positional life state, NQT #31).
 1 { shown_num(P,C,T,K) : K = 0..2 } 1 :- token_due(P,C,T,count_evil_neighbors).
-site_al(emp(P,T,Q),Q,T) :- token_due(P,empath,T,count_evil_neighbors),
-                           alive_neighbor(P,Q,T).
+life_pos(T,I) :- token_due(P,C,T,count_evil_neighbors), asched(C,T,I).
+emp_neigh(P,Q,T) :- token_due(P,empath,T,count_evil_neighbors),
+                    asched(empath,T,I), alive_neighbor_at(P,Q,T,I).
+site_al(emp(P,T,Q),Q,T) :- emp_neigh(P,Q,T).
 emp_actual(P,T,K) :- token_due(P,empath,T,count_evil_neighbors),
-    K = #count{ Q : alive_neighbor(P,Q,T), reg_evil(Q,emp(P,T,Q)) }.
+    K = #count{ Q : emp_neigh(P,Q,T), reg_evil(Q,emp(P,T,Q)) }.
 :- enforce_true(P,empath,T), shown_num(P,empath,T,K), emp_actual(P,T,K2), K != K2.
 :- enforce_false(P,empath,T), shown_num(P,empath,T,K), emp_actual(P,T,K).
 
