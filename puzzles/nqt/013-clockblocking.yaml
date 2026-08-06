@@ -6,17 +6,14 @@
 # You are not evil but might be the Drunk.
 # Day 1: Aoife executed. Night 2: Tim dies. Day 2: Fraser shoots Oscar —
 # nothing happens. Question: who is the Demon and who is the Minion?
-# OFFICIAL ANSWER (author-endorsed): Fraser = Imp, Oscar = Baron,
-# Tim = Drunk. STATUS: PARTIAL — the solver finds this world but also a
-# spurious one (Tim = starting Imp star-passing to Jasmine = Baron).
-# Diagnosis: in the spurious world Sarah's night-2 Fortune Teller check on
-# (Jasmine, You) happens AFTER the Imp's star-pass position, so Jasmine
-# already registers as the Imp -> the check must say yes, contradicting
-# the claimed no. The engine's registration sites evaluate char(Q,C,T) at
-# start-of-night granularity; missing general rule: night registration
-# sites evaluate state AS OF the evaluating ability's night-order position
-# (the positional principle already settled for statuses and death
-# triggers, extended to character/demon registration). See DEBT.md.
+# CONFIRMED ANSWER (author-endorsed): Fraser = Imp, Oscar = Baron,
+# Tim = Drunk. REPRODUCED sound-unique after the site-clock refactor:
+# registration evaluates at the observer's night-order position, so in the
+# once-spurious world (Tim = starting Imp star-passing to Jasmine) Sarah's
+# night-2 Fortune Teller check on (Jasmine, You) sees the NEW Imp — the
+# Imp acts earlier in the order — forcing a yes that contradicts the
+# claimed no. No interaction-specific rule involved
+# (state-reads-at-site-position in RULINGS).
 id: nqt-013
 script: [tb, snv]   # Clockmaker is imported from S&V
 horizon: 3   # day 2 (the Slayer shot) needs day(2); night 3 is unobserved
