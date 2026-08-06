@@ -132,6 +132,15 @@ phil_sched(C,T) :- phil_gains(_,C,T).
 asched(C,T,98) :- ability_start(P,C,T), T > 1, not sched(C,T,_),
                   not phil_sched(C,T).
 
+% hpos: the acting position of a SPECIFIC holder of an ability (asched is
+% char-level and conflates a real holder with a philosopher copyist)
+hpos(P,C,T,I) :- has_ability(P,C,T), sched(C,T,I), not phil_held(P,C).
+hpos(P,C,T,I) :- has_ability(P,C,T), phil_gains(P,C,_),
+                 sched(philosopher,T,I).
+hpos(P,C,T,98) :- has_ability(P,C,T), ability_start(P,C,T0), T0 > 1,
+                  night(T), not sched(C,T,_), not phil_held(P,C).
+phil_held(P,C) :- phil_gains(P,C,_).
+
 % ---------- ability possession ----------
 % dead players lose abilities, unless kept (persists_dead from mech layer)
 has_ability(P,C,T) :- char(P,C,T), alive(P,T).

@@ -35,7 +35,9 @@ hack without an entry here is the actual failure mode.
 | Evil claimants fully unconstrained | NQT rules say evil players LIE about their role (claim ≠ true role); we model claim freedom only — weaker, admits evil-truthful worlds | Add claim≠char constraint for evil-at-end claimants if a puzzle's uniqueness ever needs it |
 | Life/death sets read at phase boundary | Oracle's dead set, Empath/Chef alive-neighbor circles use start-of-night `alive/app_alive` — a player killed earlier the same night at position J is not yet dead to a later reader | Extend the site clock to life state via `death_idx` (app_dead_at/alive_neighbor_at); needs a discriminating instance or citation before switching the default |
 | Day-event yesno reads at phase boundary | Flowergirl/Towncrier evaluate "did a demon vote yesterday" against start-of-following-night state, not the subject's state at vote time (day-time SW takeover corner) | Evaluate against `char_d` of the event day |
-| Multi-position sites take the earliest slot | A philosopher-gained ability whose card also has a sheet slot yields two `site_pos` candidates; `site_epos` picks the min | Thread the acting occurrence's own position into site creation |
+| Multi-position sites take the earliest slot | A philosopher-gained ability whose card also has a sheet slot yields two `site_pos` candidates; `site_epos` picks the min | Thread the acting occurrence's own position into site creation (`hpos` now exists for actions; migrate sites to it) |
+| Cerenovus on dead players unresolved | Madness persistence for a dead target requires the Cerenovus to keep picking the corpse; text-first "choose a player" allows it, no citation either way | Find a ruling; affects reveal-on-end worlds (nqt-011 world 5) |
+| Positional audit incomplete for other action targets | Exorcist demon-pick, gambler guess, pit-hag target chars still read start-of-night state | Migrate to `hpos` + `eff_char_n` as instances arise |
 
 ## Recently retired
 

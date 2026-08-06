@@ -9,18 +9,26 @@ constraint (on by default).
 ## Claims
 
 One entry per public claim: `{player, character, info: [shown/picked atoms]}`.
-Semantics (compiled by `tools/botc.py claim_rules`): a good claimant truthfully
-is their believed character and received exactly the listed tokens (Drunk
-charade included); a LIVING Mutant may claim any Townsfolk with fabricated
-info, per the NQT convention text ("A living Mutant fully complies with
-madness... Other good players truthfully report") — a dead Mutant falls
-under the truthful clause of THAT TEXT, not under any game mechanic (talk
-is free; see `dead-mutant-claims-truthfully` in RULINGS); Cerenovus-mad
-players claim their mad character.
-Claim freedom belongs to players who are evil at the END of the observed
-window (`align/align_change` at `horizon`) — this covers initial evils and
-turned-evil players (Fang Gu jump, Goon flip), while an ex-evil player
-swapped good (Snake Charmer) must claim truthfully like any good player.
+Semantics (compiled by `tools/botc.py claim_rules`): a claim is a STANDING
+public record, covered on EVERY day D of the window by one of:
+
+- truthful: the player IS the claimed character that day (`char_day`) and
+  received exactly the listed tokens (Drunk charade included via
+  `believed_init`);
+- living Mutant that day, fabricating a single Townsfolk role;
+- cerenovus-mad as the claimed character that day;
+- evil that day (`evil_day`).
+
+There is NO blanket end-state freedom: an ex-evil player good at the end is
+covered like any good player, and a player evil at the end still needs
+covers for any good days (nqt-011). Madness may never silently end or
+change — the target would reveal (`madness-reveal-on-end`); the compiler
+emits that persistence constraint per claimant. The first-person player
+("you") knows their own character and tokens: pin them as facts in `given`
+and forbid `mad(you,_,_)` (`first-person-ground-truth`). Multi-stage
+narratives ("I was the Seamstress, I became the Artist") need hand-written
+per-day `ccov` branches in `given` instead of a claims entry — see
+nqt-011 for the pattern.
 
 ## The fact-vs-constraint rule (IMPORTANT)
 

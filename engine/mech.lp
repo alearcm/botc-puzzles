@@ -19,16 +19,16 @@ imp_suicide(P,T) :- death_event(P,T), char(P,imp,T), picked(P,imp,T,P).
 1 { becomes(Q,imp,T) : alive(Q,T), char(Q,CM,T), team_of(CM,minion) } 1 :-
     imp_suicide(P,T).
 becomes_at(Q,T,I) :- becomes(Q,imp,T), imp_suicide(_,T), sched(imp,T,I).
-becomes_at(P,T,I) :- sc_hit(P,Q,T), sched(snakecharmer,T,I).
-becomes_at(Q,T,I) :- sc_hit(P,Q,T), sched(snakecharmer,T,I).
+becomes_at(P,T,I) :- sc_hit_at(P,_,T,I).
+becomes_at(Q,T,I) :- sc_hit_at(_,Q,T,I).
 becomes_at(Q,T,I) :- fg_jump(P,Q,T), sched(fanggu,T,I).
 becomes_at(Q,T,I) :- ph_change(_,Q,_,T), sched(pithag,T,I).
 becomes_at(Q,T,I) :- sw_takes(Q,_,T), demon_died(P,T,night), death_idx(P,T,I).
 becomes_at(Q1,T,I) :- barber_swap(Q1,_,T), barber_pos(T,I).
 becomes_at(Q2,T,I) :- barber_swap(_,Q2,T), barber_pos(T,I).
 % alignment changes carry the same positions (mirrors becomes_at)
-align_change_at(P,T,I) :- sc_hit(P,_,T), sched(snakecharmer,T,I).
-align_change_at(Q,T,I) :- sc_hit(_,Q,T), sched(snakecharmer,T,I).
+align_change_at(P,T,I) :- sc_hit_at(P,_,T,I).
+align_change_at(Q,T,I) :- sc_hit_at(_,Q,T,I).
 align_change_at(Q,T,I) :- fg_jump(_,Q,T), sched(fanggu,T,I).
 align_change_at(G,T,I) :- goon_first(G,_,_,T,I).
 
@@ -239,21 +239,28 @@ kill_prop(Q,src(P,po),T,I,demon) :- po_extra(P,T,Q), sched(po,T,I),
 % ---------- S&V ----------
 % snake charmer: hits the actual demon -> swap, effective SAME night: the new
 % demon (ex-charmer) acts at the demon's position tonight; the old demon
-% (now snake charmer) does not act again.
-sc_hit(P,Q,T) :- picked(P,snakecharmer,T,Q), acting(P,snakecharmer,T),
-    sched(snakecharmer,T,I), functioning_at(P,snakecharmer,T,I),
-    char(Q,C,T), team_of(C,demon).
-becomes(P,CD,T) :- sc_hit(P,Q,T), char(Q,CD,T).
+% (now snake charmer) does not act again. The demon check happens at the
+% ACTING HOLDER's position and sees earlier same-night changes (site clock):
+% two snake-charmer holders can't both hit — after the first swap the demon
+% has moved.
+act_eval(Q,T,I) :- picked(P,snakecharmer,T,Q), hpos(P,snakecharmer,T,I).
+sc_hit_at(P,Q,T,I) :- picked(P,snakecharmer,T,Q), acting(P,snakecharmer,T),
+    hpos(P,snakecharmer,T,I), functioning_at(P,snakecharmer,T,I),
+    eff_char_n(Q,C,T,I), team_of(C,demon).
+sc_hit(P,Q,T) :- sc_hit_at(P,Q,T,_).
+sc_char(P,Q,T,CD) :- sc_hit_at(P,Q,T,I), eff_char_n(Q,CD,T,I),
+                     team_of(CD,demon).
+becomes(P,CD,T) :- sc_char(P,Q,T,CD).
 becomes(Q,snakecharmer,T) :- sc_hit(P,Q,T).
 align_change(P,evil,T) :- sc_hit(P,Q,T).
 align_change(Q,good,T) :- sc_hit(P,Q,T).
 % new snake charmer is poisoned forever (outlives everything)
 applied(Q,poisoned,src(P,snakecharmer),T,I,permanent_sticky) :-
-    sc_hit(P,Q,T), sched(snakecharmer,T,I).
+    sc_hit_at(P,Q,T,I).
 % same-night demon handover
 demon_blocked(Q,T) :- sc_hit(_,Q,T).
-has_ability(P,CD,T) :- sc_hit(P,Q,T), char(Q,CD,T).
-acting(P,CD,T) :- sc_hit(P,Q,T), char(Q,CD,T), acts(CD,other,_), T > 1.
+has_ability(P,CD,T) :- sc_char(P,_,T,CD).
+acting(P,CD,T) :- sc_char(P,_,T,CD), acts(CD,other,_), T > 1.
 
 % witch: cursed player dies if they nominate
 applied(Q,cursed,src(P,witch),T,I,until_dusk(T)) :-
@@ -262,10 +269,12 @@ applied(Q,cursed,src(P,witch),T,I,until_dusk(T)) :-
 day_kill(N,D) :- nominated(N,_,D), status_on_day(N,cursed,D),
     Kc = #count{ R : app_alive(R,D) }, Kc >= 4.
 
-% cerenovus: madness flag only (no enforcement semantics in v1)
+% cerenovus: madness flag only (no enforcement semantics in v1).
+% mad(Q,CC,D): mad during the day following night D — including the
+% final observation morning (D = horizon), which day/1 excludes.
 mad(Q,CC,D) :- picked(P,cerenovus,T,Q), pickedc(P,cerenovus,T,CC),
     acting(P,cerenovus,T), sched(cerenovus,T,I),
-    functioning_at(P,cerenovus,T,I), D = T, day(D).
+    functioning_at(P,cerenovus,T,I), D = T, night(T).
 
 % pit-hag: transform; demon creation -> arbitrary deaths licence
 ph_change(P,Q,CC,T) :- picked(P,pithag,T,Q), pickedc(P,pithag,T,CC),
@@ -326,16 +335,24 @@ applied(Q,drunk,src(P,sweetheart),T,I,permanent_sticky) :-
 applied(Q,drunk,src(P,sweetheart),D,0,permanent_sticky) :-
     sw_drunk(P,Q,D), dies_day(P,D).
 
-% barber: on death, demon may swap two players' characters
-0 { barber_swap(Q1,Q2,T) : player(Q1), player(Q2), Q1 < Q2 } 1 :-
+% barber: on death, the demon may swap two players' characters.
+% Printed text: "choose 2 players (not another Demon)" — demons are never
+% swap targets (caught live on nqt-011: a dead Vortox was swapped into a
+% good player, minting a good demon).
+bs_demon(Q,T) :- char(Q,C,T), team_of(C,demon), night(T).
+0 { barber_swap(Q1,Q2,T) : player(Q1), player(Q2), Q1 < Q2,
+      not bs_demon(Q1,T), not bs_demon(Q2,T) } 1 :-
     death_event(P,T), char(P,barber,T).
-% day-death: the swap happens the following night (chars change at its end)
-0 { barber_swap(Q1,Q2,D) : player(Q1), player(Q2), Q1 < Q2 } 1 :-
+% day-death: the swap happens the FOLLOWING night (indexed there; mid-night
+% visibility via barber_pos + the site clock)
+0 { barber_swap(Q1,Q2,D+1) : player(Q1), player(Q2), Q1 < Q2,
+      not bs_demon(Q1,D+1), not bs_demon(Q2,D+1) } 1 :-
     dies_day(P,D), char_d(P,barber,D), night(D+1).
 becomes(Q1,C2,T) :- barber_swap(Q1,Q2,T), char(Q2,C2,T).
 becomes(Q2,C1,T) :- barber_swap(Q1,Q2,T), char(Q1,C1,T).
 barber_pos(T,I) :- death_event(P,T), char(P,barber,T), death_idx(P,T,I).
-barber_pos(D+1,99) :- dies_day(P,D), char_d(P,barber,D), night(D+1).
+barber_pos(D+1,I) :- dies_day(P,D), char_d(P,barber,D), night(D+1),
+                     sched(barber,D+1,I).
 
 % sage: on demon-death at night, learns 2 (demon among them)
 sage_killer(P,T,QD) :- death_event(P,T), char(P,sage,T),

@@ -240,36 +240,56 @@ def check_fixture(path: Path) -> tuple[bool, str]:
 
 # ---------------- puzzles ----------------
 
-def claim_rules(claims: list[dict]) -> list[str]:
-    """Puzzle-convention claim semantics: a good claimant truthfully reports
-    their believed character and tokens (the drunk's charade included);
-    players who are evil at the end of the observed window claim freely
-    ("evil players lie"); an ex-evil player swapped good must claim
-    truthfully like any good player."""
+def claim_rules(claims: list[dict], horizon: int) -> list[str]:
+    """Puzzle-convention claim semantics. A claim is a STANDING public
+    record, not a one-shot statement: it must be covered on EVERY day D of
+    the window by one of — truthful believed character (drunk charade
+    included), living Mutant fabricating a townsfolk role, cerenovus-mad as
+    the claimed character that day, or being evil that day. Players evil at
+    the END claim freely, retroactively included ("An Outsider who became
+    the Fang Gu may lie about the role they had when they were good", #55).
+    An ex-evil player good at the end must be covered like any good player
+    (caught on nqt-011: good snake charmers claiming other roles with a
+    single final-day madness were spurious demons)."""
     out = []
+    days = list(range(1, horizon + 1))
     if claims:
-        # end-state alignment: the final night's change (fang gu jump at
-        # horizon, snake charmer swap at horizon) overrides align(_,_,horizon)
-        out.append("evil_at_end(P) :- player(P), align(P,evil,horizon), "
-                   "not align_changed(P,horizon).")
-        out.append("evil_at_end(P) :- player(P), align_change(P,evil,horizon).")
-        out.append("alive_at_end(P) :- alive(P,horizon), "
-                   "not dies_night(P,horizon).")
+        # evil_day(P,D): alignment DURING day D (night-D changes applied)
+        out.append("evil_day(P,D) :- player(P), align(P,evil,D), "
+                   "not align_changed(P,D), night(D).")
+        out.append("evil_day(P,D) :- player(P), align_change(P,evil,D).")
+        out.append("evil_at_end(P) :- evil_day(P,horizon).")
+        out.append("alive_day(P,D) :- alive(P,D), not dies_night(P,D).")
+        out.append("alive_at_end(P) :- alive_day(P,horizon).")
+        # character DURING day D, defined through the final morning
+        out.append("char_day(P,C,D) :- char_d(P,C,D), day(D).")
+        out.append("char_day(P,C,horizon) :- char(P,C,horizon), "
+                   "not char_changed(P,horizon).")
+        out.append("char_day(P,C,horizon) :- becomes(P,C,horizon).")
     for cl in claims:
         p, char = cl["player"], cl["character"]
         shown = [s.strip().rstrip(".") for s in cl.get("info", [])]
-        body = ", ".join([f"initial({p},{char})"] + shown) or f"initial({p},{char})"
-        out.append(f"claim_ok({p}) :- {body}.")
-        drunk_body = ", ".join(
-            [f"initial({p},drunk)", f"believed_init({p},{char})"] + shown)
-        out.append(f"claim_ok({p}) :- {drunk_body}.")
-        out.append(f"claim_ok({p}) :- evil_at_end({p}).")
-        # madness: a LIVING mutant claims a townsfolk (fabricated info); a
-        # dead mutant no longer complies and claims truthfully (NQT #55
-        # comments); a cerenovus-mad player claims their mad character
-        out.append(f"claim_ok({p}) :- initial({p},mutant), "
-                   f"role({char},townsfolk,_), alive_at_end({p}).")
-        out.append(f"claim_ok({p}) :- mad({p},{char},_).")
+        for d in days:
+            body = ", ".join([f"char_day({p},{char},{d})"] + shown)
+            drunk_body = ", ".join(
+                [f"char_day({p},drunk,{d})", f"believed_init({p},{char})"]
+                + shown)
+            out.append(f"ccov({p},{d}) :- {body}.")
+            out.append(f"ccov({p},{d}) :- {drunk_body}.")
+            # madness compliance belongs to whoever IS the mutant that
+            # day (a mutant pit-hagged away loses the cover, a player
+            # turned INTO the mutant gains it)
+            out.append(f"ccov({p},{d}) :- char_day({p},mutant,{d}), "
+                       f"role({char},townsfolk,_), alive_day({p},{d}).")
+            out.append(f"ccov({p},{d}) :- mad({p},{char},{d}).")
+            out.append(f"ccov({p},{d}) :- evil_day({p},{d}).")
+        all_days = ", ".join(f"ccov({p},{d})" for d in days)
+        out.append(f"claim_ok({p}) :- {all_days}.")
+        # reveal-on-end: madness that ends or changes makes the target
+        # reveal they were cerenovus-targeted (NQT convention, ALL players
+        # incl. evil/dead) — no claim shows a reveal, so madness persists
+        out.append(f":- mad({p},CC,D), night(D2), D2 = D+1, "
+                   f"not mad({p},CC,D2).")
         out.append(f":- not claim_ok({p}).")
     return out
 
@@ -291,7 +311,7 @@ def load_puzzle(path: Path) -> tuple[Instance, dict]:
                 f"claimed character '{cl['character']}' is not in the pool "
                 f"(scripts {inst.scripts} + roster {inst.roster}) — add it "
                 f"to `roster:` (silent UNSAT otherwise; see nqt-022)")
-    inst.given.extend(claim_rules(doc.get("claims", [])))
+    inst.given.extend(claim_rules(doc.get("claims", []), inst.horizon))
     if doc.get("assume_ongoing", True):
         inst.given.append("assume_ongoing")
     return inst, doc

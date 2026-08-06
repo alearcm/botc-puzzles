@@ -1,0 +1,21 @@
+# Barber printed text: "the Demon may choose 2 players (NOT ANOTHER DEMON)
+# to swap characters" — the demon (alive or dead) is never a swap target.
+# Caught live on nqt-011: a dead Vortox was swapped into a good Artist,
+# minting a good demon and dodging the game-over check.
+script: snv
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7, p8]
+given:
+  - "initial(p1,vortox)"
+  - "initial(p2,barber)"
+  - "initial(p3,cerenovus)"
+  - "initial(p4,artist)"
+  - "initial(p5,sage)"
+  - "initial(p6,dreamer)"
+  - "initial(p7,oracle)"
+  - "initial(p8,mutant)"
+  - "picked(p1,vortox,2,p2)"    # vortox kills the barber night 2
+assert:
+  never:
+    - "barber_swap(p1,QQ,2), player(QQ)"
+    - "barber_swap(QQ,p1,2), player(QQ)"

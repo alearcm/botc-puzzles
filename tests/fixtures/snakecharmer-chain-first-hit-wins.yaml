@@ -1,0 +1,28 @@
+# Two snake-charmer-ability holders in one night: the philosopher-copy acts
+# at the philosopher's slot (earlier than the real Snake Charmer's slot).
+# If the earlier holder hits the demon, the swap has already happened by the
+# time the later holder acts — their pick of the SAME player finds a snake
+# charmer, not a demon. No coded pairing: the site clock + per-holder
+# positions (hpos) produce it.
+script: snv
+horizon: 2
+players: [p1, p2, p3, p4, p5, p6, p7, p8]
+given:
+  - "initial(p1,vortox)"
+  - "initial(p2,philosopher)"
+  - "initial(p3,snakecharmer)"
+  - "initial(p4,artist)"
+  - "initial(p5,sage)"
+  - "initial(p6,dreamer)"
+  - "initial(p7,cerenovus)"
+  - "initial(p8,mutant)"
+  - "uses_once(p2,philosopher,2)"
+  - "phil_pick(p2,2,snakecharmer)"
+  - "picked(p3,snakecharmer,1,p4)"   # night 1: real SC picks a non-demon
+  - "picked(p2,snakecharmer,2,p1)"   # phil-copy hits the demon (early slot)
+  - "picked(p3,snakecharmer,2,p1)"   # real SC picks the same player later
+assert:
+  certain:
+    - "sc_hit(p2,p1,2)"
+  never:
+    - "sc_hit(p3,p1,2)"

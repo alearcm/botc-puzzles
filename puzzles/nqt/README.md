@@ -10,6 +10,7 @@ solver must reproduce the author-confirmed answer from the thread.
 | 8 | The Stitch-Up | S&V+TB homebrew (all-Seamstress) | evil team {josh, steph}; demon within pair ambiguous | Josh & Steph evil, You poisoned | YES |
 | 21 | Eight Jugglers Juggling | homebrew (all-Juggler) + Leviathan/Goblin/Drunk | unique world: Oscar = Leviathan, Tim = Goblin, Aoife = Drunk | same | YES (first experimental characters: cards/exp.yaml) |
 | 10 | Don't Overcook It | TB (restricted roster) | unique: Dan = Imp, Fraser = Poisoner | Dan Imp, Fraser Poisoner | YES |
+| 11 | False Is the New Black | S&V (guest puzzle) | demon unique: Aoife = Vortox; minion {sarah, matthew, tom} | Aoife Vortox, Sarah minion | PARTIAL — demon reproduced; minion ambiguity via an unadjudicated night-1 Snake-Charmer swap line (thread eliminations use soft priors). Drove 6 general claim/engine fixes |
 | 13 | Clockblocking | TB+Clockmaker | sound-unique: Fraser = Imp, Oscar = Baron, Tim = Drunk | same | YES (forced the site-clock refactor: registration evaluates at the observer's night-order position) |
 | 22 | One in the Chamber | TB+Chambermaid | sound-unique: Sarah = starting Imp, Steph = Baron (star-pass Imp), You = Drunk | same | YES (forced shadow-pick generalization + roster validation) |
 | 26 | A Major Problem | TB | unique: Tom = Imp, Matthew = Poisoner | Tom Imp, Matthew Poisoner | YES |
@@ -20,7 +21,7 @@ solver must reproduce the author-confirmed answer from the thread.
 | 55 | The Life of a Flowergirl | S&V | unique world: Anna = Vortox, Jasmine = Witch | same | YES (forced claim-model fixes: evil-at-end claim freedom, living-Mutant madness; first "Potential hidden roles" box) |
 | 59 | Fifty-Fifty | TB | unique: Oscar = Imp, Jasmine = Spy (full grimoire certain) | Jasmine Spy, Oscar Imp | YES |
 
-Running total: **12/12 sound-unique reproductions** (008 at
+Running total: **12/13 sound-unique + 1 PARTIAL (#11: demon unique, minion open)** (008 at
 team level by
 design). #28 was temporarily PARTIAL after the solver switched to sound
 per-player probes; diagnosis found the discriminator in the Chambermaid's

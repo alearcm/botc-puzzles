@@ -22,6 +22,9 @@ site_pos_lt(S,I) :- site_pos(S,I), site_pos(S,J), J < I.
 has_pos(S) :- site_pos(S,_).
 
 eval_at(Q,T,I) :- scq(S,Q,T), site_epos(S,I).
+% actions that read positional state (snake charmer's demon check, ...)
+% register their evaluation points the same way
+eval_at(Q,T,I) :- act_eval(Q,T,I).
 chg_seen(Q,T,I) :- eval_at(Q,T,I), becomes_at(Q,T,J), J < I.
 eff_char_n(Q,C,T,I) :- eval_at(Q,T,I), char(Q,C,T), not chg_seen(Q,T,I).
 eff_char_n(Q,C,T,I) :- chg_seen(Q,T,I), becomes(Q,C,T).
