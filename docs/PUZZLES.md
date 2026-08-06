@@ -30,6 +30,15 @@ narratives ("I was the Seamstress, I became the Artist") need hand-written
 per-day `ccov` branches in `given` instead of a claims entry — see
 nqt-011 for the pattern.
 
+### Claim completeness for out-of-band tokens
+
+Good players report ALL information they receive. Schema tokens are pinned
+by the claims themselves, but out-of-band tokens (the Widow's ping, a
+once-per-game trigger) need an explicit exclusion: if only one player
+claims the token, constrain the recipient to that player
+(`":- widow_ping(Q), Q != fraser"` — nqt-042; the thread's own elimination
+of the alternative demon rested on exactly this).
+
 ## The fact-vs-constraint rule (IMPORTANT)
 
 Whether an observation goes into `given` as a **fact** or a **constraint**

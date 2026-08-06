@@ -1,0 +1,84 @@
+# Weekly Puzzle #42 — "Life, the Universe, and Everything"
+# (Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1kwr1mx/
+# 8 players, TB + Widow (exp) + Philosopher/Juggler/Artist (S&V imports).
+# One Imp + one minion of {Baron, Widow}. Outsiders: default one, Baron
+# makes three. You are not evil, might be the Drunk.
+# Hidden roles box: Imp, Baron, Widow, Drunk.
+# Day 1: You executed. Night 2: Adam dies. Day 2: Oscar executed.
+# Night 3: Jasmine dies. Question: who is the Demon and who is the Minion?
+# CONFIRMED ANSWER (author-endorsed, several phrasings): Jasmine = starting
+# Imp, Matthew = Widow (poisoned Hannah). Jasmine self-kills night 3 and
+# star-passes to Matthew — Hannah's poison ends AT the star-pass position,
+# so her night-3 Undertaker read (Oscar = Empath, true) is sober: the
+# src_lost_mid + site-clock machinery end to end.
+id: nqt-042
+script: tb
+roster: [widow, philosopher, juggler, artist]
+horizon: 3
+players: [matthew, jasmine, fraser, sula, you, adam, oscar, hannah]
+statements:
+  a_art: widow_poisoned_ohj
+claims:
+  - {player: matthew, character: fortuneteller,
+     info: ["picked2(matthew,fortuneteller,1,fraser,matthew)",
+            "shown_bool(matthew,fortuneteller,1,yes)",
+            "picked2(matthew,fortuneteller,2,oscar,sula)",
+            "shown_bool(matthew,fortuneteller,2,yes)",
+            "picked2(matthew,fortuneteller,3,hannah,sula)",
+            "shown_bool(matthew,fortuneteller,3,yes)"]}
+  - {player: jasmine, character: recluse, info: []}
+  - {player: fraser, character: juggler,
+     info: ["shown_num(fraser,juggler,2,1)", "widow_ping(fraser)"]}
+  - {player: sula, character: saint, info: []}
+  - {player: adam, character: artist,
+     info: ["shown_bool(adam,artist,1,yes)"]}
+  - {player: oscar, character: empath,
+     info: ["shown_num(oscar,empath,1,1)",
+            "shown_num(oscar,empath,2,0)"]}
+  - {player: hannah, character: undertaker,
+     info: ["shown_char(hannah,undertaker,2,baron)",
+            "shown_char(hannah,undertaker,3,empath)"]}
+given:
+  # claim completeness: good players report ALL info received — nobody but
+  # Fraser claims the widow ping, so nobody else received it (the thread's
+  # own elimination of the Fraser-Imp world)
+  - ":- widow_ping(Q), Q != fraser"
+  # public day-1 inputs
+  - "juggle(fraser,you,philosopher,1)"
+  - "juggle(fraser,matthew,imp,1)"
+  - "artist_q(a_art,adam,1)"
+  # the artist's question: was Oscar, Hannah or Jasmine Widow-poisoned
+  - "widow_poisoned_ohj :- applied(oscar,poisoned,src(P,widow),1,I,E), player(P)"
+  - "widow_poisoned_ohj :- applied(hannah,poisoned,src(P,widow),1,I,E), player(P)"
+  - "widow_poisoned_ohj :- applied(jasmine,poisoned,src(P,widow),1,I,E), player(P)"
+  # first-person: You are the Philosopher (chose Empath, learned 0) or the
+  # Drunk believing Philosopher (charade info free — shadow phil picks are
+  # not mechanized, so hand-written branches)
+  - "claim_ok(you) :- initial(you,philosopher), uses_once(you,philosopher,1),
+       phil_pick(you,1,empath), shown_num(you,empath,1,0)"
+  - "claim_ok(you) :- initial(you,drunk), believed_init(you,philosopher)"
+  - ":- not claim_ok(you)"
+  # events
+  - "executed(you,1)"
+  - "executed(oscar,2)"
+  - ":- announced_dead(P,1), player(P)"
+  - ":- not announced_dead(adam,2)"
+  - ":- announced_dead(P,2), P != adam, player(P)"
+  - ":- not announced_dead(jasmine,3)"
+  - ":- announced_dead(P,3), P != jasmine, player(P)"
+  - ":- day_kill(P,D), player(P), day(D)"
+  # roster
+  - ":- initial(P,C), role(C,demon,_), C != imp"
+  - ":- initial(P,C), role(C,minion,_), C != baron, C != widow"
+  # "Potential hidden roles" box: claimed role or one of these four
+  - "hidden42(imp; baron; widow; drunk)"
+  - ":- initial(matthew,C), C != fortuneteller, not hidden42(C)"
+  - ":- initial(jasmine,C), C != recluse, not hidden42(C)"
+  - ":- initial(fraser,C), C != juggler, not hidden42(C)"
+  - ":- initial(sula,C), C != saint, not hidden42(C)"
+  - ":- initial(adam,C), C != artist, not hidden42(C)"
+  - ":- initial(oscar,C), C != empath, not hidden42(C)"
+  - ":- initial(hannah,C), C != undertaker, not hidden42(C)"
+  - ":- initial(you,C), C != philosopher, not hidden42(C)"
+  - ":- align(you,evil,1)"

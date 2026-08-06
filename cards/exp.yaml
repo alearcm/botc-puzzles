@@ -30,3 +30,21 @@
     - "vi_count(K) :- K = #count{ P : initial(P,villageidiot) }"
     - "1 { vi_drunk(P) : initial(P,villageidiot) } 1 :- vi_count(K), K >= 2"
     - "applied(P,drunk,src(P,vi_extra),1,0,permanent_sticky) :- vi_drunk(P)"
+- id: widow
+  team: minion
+  coverage: full
+  notes: "text: 'On your 1st night, look at the Grimoire & choose a player:
+    they are poisoned. 1 good player knows a Widow is in play.' Grimoire
+    look is epistemic (evil private info unconstrained); the poison is a
+    permanent status ending the moment the Widow stops holding the ability
+    (death OR star pass — generic src_lost_mid, wiki how-to-run: 'the
+    poisoning ends immediately upon the Widow's death'); the ping goes to
+    one chosen good player (widow_ping/1)."
+  acts:
+    phase: first
+    pick: p1_any
+  status:
+    kind: poisoned
+    expiry: permanent
+  facts:
+    - "1 { widow_ping(Q) : player(Q), align(Q,good,1) } 1 :- acting(P,widow,1)"

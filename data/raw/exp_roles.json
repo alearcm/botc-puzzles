@@ -1,4 +1,14 @@
 [
-  {"id": "villageidiot", "firstNight": 70, "otherNight": 70,
-   "_note": "experimental char absent from cached townsquare_roles.json; late-info slot chosen, exact official number unverified (no puzzle has hinged on it; see DEBT)"}
+  {
+    "id": "villageidiot",
+    "firstNight": 70,
+    "otherNight": 70,
+    "_note": "experimental char absent from cached townsquare_roles.json; late-info slot chosen, exact official number unverified (no puzzle has hinged on it; see DEBT)"
+  },
+  {
+    "id": "widow",
+    "firstNight": 18,
+    "otherNight": 0,
+    "_note": "experimental; first-night minion slot near the Poisoner, exact official number unverified"
+  }
 ]
