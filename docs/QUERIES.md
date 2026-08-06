@@ -48,3 +48,18 @@ leaves 7 worlds; killing Oscar, Sula, or himself (star pass) leaves 8.
 The actual puzzle's demon killed Jasmine — one of the WORST
 confusion-preserving picks, because the author was optimizing for a
 unique-solution puzzle, not for the demon.
+
+## robust <puzzle>
+
+Demon candidates under EVERY point of the switch product space
+(`engine/switches.yaml` — contested seams with no forcing citation).
+Reports per-setting answers, the ROBUST set (intersection), and whether
+the conclusion is setting-dependent. This is DESIGN well-posedness made
+executable: #36 is only well-posed GIVEN the author's drunk-token
+convention (under `any_token` a second demon world returns), while #33's
+answer survives every setting.
+
+Switch composition is build-time: a concrete candidate ruleset = base
+engine + one ASP snippet per switch; `Instance.switches` overrides
+defaults. Wiring a new switch = moving its clause out of the base engine
+into a setting entry.

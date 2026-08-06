@@ -127,6 +127,28 @@ def global_order_facts(ids: set[str]) -> list[str]:
 
 # ---------------- instances ----------------
 
+def load_switches() -> list[dict]:
+    path = ROOT / "engine" / "switches.yaml"
+    return yaml.safe_load(path.read_text()) if path.exists() else []
+
+
+def switch_facts(settings: dict[str, str] | None) -> list[str]:
+    """ASP snippets for the chosen switch settings (defaults unless
+    overridden). Unknown switch ids or settings are errors."""
+    out = []
+    chosen = dict(settings or {})
+    for sw in load_switches():
+        setting = chosen.pop(sw["id"], sw["default"])
+        if setting not in sw["settings"]:
+            raise ValueError(f"switch {sw['id']}: unknown setting {setting!r}")
+        snippet = sw["settings"][setting].strip()
+        if snippet:
+            out.append(snippet)
+    if chosen:
+        raise ValueError(f"unknown switches: {sorted(chosen)}")
+    return out
+
+
 @dataclass
 class Instance:
     script: str | list[str] | None = None  # edition shorthand(s) for the pool
@@ -135,6 +157,7 @@ class Instance:
     given: list[str] = field(default_factory=list)
     statements: dict[str, str] = field(default_factory=dict)  # stmt id -> ASP body
     roster: list[str] = field(default_factory=list)  # extra character ids
+    switches: dict[str, str] = field(default_factory=dict)  # switch id -> setting
 
     @property
     def scripts(self) -> list[str]:
@@ -184,6 +207,7 @@ def build_program(inst: Instance) -> str:
     if not nord:
         nord = global_order_facts(ids)
     parts.append("\n".join(nord))
+    parts.append("\n".join(switch_facts(inst.switches)))
     parts.append(inst.facts())
     return "\n".join(parts)
 
@@ -430,12 +454,40 @@ def query_evilmax(path: Path, night: int, truth: list[str],
     return {"night": night, "truth": tfacts, "kills": ranking, "best": best}
 
 
+def query_robust(path: Path) -> dict:
+    """Demon candidates under EVERY point of the switch product space:
+    which conclusions are robust (hold under all settings) and which are
+    setting-dependent. A puzzle whose answer varies across settings it did
+    not declare between is ill-posed (DESIGN well-posedness)."""
+    import itertools
+    inst0, doc = load_puzzle(path)
+    sws = load_switches()
+    axes = [(sw["id"], sorted(sw["settings"])) for sw in sws]
+    per_setting = {}
+    for combo in itertools.product(*(vals for _, vals in axes)):
+        settings = dict(zip((sid for sid, _ in axes), combo))
+        inst, _ = load_puzzle(path)
+        inst.switches = settings
+        cands = frozenset(
+            p for p in inst.players
+            if sat(inst, f"idp :- initial({p},C), role(C,demon,_).\n:- not idp."))
+        per_setting[",".join(f"{k}={v}" for k, v in settings.items())] = \
+            sorted(cands)
+    all_sets = [frozenset(v) for v in per_setting.values()]
+    robust = sorted(frozenset.intersection(*all_sets)) if all_sets else []
+    union = sorted(frozenset.union(*all_sets)) if all_sets else []
+    return {"per_setting": per_setting,
+            "robust_demon_candidates": robust,
+            "union_demon_candidates": union,
+            "setting_dependent": union != robust}
+
+
 def _main() -> None:
     import argparse
     import pprint
     ap = argparse.ArgumentParser(description="BotC world-enumeration queries")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for name in ("solve", "worlds", "certain", "count", "evilmax"):
+    for name in ("solve", "worlds", "certain", "count", "evilmax", "robust"):
         sp = sub.add_parser(name)
         sp.add_argument("puzzle", type=Path)
         if name in ("worlds", "count"):
@@ -462,6 +514,8 @@ def _main() -> None:
     elif args.cmd == "evilmax":
         pprint.pprint(query_evilmax(args.puzzle, args.night,
                                     args.truth.split(";"), args.limit))
+    elif args.cmd == "robust":
+        pprint.pprint(query_robust(args.puzzle))
 
 
 if __name__ == "__main__":
