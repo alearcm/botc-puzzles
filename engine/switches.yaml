@@ -1,0 +1,21 @@
+# Contested seams with no forcing citation: each switch is a free
+# parameter of the ruleset. A concrete candidate ruleset = base engine +
+# one setting per switch (build-time composition — no runtime machinery).
+# The `robust` query runs the product space and reports which conclusions
+# hold under every setting. Settings are ASP snippets appended to the
+# program; the base engine contains only what all settings share.
+#
+# Registry-only switches (documented in RULINGS but with a single
+# mechanized setting so far) do not appear here; wiring one in means
+# moving its clause out of the base engine into a setting.
+
+- id: drunk_token
+  question: May the Drunk's believed-character token duplicate an
+    in-play character?
+  source: "NQT #36 author ruling for the puzzle corpus (default);
+    acknowledged grey area in the official rules"
+  default: not_in_play
+  settings:
+    not_in_play: ":- initial(P,drunk), believed_init(P,B), initial(Q,B),
+      not dup_ok(B)."
+    any_token: ""

@@ -127,6 +127,28 @@ def global_order_facts(ids: set[str]) -> list[str]:
 
 # ---------------- instances ----------------
 
+def load_switches() -> list[dict]:
+    path = ROOT / "engine" / "switches.yaml"
+    return yaml.safe_load(path.read_text()) if path.exists() else []
+
+
+def switch_facts(settings: dict[str, str] | None) -> list[str]:
+    """ASP snippets for the chosen switch settings (defaults unless
+    overridden). Unknown switch ids or settings are errors."""
+    out = []
+    chosen = dict(settings or {})
+    for sw in load_switches():
+        setting = chosen.pop(sw["id"], sw["default"])
+        if setting not in sw["settings"]:
+            raise ValueError(f"switch {sw['id']}: unknown setting {setting!r}")
+        snippet = sw["settings"][setting].strip()
+        if snippet:
+            out.append(snippet)
+    if chosen:
+        raise ValueError(f"unknown switches: {sorted(chosen)}")
+    return out
+
+
 @dataclass
 class Instance:
     script: str | list[str] | None = None  # edition shorthand(s) for the pool
@@ -135,6 +157,7 @@ class Instance:
     given: list[str] = field(default_factory=list)
     statements: dict[str, str] = field(default_factory=dict)  # stmt id -> ASP body
     roster: list[str] = field(default_factory=list)  # extra character ids
+    switches: dict[str, str] = field(default_factory=dict)  # switch id -> setting
 
     @property
     def scripts(self) -> list[str]:
@@ -184,6 +207,7 @@ def build_program(inst: Instance) -> str:
     if not nord:
         nord = global_order_facts(ids)
     parts.append("\n".join(nord))
+    parts.append("\n".join(switch_facts(inst.switches)))
     parts.append(inst.facts())
     return "\n".join(parts)
 
@@ -402,17 +426,77 @@ def query_certain(path: Path, limit: int = 2000) -> dict:
     }
 
 
+def query_evilmax(path: Path, night: int, truth: list[str],
+                  limit: int = 2000) -> dict:
+    """Evil-perspective planning: the demon KNOWS the true grimoire
+    (`truth` facts). For each candidate victim realizable in the truth
+    world at `night`, count the distinct worlds (initial/2 projection)
+    still consistent for the TOWN after that death is announced — evil
+    prefers the kill leaving the most worlds standing. The puzzle file
+    must be a PREFIX observation (events/claims up to the prior day)."""
+    inst, doc = load_puzzle(path)
+    tfacts = [t.strip().rstrip(".") for t in truth]
+
+    def extended(extra_given: list[str]) -> Instance:
+        return Instance(script=inst.script, players=inst.players,
+                        horizon=inst.horizon, given=inst.given + extra_given,
+                        statements=inst.statements, roster=inst.roster)
+
+    ranking = {}
+    for v in inst.players:
+        death = [f":- not announced_dead({v},{night})",
+                 f":- announced_dead(P,{night}), P != {v}, player(P)"]
+        if not sat(extended(tfacts + death)):
+            continue  # not realizable in the true world
+        ws, trunc = worlds_proj(extended(death), ["initial/2"], limit=limit)
+        ranking[v] = {"worlds": len(ws), "truncated": trunc}
+    best = max(ranking, key=lambda v: ranking[v]["worlds"]) if ranking else None
+    return {"night": night, "truth": tfacts, "kills": ranking, "best": best}
+
+
+def query_robust(path: Path) -> dict:
+    """Demon candidates under EVERY point of the switch product space:
+    which conclusions are robust (hold under all settings) and which are
+    setting-dependent. A puzzle whose answer varies across settings it did
+    not declare between is ill-posed (DESIGN well-posedness)."""
+    import itertools
+    inst0, doc = load_puzzle(path)
+    sws = load_switches()
+    axes = [(sw["id"], sorted(sw["settings"])) for sw in sws]
+    per_setting = {}
+    for combo in itertools.product(*(vals for _, vals in axes)):
+        settings = dict(zip((sid for sid, _ in axes), combo))
+        inst, _ = load_puzzle(path)
+        inst.switches = settings
+        cands = frozenset(
+            p for p in inst.players
+            if sat(inst, f"idp :- initial({p},C), role(C,demon,_).\n:- not idp."))
+        per_setting[",".join(f"{k}={v}" for k, v in settings.items())] = \
+            sorted(cands)
+    all_sets = [frozenset(v) for v in per_setting.values()]
+    robust = sorted(frozenset.intersection(*all_sets)) if all_sets else []
+    union = sorted(frozenset.union(*all_sets)) if all_sets else []
+    return {"per_setting": per_setting,
+            "robust_demon_candidates": robust,
+            "union_demon_candidates": union,
+            "setting_dependent": union != robust}
+
+
 def _main() -> None:
     import argparse
     import pprint
     ap = argparse.ArgumentParser(description="BotC world-enumeration queries")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for name in ("solve", "worlds", "certain", "count"):
+    for name in ("solve", "worlds", "certain", "count", "evilmax", "robust"):
         sp = sub.add_parser(name)
         sp.add_argument("puzzle", type=Path)
         if name in ("worlds", "count"):
             sp.add_argument("--show", default="initial/2",
                             help="comma-separated projection atoms (name/arity)")
+        if name == "evilmax":
+            sp.add_argument("--night", type=int, required=True)
+            sp.add_argument("--truth", required=True,
+                            help="semicolon-separated true-world facts")
         if name != "solve":
             sp.add_argument("--limit", type=int, default=2000)
     args = ap.parse_args()
@@ -427,6 +511,11 @@ def _main() -> None:
               f"(projection {r['projection']})")
     elif args.cmd == "certain":
         pprint.pprint(query_certain(args.puzzle, args.limit))
+    elif args.cmd == "evilmax":
+        pprint.pprint(query_evilmax(args.puzzle, args.night,
+                                    args.truth.split(";"), args.limit))
+    elif args.cmd == "robust":
+        pprint.pprint(query_robust(args.puzzle))
 
 
 if __name__ == "__main__":
