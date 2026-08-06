@@ -1,0 +1,62 @@
+# Weekly Puzzle #21 — "Eight Jugglers Juggling" (Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1hpqhai/
+# 8 players. Bootlegger homebrew rule: "Every Townsfolk is a Juggler."
+# One Demon (Leviathan — no night kill), one Minion (Goblin), one Outsider
+# (Drunk). Hidden roles box: Leviathan, Goblin, Drunk. Everyone claims
+# Juggler; all juggled on day 1 and report their night-2 number.
+# You are not evil but might be the Drunk.
+# No deaths, no executions. Question: who is the Demon and who is the Minion?
+# CONFIRMED ANSWER (author-endorsed): Oscar = Leviathan, Tim = Goblin,
+# Aoife = Drunk. REPRODUCED sound-unique (single world). First puzzle needing
+# experimental characters (cards/exp.yaml: Leviathan endgame clock in
+# endgame.lp, Goblin) and a homebrew bag rule (dup_ok(juggler)).
+id: nqt-021
+script: [tb, snv, exp]   # Juggler from S&V, Drunk from TB, Leviathan/Goblin experimental
+horizon: 2
+players: [tim, matt, olivia, oscar, you, fraser, aoife, josh]
+claims:
+  - {player: tim, character: juggler,
+     info: ["shown_num(tim,juggler,2,0)"]}
+  - {player: matt, character: juggler,
+     info: ["shown_num(matt,juggler,2,0)"]}
+  - {player: olivia, character: juggler,
+     info: ["shown_num(olivia,juggler,2,2)"]}
+  - {player: oscar, character: juggler,
+     info: ["shown_num(oscar,juggler,2,0)"]}
+  - {player: you, character: juggler,
+     info: ["shown_num(you,juggler,2,0)"]}
+  - {player: fraser, character: juggler,
+     info: ["shown_num(fraser,juggler,2,1)"]}
+  - {player: aoife, character: juggler,
+     info: ["shown_num(aoife,juggler,2,0)"]}
+  - {player: josh, character: juggler,
+     info: ["shown_num(josh,juggler,2,1)"]}
+given:
+  # day-1 public juggles (two guesses each)
+  - "juggle(tim,you,leviathan,1)"
+  - "juggle(tim,josh,juggler,1)"
+  - "juggle(matt,josh,goblin,1)"
+  - "juggle(matt,tim,juggler,1)"
+  - "juggle(olivia,you,juggler,1)"
+  - "juggle(olivia,aoife,drunk,1)"
+  - "juggle(oscar,josh,goblin,1)"
+  - "juggle(oscar,matt,juggler,1)"
+  - "juggle(you,matt,goblin,1)"
+  - "juggle(you,oscar,goblin,1)"
+  - "juggle(fraser,olivia,juggler,1)"
+  - "juggle(fraser,oscar,drunk,1)"
+  - "juggle(aoife,olivia,leviathan,1)"
+  - "juggle(aoife,oscar,leviathan,1)"
+  - "juggle(josh,tim,goblin,1)"
+  - "juggle(josh,oscar,juggler,1)"
+  # roster: homebrew "Every Townsfolk is a Juggler" + hidden roles box.
+  # The homebrew implies duplicate Jugglers are legal in the bag.
+  - "dup_ok(juggler)"
+  - ":- initial(P,C), role(C,townsfolk,_), C != juggler"
+  - ":- initial(P,C), role(C,demon,_), C != leviathan"
+  - ":- initial(P,C), role(C,minion,_), C != goblin"
+  - ":- initial(P,C), role(C,outsider,_), C != drunk"
+  - ":- align(you,evil,1)"
+  # no deaths, no executions (Leviathan does not kill)
+  - ":- announced_dead(P,T), player(P), night(T)"
+  - ":- day_kill(P,D), player(P), day(D)"

@@ -10,6 +10,10 @@
 # token-receivers (a poisoned Sage counts), own token excluded. The
 # witch-self-curse world dies on the Mathematician's night-2 count, not on
 # any witch restriction.
+# Hidden-roles box (No Dashii/Vortox/Witch) added after the turned-evil
+# claim-freedom rule (from #55) admitted lying swapped-Snake-Charmer lines;
+# the "didn't become the Demon" claim content moved into the good claim
+# branch (aoife_no_swap) instead of a world-level constraint.
 id: nqt-034
 script: snv
 horizon: 2
@@ -26,7 +30,7 @@ claims:
   - {player: josh, character: juggler,
      info: ["shown_num(josh,juggler,2,0)"]}
   - {player: aoife, character: snakecharmer,
-     info: ["picked(aoife,snakecharmer,1,josh)"]}
+     info: ["picked(aoife,snakecharmer,1,josh)", "aoife_no_swap"]}
   - {player: you, character: mathematician,
      info: ["shown_num(you,mathematician,1,1)",
             "shown_num(you,mathematician,2,0)"]}
@@ -47,8 +51,18 @@ given:
   - ":- initial(P,C), role(C,demon,_), C != nodashii, C != vortox"
   - ":- initial(P,C), role(C,minion,_), C != witch"
   - ":- align(you,evil,1)"
-  # the snake charmer's pick did not transform her (claim content)
-  - ":- sc_hit(aoife,Q,1), player(Q)"
+  # "Potential hidden roles" box: claimed role or one of these three
+  - "hidden34(nodashii; vortox; witch)"
+  - ":- initial(sula,C), C != clockmaker, not hidden34(C)"
+  - ":- initial(sarah,C), C != seamstress, not hidden34(C)"
+  - ":- initial(josh,C), C != juggler, not hidden34(C)"
+  - ":- initial(aoife,C), C != snakecharmer, not hidden34(C)"
+  - ":- initial(you,C), C != mathematician, not hidden34(C)"
+  - ":- initial(fraser,C), C != sage, not hidden34(C)"
+  - ":- initial(steph,C), C != artist, not hidden34(C)"
+  # claim content "I didn't become the Demon" — binding only via the good
+  # claim branch (an evil-at-end Aoife may be lying about it)
+  - "aoife_no_swap :- not sc_hit(aoife,josh,1)"
   # deaths: day 1 steph (witch curse) — the death must be PRODUCED
   - ":- not day_kill(steph,1)"
   - ":- day_kill(P,1), P != steph, player(P)"

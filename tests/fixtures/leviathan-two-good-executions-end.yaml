@@ -1,0 +1,16 @@
+# Leviathan text: "If more than 1 good player is executed, you win."
+# Two good executions across days 1-2 end the game for evil at day 2.
+# (Leviathan itself never kills at night: no other deaths occur.)
+script: [tb, exp]
+horizon: 3   # day domain is 1..horizon-1; the day-2 execution needs day(2)
+players: [a, b, c, d, e]
+given:
+  - "initial(a,leviathan)"
+  - "initial(b,goblin)"
+  - "initial(c,washerwoman)"
+  - "initial(d,chef)"
+  - "initial(e,soldier)"
+  - "executed(c,1)"
+  - "executed(d,2)"
+assert:
+  certain: ["ended(4,evil)"]

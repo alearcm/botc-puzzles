@@ -225,7 +225,10 @@ def claim_rules(claims: list[dict]) -> list[str]:
     truthfully like any good player."""
     out = []
     if claims:
-        out.append("evil_at_end(P) :- player(P), align(P,evil,horizon).")
+        # end-state alignment: the final night's change (fang gu jump at
+        # horizon, snake charmer swap at horizon) overrides align(_,_,horizon)
+        out.append("evil_at_end(P) :- player(P), align(P,evil,horizon), "
+                   "not align_changed(P,horizon).")
         out.append("evil_at_end(P) :- player(P), align_change(P,evil,horizon).")
         out.append("alive_at_end(P) :- alive(P,horizon), "
                    "not dies_night(P,horizon).")

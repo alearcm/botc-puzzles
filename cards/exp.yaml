@@ -1,0 +1,11 @@
+# Experimental (post-base-3) characters imported by NQT puzzles.
+# Added per-puzzle, text-first, with minimal mechanics; same schema as the
+# base card files.
+- id: leviathan
+  team: demon
+  coverage: full
+  notes: "text: no night kill at all; 'if more than 1 good player is executed, you win' and 'after day 5, evil wins' live in endgame.lp; 'all players know you are in play' is epistemic only (no mechanical effect)"
+- id: goblin
+  team: minion
+  coverage: partial
+  notes: "text: 'if you publicly claim to be the Goblin when nominated & are executed that day, your team wins' — social win path not yet encoded (needs a public-claim input); no night mechanics. Fine for puzzles where no Goblin claim is made."

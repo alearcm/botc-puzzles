@@ -4,6 +4,8 @@
 # Exactly one Outsider in play: the Drunk. You are not evil, might be Drunk.
 # Day 1: Adam executed. Night 2: You die. Day 2: Aoife executed.
 # Night 3: Sarah dies. Question: who is the Demon and who is the Minion?
+# Hidden-roles box (Pukka/No Dashii/Scarlet Woman/Drunk) added after the
+# turned-evil claim-freedom rule (from #55) admitted exotic S&V lines.
 id: nqt-028
 script: [tb, bmr, snv]
 horizon: 3
@@ -45,6 +47,16 @@ given:
   - ":- initial(P,C), role(C,outsider,_), C != drunk"
   - "drunk_in_play :- initial(P,drunk), player(P)"
   - ":- not drunk_in_play"
+  # "Potential hidden roles" box: claimed role or one of these four
+  - "hidden28(pukka; nodashii; scarletwoman; drunk)"
+  - ":- initial(adam,C), C != clockmaker, not hidden28(C)"
+  - ":- initial(oscar,C), C != empath, not hidden28(C)"
+  - ":- initial(olivia,C), C != fortuneteller, not hidden28(C)"
+  - ":- initial(sarah,C), C != oracle, not hidden28(C)"
+  - ":- initial(you,C), C != chambermaid, not hidden28(C)"
+  - ":- initial(matt,C), C != juggler, not hidden28(C)"
+  - ":- initial(fraser,C), C != undertaker, not hidden28(C)"
+  - ":- initial(aoife,C), C != librarian, not hidden28(C)"
   # events
   - "executed(adam,1)"
   - "executed(aoife,2)"

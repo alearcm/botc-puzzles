@@ -54,6 +54,13 @@ any_exec(D) :- executed(_,D).
 % ---------- vortox: no execution in a day -> evil wins ----------
 ended(2*D,evil) :- day(D), vortox_alive(D), not any_exec(D).
 
+% ---------- leviathan: execution-count clock (no night kill) ----------
+% "If more than 1 good player is executed, you win. After day 5, evil wins."
+lev_alive(D) :- day(D), char_d(P,leviathan,D), alive(P,D), not dies_night(P,D).
+ended(2*D,evil) :- lev_alive(D),
+    #count{ P,D2 : exec_death(P,D2), day(D2), D2 <= D, align(P,good,D2) } >= 2.
+ended(2*D,evil) :- lev_alive(D), D >= 5.
+
 % ---------- mastermind: demon executed -> one more day ----------
 mm_active(D) :- exec_death(P,D), char_d(P,C,D), team_of(C,demon),
     char_d(M,mastermind,D), alive(M,D), not dies_day(M,D),

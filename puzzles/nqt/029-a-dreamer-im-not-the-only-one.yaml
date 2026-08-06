@@ -1,0 +1,69 @@
+# Weekly Puzzle #29 — "A Dreamer? I'm Not the Only One" (Not_Quite_Vertical)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1ixykmz/
+# 8 players. Bootlegger homebrew rule: "Every Townsfolk is a Dreamer."
+# One Demon (Imp), one Minion (Poisoner), one Outsider in play (Drunk).
+# Hidden roles box: Imp, Poisoner, Drunk. Everyone claims Dreamer and
+# reports their night-1 (and night-2) visions.
+# You are not evil but might be the Drunk.
+# Day 1: Jasmine executed. Night 2: You die.
+# Question: who is the Demon and who is the Minion?
+# CONFIRMED ANSWER (author-endorsed): Adam = Imp, Jasmine = Poisoner,
+# Hannah = Drunk. REPRODUCED sound-unique (single world) on first solve —
+# no engine changes needed.
+id: nqt-029
+script: [tb, snv]   # Dreamer from S&V; Imp/Poisoner/Drunk from TB
+horizon: 2
+players: [sula, steph, hannah, fraser, you, jasmine, adam, sarah]
+claims:
+  - {player: sula, character: dreamer,
+     info: ["picked(sula,dreamer,1,jasmine)",
+            "shown_dreamer(sula,1,drunk,poisoner)",
+            "picked(sula,dreamer,2,hannah)",
+            "shown_dreamer(sula,2,drunk,poisoner)"]}
+  - {player: steph, character: dreamer,
+     info: ["picked(steph,dreamer,1,jasmine)",
+            "shown_dreamer(steph,1,drunk,imp)",
+            "picked(steph,dreamer,2,sula)",
+            "shown_dreamer(steph,2,dreamer,poisoner)"]}
+  - {player: hannah, character: dreamer,
+     info: ["picked(hannah,dreamer,1,adam)",
+            "shown_dreamer(hannah,1,drunk,poisoner)",
+            "picked(hannah,dreamer,2,sula)",
+            "shown_dreamer(hannah,2,drunk,imp)"]}
+  - {player: fraser, character: dreamer,
+     info: ["picked(fraser,dreamer,1,hannah)",
+            "shown_dreamer(fraser,1,drunk,imp)",
+            "picked(fraser,dreamer,2,jasmine)",
+            "shown_dreamer(fraser,2,drunk,poisoner)"]}
+  - {player: you, character: dreamer,
+     info: ["picked(you,dreamer,1,jasmine)",
+            "shown_dreamer(you,1,dreamer,poisoner)"]}
+  - {player: jasmine, character: dreamer,
+     info: ["picked(jasmine,dreamer,1,sula)",
+            "shown_dreamer(jasmine,1,drunk,imp)"]}
+  - {player: adam, character: dreamer,
+     info: ["picked(adam,dreamer,1,jasmine)",
+            "shown_dreamer(adam,1,dreamer,imp)",
+            "picked(adam,dreamer,2,fraser)",
+            "shown_dreamer(adam,2,dreamer,imp)"]}
+  - {player: sarah, character: dreamer,
+     info: ["picked(sarah,dreamer,1,jasmine)",
+            "shown_dreamer(sarah,1,drunk,poisoner)",
+            "picked(sarah,dreamer,2,adam)",
+            "shown_dreamer(sarah,2,drunk,imp)"]}
+given:
+  # roster: homebrew "Every Townsfolk is a Dreamer" + hidden roles box
+  - "dup_ok(dreamer)"
+  - ":- initial(P,C), role(C,townsfolk,_), C != dreamer"
+  - ":- initial(P,C), role(C,demon,_), C != imp"
+  - ":- initial(P,C), role(C,minion,_), C != poisoner"
+  - ":- initial(P,C), role(C,outsider,_), C != drunk"
+  - "drunk_in_play :- initial(P,drunk), player(P)"
+  - ":- not drunk_in_play"
+  - ":- align(you,evil,1)"
+  # events
+  - "executed(jasmine,1)"
+  - ":- announced_dead(P,1), player(P)"
+  - ":- not announced_dead(you,2)"
+  - ":- announced_dead(P,2), P != you, player(P)"
+  - ":- day_kill(P,D), player(P), day(D)"
