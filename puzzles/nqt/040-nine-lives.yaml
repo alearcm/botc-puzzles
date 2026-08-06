@@ -1,0 +1,66 @@
+# Weekly Puzzle #40 — "Nine Lives" (Not_Quite_Vertical, r/BOTC)
+# https://www.reddit.com/r/BloodOnTheClocktower/comments/1klqy8j/
+# 9 players, TB. One Imp + one minion of {Baron, Spy, Poisoner, Scarlet
+# Woman}. Default outsider count TWO (9p base); Baron adds two. Three
+# outsider claims (Saint, Recluse, Butler) for the default two slots.
+# You are not evil, might be the Drunk. Josh never voted.
+# Hidden roles box: Imp, Poisoner, Spy, Baron, Scarlet Woman, Drunk.
+# Day 1: Josh executed. Night 2: Fraser dies. Day 2: Jasmine executed.
+# Night 3: Tim dies. Day 3: Adam shoots Matthew (nothing).
+# Question: who is the Demon and who is the Minion?
+# CONFIRMED ANSWER (author-endorsed): Adam = Imp, Tim = Baron
+# (Jasmine = the Drunk believing Washerwoman).
+id: nqt-040
+script: tb
+horizon: 4
+players: [hannah, fraser, tim, josh, adam, you, matthew, steph, jasmine]
+claims:
+  - {player: hannah, character: saint, info: []}
+  - {player: fraser, character: librarian,
+     info: ["shown_among2(fraser,librarian,1,drunk,hannah,jasmine)"]}
+  - {player: tim, character: empath,
+     info: ["shown_num(tim,empath,1,2)",
+            "shown_num(tim,empath,2,1)"]}
+  - {player: josh, character: butler, info: []}
+  - {player: adam, character: slayer, info: []}
+  - {player: you, character: investigator,
+     info: ["shown_among2(you,investigator,1,scarletwoman,fraser,steph)"]}
+  - {player: matthew, character: fortuneteller,
+     info: ["picked2(matthew,fortuneteller,1,josh,tim)",
+            "shown_bool(matthew,fortuneteller,1,no)",
+            "picked2(matthew,fortuneteller,2,hannah,tim)",
+            "shown_bool(matthew,fortuneteller,2,no)",
+            "picked2(matthew,fortuneteller,3,matthew,you)",
+            "shown_bool(matthew,fortuneteller,3,yes)"]}
+  - {player: steph, character: recluse, info: []}
+  - {player: jasmine, character: washerwoman,
+     info: ["shown_among2(jasmine,washerwoman,1,empath,adam,tim)"]}
+given:
+  # events
+  - "executed(josh,1)"
+  - "executed(jasmine,2)"
+  - "slayer_shot(adam,matthew,3)"
+  - ":- announced_dead(P,1), player(P)"
+  - ":- not announced_dead(fraser,2)"
+  - ":- announced_dead(P,2), P != fraser, player(P)"
+  - ":- not announced_dead(tim,3)"
+  - ":- announced_dead(P,3), P != tim, player(P)"
+  - ":- day_kill(P,1), player(P)"
+  - ":- day_kill(P,2), player(P)"
+  - ":- day_kill(P,3), player(P)"
+  - ":- voted(josh,D), day(D)"
+  # roster
+  - ":- initial(P,C), role(C,demon,_), C != imp"
+  - ":- initial(P,C), role(C,minion,_), C != baron, C != spy, C != poisoner, C != scarletwoman"
+  # "Potential hidden roles" box: claimed role or one of these six
+  - "hidden40(imp; poisoner; spy; baron; scarletwoman; drunk)"
+  - ":- initial(hannah,C), C != saint, not hidden40(C)"
+  - ":- initial(fraser,C), C != librarian, not hidden40(C)"
+  - ":- initial(tim,C), C != empath, not hidden40(C)"
+  - ":- initial(josh,C), C != butler, not hidden40(C)"
+  - ":- initial(adam,C), C != slayer, not hidden40(C)"
+  - ":- initial(you,C), C != investigator, not hidden40(C)"
+  - ":- initial(matthew,C), C != fortuneteller, not hidden40(C)"
+  - ":- initial(steph,C), C != recluse, not hidden40(C)"
+  - ":- initial(jasmine,C), C != washerwoman, not hidden40(C)"
+  - ":- align(you,evil,1)"

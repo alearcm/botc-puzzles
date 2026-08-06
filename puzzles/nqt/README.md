@@ -21,11 +21,12 @@ solver must reproduce the author-confirmed answer from the thread.
 | 33 | Twice is Coincidence, Thrice is Proof | TB | unique: Tom = Imp, Sula = Poisoner | same | YES (first solve, no engine changes) |
 | 34 | The Vortox Conjecture | S&V | unique: Sula = Vortox, Sarah = Witch | same | YES (forced engine fixes: strict ongoing-play, Vortox-counts-as-malfunction, Mathematician impaired-token scope; witch self-curse stays legal) |
 | 36 | What is Your Weapon of Choice? | TB | unique: Fraser = Imp, Oscar = Poisoner | same | YES (forced drunk-token-not-in-play: the Drunk can't believe an in-play character, dup_ok exempt) |
+| 40 | Nine Lives | TB (9p) | unique: Adam = Imp, Tim = Baron | same | YES (first solve; Empath night-2 read leans on positional death visibility) |
 | 43 | Two Many Cooks | TB | unique: Dan = Imp, Fraser = Poisoner | Dan Imp, Fraser Poisoner | YES |
 | 55 | The Life of a Flowergirl | S&V | unique world: Anna = Vortox, Jasmine = Witch | same | YES (forced claim-model fixes: evil-at-end claim freedom, living-Mutant madness; first "Potential hidden roles" box) |
 | 59 | Fifty-Fifty | TB | unique: Oscar = Imp, Jasmine = Spy (full grimoire certain) | Jasmine Spy, Oscar Imp | YES |
 
-Running total: **16/17 sound-unique + 1 PARTIAL (#11: demon unique, minion open)** (008 at
+Running total: **17/18 sound-unique + 1 PARTIAL (#11: demon unique, minion open)** (008 at
 team level by
 design). #28 was temporarily PARTIAL after the solver switched to sound
 per-player probes; diagnosis found the discriminator in the Chambermaid's
