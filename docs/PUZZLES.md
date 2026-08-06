@@ -12,8 +12,11 @@ One entry per public claim: `{player, character, info: [shown/picked atoms]}`.
 Semantics (compiled by `tools/botc.py claim_rules`): a good claimant truthfully
 is their believed character and received exactly the listed tokens (Drunk
 charade included); a LIVING Mutant may claim any Townsfolk with fabricated
-info (a dead Mutant no longer complies with madness and claims truthfully —
-NQT #55 author comment); Cerenovus-mad players claim their mad character.
+info, per the NQT convention text ("A living Mutant fully complies with
+madness... Other good players truthfully report") — a dead Mutant falls
+under the truthful clause of THAT TEXT, not under any game mechanic (talk
+is free; see `dead-mutant-claims-truthfully` in RULINGS); Cerenovus-mad
+players claim their mad character.
 Claim freedom belongs to players who are evil at the END of the observed
 window (`align/align_change` at `horizon`) — this covers initial evils and
 turned-evil players (Fang Gu jump, Goon flip), while an ex-evil player
