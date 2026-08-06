@@ -213,9 +213,11 @@ shab_victim(Q,T0) :- picked2(_,shabaloth,T0,_,Q).
     char(P,shabaloth,T), acting(P,shabaloth,T), night(T), T > 1.
 
 % po: charge or kill (p1 pick = kill; charge modelled as self-pick)
-po_charged(P,T) :- picked(P,po,T,P), not po_ready(P,T).
-% on a burst night the regular pick is inert (self-pick by convention)
-kill_suppressed(P,po,T) :- po_ready(P,T).
+% po's "you may choose": charging = genuinely choosing no-one
+po_charged(P,T) :- acting(P,po,T), not po_picked(P,T), not po_ready(P,T).
+po_picked(P,T) :- picked(P,po,T,_).
+% on a burst night the single pick is replaced by the 3-pick
+pick_suppressed(P,po,T) :- po_ready(P,T).
 % after charging: exactly 3 targets (or all remaining if fewer than 3 alive)
 po_ready(P,T) :- po_charged(P,T0), T = T0+1, night(T), acting(P,po,T).
 po_pool(P,T,K) :- po_ready(P,T), K = #count{ Q : app_alive(Q,T) }.
@@ -223,8 +225,8 @@ po_pool(P,T,K) :- po_ready(P,T), K = #count{ Q : app_alive(Q,T) }.
 K { po_extra(P,T,Q) : app_alive(Q,T) } K :- po_ready(P,T), po_pool(P,T,K), K < 3.
 kill_prop(Q,src(P,po),T,I,demon) :- po_extra(P,T,Q), sched(po,T,I),
     functioning_at(P,po,T,I).
-% (normal po kill comes from eff_kill(po,p1); self-pick must not kill)
-prevented(P,src(P,po),T,I) :- final_kill(P,src(P,po),T,I,demon), po_charged(P,T).
+% cerenovus: the madness character must be good (printed text)
+:- pickedc(P,cerenovus,T,CC), role(CC,TM,_), evil_team(TM).
 
 % ---------- S&V ----------
 % snake charmer: hits the actual demon -> swap, effective SAME night: the new

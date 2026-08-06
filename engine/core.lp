@@ -192,6 +192,8 @@ shadow_acting(P,B,T) :- shadow(P,B,T), acts(B,each,_), sched(B,T,_),
 :- acts_pick(C,p2_alive_not_self), picked2(P,C,T,_,Q), not app_alive(Q,T).
 :- acts_pick(C,p2_alive_not_self), picked2(P,C,T,P,_).
 :- acts_pick(C,p2_alive_not_self), picked2(P,C,T,_,P).
+:- acts_pick(C,p2_not_self), picked2(P,C,T,P,_).
+:- acts_pick(C,p2_not_self), picked2(P,C,T,_,P).
 % at most one pick atom per acting instance (instance facts add, not join)
 :- picked(P,C,T,Q1), picked(P,C,T,Q2), Q1 < Q2, acts_pick(C,PS),
    PS != p1_and_char.
@@ -199,6 +201,12 @@ shadow_acting(P,B,T) :- shadow(P,B,T), acts(B,each,_), sched(B,T,_),
 :- picked2(P,C,T,Q1,Q2), picked2(P,C,T,Q3,Q4), Q2 != Q4.
 1 { picked2(P,C,T,Q1,Q2) : player(Q1), player(Q2), Q1 < Q2 } 1 :-
     acting(P,C,T), acts_pick(C,p2_players).
+1 { picked2(P,C,T,Q1,Q2) : player(Q1), player(Q2), Q1 < Q2,
+                           Q1 != P, Q2 != P } 1 :-
+    acting(P,C,T), acts_pick(C,p2_not_self).
+% optional single pick ("you may choose a player")
+0 { picked(P,C,T,Q) : player(Q) } 1 :-
+    acting(P,C,T), acts_pick(C,p1_any_opt), not pick_suppressed(P,C,T).
 1 { pickedc(P,C,T,CC) : on_script(CC) } 1 :-
     acting(P,C,T), acts_pick(C,char_only).
 1 { picked(P,C,T,Q) : alive(Q,T) } 1 :-

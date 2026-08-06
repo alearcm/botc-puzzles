@@ -15,9 +15,9 @@
   team: townsfolk
   acts:
     phase: each
-    pick: p1_alive_not_self
+    pick: p1_alive
   coverage: full
-  notes: either-or drunking + cant_die in mech.lp/death.lp
+  notes: "text: \"choose an alive player\" \u2014 self allowed; either-or drunking + cant_die"
 - id: chambermaid
   team: townsfolk
   acts:
@@ -31,16 +31,18 @@
   team: townsfolk
   acts:
     phase: other
-    pick: p1_alive
+    pick: p1_any
   coverage: full
   facts:
   - no_repeat_pick(exorcist)
+  notes: "text: \"choose a player (different to last night)\" \u2014 dead pickable"
 - id: innkeeper
   team: townsfolk
   acts:
     phase: other
-    pick: p2_alive
+    pick: p2_players
   coverage: full
+  notes: "text: \"choose 2 players\" \u2014 no aliveness restriction printed"
 - id: gambler
   team: townsfolk
   acts:
@@ -137,10 +139,9 @@
   team: demon
   acts:
     phase: each
-    pick: p1_alive
+    pick: p1_any
   coverage: full
-  notes: poison-now/die-next-night through the kill pipeline; protection saves the life, poison expiry
-    unchanged
+  notes: 'text: "choose a player"; poison-now/die-next-night via kill pipeline'
 - id: shabaloth
   team: demon
   acts:
@@ -153,7 +154,7 @@
   team: demon
   acts:
     phase: other
-    pick: p1_any
+    pick: p1_any_opt
   kill: p1
   coverage: full
-  notes: self-pick convention = charge; exactly-3 burst (fewer if fewer alive)
+  notes: "text: \"you may choose\" \u2014 pass = charge; exactly-3 burst next night"

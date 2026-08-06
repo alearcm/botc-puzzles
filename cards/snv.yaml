@@ -66,11 +66,12 @@
   acts:
     phase: each
     once: true
-    pick: p2_alive_not_self
+    pick: p2_not_self
   learns:
     phase: each
     schema: same_alignment_yesno
   coverage: full
+  notes: "text: \"choose 2 players (not yourself)\" \u2014 dead pickable"
 - id: philosopher
   team: townsfolk
   coverage: full
@@ -117,9 +118,9 @@
   team: minion
   acts:
     phase: each
-    pick: p1_alive
+    pick: p1_any
   coverage: full
-  notes: self-curse allowed (user-confirmed ruling)
+  notes: "text: \"choose a player\" \u2014 self-curse allowed (user-confirmed)"
 - id: cerenovus
   team: minion
   acts:
@@ -151,7 +152,9 @@
     pick: p1_any
   kill: p1
   coverage: full
-  notes: minion ability persists dead; poisons an alive townsfolk neighbour of the minion
+  notes: printed [-1 Outsider] (text-audit catch); minion ability persists dead; poisons a townsfolk neighbour
+  setup_delta:
+    outsider: -1
 - id: nodashii
   team: demon
   acts:

@@ -234,6 +234,15 @@ declare between is flagged ill-posed.
 `RULINGS.md` is the human-readable catalog of this: each entry compiles to
 fixtures (with tiers) and, where contested, to named deltas.
 
+**Text-first discipline.** Card data defaults come from the printed ability
+text: "choose a player" permits self and the dead unless the text says
+otherwise; "(not yourself)" and "alive" restrictions exist exactly where
+printed. A puzzle's unique solution is *weak evidence* — it may motivate a
+RULINGS entry marked inferred and an engine change stated as a general rule,
+never a character-specific patch. Edge cases get named entries and fixtures;
+the default path behaves as written. Known shortcuts live in `DEBT.md` — an
+undocumented hack is the failure mode, not the shortcut itself.
+
 ## 11. Non-goals
 
 - **Atheist**: a license to exit the formal system; excluded by design (no
