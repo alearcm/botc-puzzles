@@ -1,0 +1,50 @@
+# Evil-planning prefix of Weekly Puzzle #33 ("Twice is Coincidence...").
+# The game as of dusk on day 2: You executed d1, Olivia died n2, Fraser
+# executed d2. Claims contain only tokens received so far (Jasmine's
+# Ravenkeeper token would arrive on her death; Oscar has two checks).
+# TRUE WORLD (the demon's knowledge): Tom = Imp, Sula = Poisoner.
+# Query: whom should Tom kill on night 3 to leave the town the most
+# consistent worlds?  Usage:
+#   python3 tools/botc.py evilmax puzzles/queries/033-night3-evilmax.yaml \
+#     --night 3 --truth "initial(tom,imp);initial(sula,poisoner)"
+id: nqt-033-evilmax-n3
+script: tb
+horizon: 3
+players: [tom, oscar, sula, fraser, you, olivia, jasmine, hannah]
+claims:
+  - {player: tom, character: librarian,
+     info: ["shown_among2(tom,librarian,1,saint,olivia,sula)"]}
+  - {player: oscar, character: fortuneteller,
+     info: ["picked2(oscar,fortuneteller,1,fraser,sula)",
+            "shown_bool(oscar,fortuneteller,1,no)",
+            "picked2(oscar,fortuneteller,2,sula,tom)",
+            "shown_bool(oscar,fortuneteller,2,no)"]}
+  - {player: sula, character: saint, info: []}
+  - {player: fraser, character: investigator,
+     info: ["shown_among2(fraser,investigator,1,poisoner,jasmine,you)"]}
+  - {player: you, character: empath,
+     info: ["shown_num(you,empath,1,0)"]}
+  - {player: olivia, character: recluse, info: []}
+  - {player: jasmine, character: ravenkeeper, info: []}
+  - {player: hannah, character: washerwoman,
+     info: ["shown_among2(hannah,washerwoman,1,investigator,fraser,sula)"]}
+given:
+  - "executed(you,1)"
+  - "executed(fraser,2)"
+  - ":- announced_dead(P,1), player(P)"
+  - ":- not announced_dead(olivia,2)"
+  - ":- announced_dead(P,2), P != olivia, player(P)"
+  - ":- day_kill(P,D), player(P), day(D)"
+  - ":- initial(P,C), role(C,demon,_), C != imp"
+  - ":- initial(P,C), role(C,minion,_), C != baron, C != spy, C != poisoner, C != scarletwoman"
+  - ":- initial(P,C), role(C,outsider,_), C != saint, C != recluse, C != drunk"
+  - "hidden33(imp; poisoner; spy; baron; scarletwoman; drunk)"
+  - ":- initial(tom,C), C != librarian, not hidden33(C)"
+  - ":- initial(oscar,C), C != fortuneteller, not hidden33(C)"
+  - ":- initial(sula,C), C != saint, not hidden33(C)"
+  - ":- initial(fraser,C), C != investigator, not hidden33(C)"
+  - ":- initial(you,C), C != empath, not hidden33(C)"
+  - ":- initial(olivia,C), C != recluse, not hidden33(C)"
+  - ":- initial(jasmine,C), C != ravenkeeper, not hidden33(C)"
+  - ":- initial(hannah,C), C != washerwoman, not hidden33(C)"
+  - ":- align(you,evil,1)"

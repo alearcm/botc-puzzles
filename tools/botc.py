@@ -402,17 +402,49 @@ def query_certain(path: Path, limit: int = 2000) -> dict:
     }
 
 
+def query_evilmax(path: Path, night: int, truth: list[str],
+                  limit: int = 2000) -> dict:
+    """Evil-perspective planning: the demon KNOWS the true grimoire
+    (`truth` facts). For each candidate victim realizable in the truth
+    world at `night`, count the distinct worlds (initial/2 projection)
+    still consistent for the TOWN after that death is announced — evil
+    prefers the kill leaving the most worlds standing. The puzzle file
+    must be a PREFIX observation (events/claims up to the prior day)."""
+    inst, doc = load_puzzle(path)
+    tfacts = [t.strip().rstrip(".") for t in truth]
+
+    def extended(extra_given: list[str]) -> Instance:
+        return Instance(script=inst.script, players=inst.players,
+                        horizon=inst.horizon, given=inst.given + extra_given,
+                        statements=inst.statements, roster=inst.roster)
+
+    ranking = {}
+    for v in inst.players:
+        death = [f":- not announced_dead({v},{night})",
+                 f":- announced_dead(P,{night}), P != {v}, player(P)"]
+        if not sat(extended(tfacts + death)):
+            continue  # not realizable in the true world
+        ws, trunc = worlds_proj(extended(death), ["initial/2"], limit=limit)
+        ranking[v] = {"worlds": len(ws), "truncated": trunc}
+    best = max(ranking, key=lambda v: ranking[v]["worlds"]) if ranking else None
+    return {"night": night, "truth": tfacts, "kills": ranking, "best": best}
+
+
 def _main() -> None:
     import argparse
     import pprint
     ap = argparse.ArgumentParser(description="BotC world-enumeration queries")
     sub = ap.add_subparsers(dest="cmd", required=True)
-    for name in ("solve", "worlds", "certain", "count"):
+    for name in ("solve", "worlds", "certain", "count", "evilmax"):
         sp = sub.add_parser(name)
         sp.add_argument("puzzle", type=Path)
         if name in ("worlds", "count"):
             sp.add_argument("--show", default="initial/2",
                             help="comma-separated projection atoms (name/arity)")
+        if name == "evilmax":
+            sp.add_argument("--night", type=int, required=True)
+            sp.add_argument("--truth", required=True,
+                            help="semicolon-separated true-world facts")
         if name != "solve":
             sp.add_argument("--limit", type=int, default=2000)
     args = ap.parse_args()
@@ -427,6 +459,9 @@ def _main() -> None:
               f"(projection {r['projection']})")
     elif args.cmd == "certain":
         pprint.pprint(query_certain(args.puzzle, args.limit))
+    elif args.cmd == "evilmax":
+        pprint.pprint(query_evilmax(args.puzzle, args.night,
+                                    args.truth.split(";"), args.limit))
 
 
 if __name__ == "__main__":
