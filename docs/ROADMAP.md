@@ -44,7 +44,7 @@ Originally scoped as:
 **Gate:** every TB character is data (zero hand-written per-character ASP);
 the default candidate passes all T0 fixtures; T1/T2 conformance reported.
 
-## M2 — Puzzle corpus + solver CLI
+## M2  ✅ GATE MET (2026-08-06): 19/20 sound-unique (95%) + 1 diagnosed PARTIAL across 20 transcriptions (TB, S&V, homebrew all-X, experimental imports) — Puzzle corpus + solver CLI
 
 - Puzzle file format: seats, script, ruleset declaration, public events,
   claims, question type.

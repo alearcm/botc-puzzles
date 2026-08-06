@@ -217,6 +217,22 @@ def worlds(inst: Instance, show: list[str], limit: int = 200) -> list[frozenset[
     return out
 
 
+def worlds_proj(inst: Instance, show: list[str], limit: int = 2000,
+                extra: str = "") -> tuple[list[frozenset[str]], bool]:
+    """DISTINCT projections onto `show` via clingo --project (each projected
+    world enumerated once, soundly — no duplicate full models inflating or
+    truncating the projection). Returns (worlds, truncated)."""
+    shows = "\n".join(f"#show {s}." for s in show)
+    ctl = clingo.Control([f"-c horizon={inst.horizon}", "--project", str(limit)])
+    ctl.add("base", [], build_program(inst) + "\n#show.\n" + shows + "\n" + extra)
+    ctl.ground([("base", [])])
+    out = []
+    with ctl.solve(yield_=True) as h:
+        for m in h:
+            out.append(frozenset(str(a) for a in m.symbols(shown=True)))
+    return out, len(out) >= limit
+
+
 def load_fixture(path: Path) -> tuple[Instance, dict]:
     doc = yaml.safe_load(path.read_text())
     inst = Instance(
@@ -359,7 +375,59 @@ def solve_puzzle(path: Path, limit: int = 200) -> dict:
     }
 
 
-if __name__ == "__main__":
+# ---------------- query surface (M3) ----------------
+
+def query_worlds(path: Path, show: list[str], limit: int = 2000) -> dict:
+    """All distinct worlds of the observation, projected onto `show`."""
+    inst, doc = load_puzzle(path)
+    ws, truncated = worlds_proj(inst, show, limit=limit)
+    return {"projection": show, "count": len(ws), "truncated": truncated,
+            "worlds": [sorted(w) for w in sorted(ws)]}
+
+
+def query_certain(path: Path, limit: int = 2000) -> dict:
+    """Who can you figure out: per-player possible initial characters across
+    ALL worlds (sound when not truncated), split into pinned / ambiguous."""
+    inst, doc = load_puzzle(path)
+    ws, truncated = worlds_proj(inst, ["initial/2"], limit=limit)
+    poss: dict[str, set[str]] = {p: set() for p in inst.players}
+    for w in ws:
+        for a in w:
+            p, c = a[len("initial("):-1].split(",")
+            poss[p].add(c)
+    return {
+        "worlds": len(ws), "truncated": truncated,
+        "pinned": {p: sorted(cs)[0] for p, cs in poss.items() if len(cs) == 1},
+        "ambiguous": {p: sorted(cs) for p, cs in poss.items() if len(cs) > 1},
+    }
+
+
+def _main() -> None:
+    import argparse
     import pprint
-    import sys as _sys
-    pprint.pprint(solve_puzzle(Path(_sys.argv[1])))
+    ap = argparse.ArgumentParser(description="BotC world-enumeration queries")
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    for name in ("solve", "worlds", "certain", "count"):
+        sp = sub.add_parser(name)
+        sp.add_argument("puzzle", type=Path)
+        if name in ("worlds", "count"):
+            sp.add_argument("--show", default="initial/2",
+                            help="comma-separated projection atoms (name/arity)")
+        if name != "solve":
+            sp.add_argument("--limit", type=int, default=2000)
+    args = ap.parse_args()
+    if args.cmd == "solve":
+        pprint.pprint(solve_puzzle(args.puzzle))
+    elif args.cmd == "worlds":
+        pprint.pprint(query_worlds(args.puzzle, args.show.split(","),
+                                   args.limit))
+    elif args.cmd == "count":
+        r = query_worlds(args.puzzle, args.show.split(","), args.limit)
+        print(f"{r['count']}{'+' if r['truncated'] else ''} distinct worlds "
+              f"(projection {r['projection']})")
+    elif args.cmd == "certain":
+        pprint.pprint(query_certain(args.puzzle, args.limit))
+
+
+if __name__ == "__main__":
+    _main()
